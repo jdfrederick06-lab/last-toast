@@ -113,9 +113,8 @@ footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing
   <footer>KANE OIL &amp; ENERGY · EST. 1974 · PRIVATE EVENT</footer>
 </div>
 
-<script src="config.js"></script>
-<script src="party.js"></script>
-<script src="core.js"></script>
+<script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
+['config.js', 'party.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 let backend, S = normRoot({}), lastSite = null;
 const myId = () => store.get('myRsvp');

@@ -261,10 +261,8 @@ body.prompting{overflow:hidden}
 <div id="fullmsg"></div>
 <div id="prompterRoot"></div>
 
-<script src="config.js"></script>
-<script src="party.js"></script>
-<script src="story.locked.js"></script>
-<script src="core.js"></script>
+<script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
+['config.js', 'party.js', 'story.locked.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 /* =========================================================================
    KANE OIL DATABASE — player dossiers + the host's master control terminal
