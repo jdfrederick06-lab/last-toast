@@ -60,7 +60,7 @@ footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing
 </head>
 <body class="grid">
 <div id="app">
-  <nav class="nav"><span id="navLogo"></span><b>KANE OIL &amp; ENERGY</b><a class="btn sm gold" href="#rsvp">RSVP</a></nav>
+  <nav class="nav"><span id="navLogo"></span><b>KANE OIL &amp; ENERGY</b><a class="btn sm ghost" id="portalLink" href="database.html">DATABASE</a><a class="btn sm gold" href="#rsvp">RSVP</a></nav>
   <header class="hero">
     <div class="logo" id="heroLogo"></div>
     <div class="kick">An invitation</div>
@@ -100,6 +100,11 @@ footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing
       <p class="note" style="margin:10px 0 0;text-align:center">Your RSVP goes to the host. Please don't include phone numbers, addresses, or anything private.</p>
     </form>
   </section>
+  <section class="panel" id="portalPanel" style="text-align:center">
+    <h2 class="sh">Already have your code word?</h2>
+    <p class="note" style="font-size:15px;margin:0 0 14px">Enter the Kane Oil Database to read your dossier.</p>
+    <a class="btn gold" href="database.html">ENTER THE KANE OIL DATABASE →</a>
+  </section>
   <footer>KANE OIL &amp; ENERGY · EST. 1974 · PRIVATE EVENT</footer>
 </div>
 
@@ -124,6 +129,8 @@ $('#details').innerHTML = [
 $('#premise').innerHTML = (P.premise || []).map(p => `<p>${esc(p)}</p>`).join('');
 $('#expect').innerHTML = (P.expect || []).map(p => `<li>${esc(p)}</li>`).join('');
 $('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">STEP ${String(i + 1).padStart(2, '0')}</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
+// the database link shows unless party.js sets showDatabaseLink: false
+if (P.showDatabaseLink === false) { $('#portalLink').classList.add('hidden'); $('#portalPanel').classList.add('hidden'); }
 if (P.showRules && (P.rules || []).length) {
   $('#rulesPanel').classList.remove('hidden');
   $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
