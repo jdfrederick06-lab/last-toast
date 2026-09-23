@@ -17,6 +17,11 @@ window.PARTY = {
   address: `[Street address, City]`,
   dress: `Black tie optional. Dress for a corporate gala.`,
   rsvpBy: `[RSVP-by date]`,
+  rsvpOpen: true,            // false closes the RSVP form
+  showDatabaseLink: true,    // false hides the "Database" buttons on the invitation
+  notice: ``,                // optional gold announcement banner at the top of the invitation
+  // Tip: you can also change the date, venue, banner and these switches live from the
+  // host dashboard (System tab → Live Page Editor), with no GitHub upload needed.
 
   // The in-world invitation, as if it came from Kane Oil itself
   inWorld: `Kane Oil & Energy requests the pleasure of your company at its Annual Gala, hosted by Chief Executive Officer Alexandra Kane.`,

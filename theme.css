@@ -29,6 +29,7 @@ a{color:var(--cyan)}
 /* top bar */
 .topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:16px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,rgba(14,24,46,.92),rgba(8,14,28,.88));box-shadow:0 10px 30px rgba(0,0,0,.35);position:sticky;top:8px;z-index:20;backdrop-filter:blur(10px)}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand>div{min-width:0}
 .brand svg{flex:none;filter:drop-shadow(0 0 8px rgba(217,178,91,.5))}
 .brand b{display:block;font-size:13px;letter-spacing:.18em;font-weight:800;color:var(--gold2);white-space:nowrap}
 .brand small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -90,5 +91,36 @@ textarea.input{min-height:110px;resize:vertical;line-height:1.5}
 .toast b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--gold2);margin-bottom:2px}
 .toast.err{border-color:var(--red);background:rgba(30,4,10,.95)}.toast.err b{color:var(--red2)}
 .toast.ok{border-color:var(--green);background:rgba(4,22,14,.95)}.toast.ok b{color:var(--green)}
+/* ---------- motion & high-tech finish ---------- */
+.panel{animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.panel::after{content:"";position:absolute;inset:-5px;pointer-events:none;
+  background:
+    linear-gradient(var(--gold),var(--gold)) top left/14px 1px no-repeat,linear-gradient(var(--gold),var(--gold)) top left/1px 14px no-repeat,
+    linear-gradient(var(--gold),var(--gold)) top right/14px 1px no-repeat,linear-gradient(var(--gold),var(--gold)) top right/1px 14px no-repeat,
+    linear-gradient(var(--gold),var(--gold)) bottom left/14px 1px no-repeat,linear-gradient(var(--gold),var(--gold)) bottom left/1px 14px no-repeat,
+    linear-gradient(var(--gold),var(--gold)) bottom right/14px 1px no-repeat,linear-gradient(var(--gold),var(--gold)) bottom right/1px 14px no-repeat;opacity:.55}
+.panel.red::after{background:
+    linear-gradient(var(--red),var(--red)) top left/14px 1px no-repeat,linear-gradient(var(--red),var(--red)) top left/1px 14px no-repeat,
+    linear-gradient(var(--red),var(--red)) top right/14px 1px no-repeat,linear-gradient(var(--red),var(--red)) top right/1px 14px no-repeat,
+    linear-gradient(var(--red),var(--red)) bottom left/14px 1px no-repeat,linear-gradient(var(--red),var(--red)) bottom left/1px 14px no-repeat,
+    linear-gradient(var(--red),var(--red)) bottom right/14px 1px no-repeat,linear-gradient(var(--red),var(--red)) bottom right/1px 14px no-repeat}
+.btn{position:relative;overflow:hidden}
+.btn::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-20deg);transition:left .6s ease;pointer-events:none}
+.btn:hover:not(:disabled)::after{left:130%}
+.btn:active:not(:disabled){transform:translateY(1px) scale(.99)}
+.topbar::after{content:"";position:absolute;left:16px;right:16px;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),var(--cyan),transparent);background-size:200% 100%;animation:shimmer 6s linear infinite;opacity:.7}
+@keyframes shimmer{to{background-position:-200% 0}}
+html::after{content:"";position:fixed;left:0;right:0;top:0;height:120px;pointer-events:none;z-index:0;background:linear-gradient(180deg,transparent,rgba(90,214,255,.045),transparent);animation:sweep 9s linear infinite}
+@keyframes sweep{from{transform:translateY(-140px)}to{transform:translateY(110vh)}}
+#modal{opacity:0;transition:opacity .2s}
+#modal.open{opacity:1}
+.mcard.wide{max-width:1000px}
+.toast.out{animation:toastOut .3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px) scale(.97)}}
+.fade-in{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+.pulse-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);animation:pdot 1.4s ease-in-out infinite}
+@keyframes pdot{50%{opacity:.35;transform:scale(.8)}}
+
 @media(max-width:520px){.topbar .chip .lbl{display:none}.panel{padding:15px}}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after,html::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

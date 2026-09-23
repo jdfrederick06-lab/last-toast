@@ -55,12 +55,16 @@ h2.sh{font-family:var(--serif);font-weight:600;font-size:clamp(30px,6vw,42px);ma
 .check input{width:20px;height:20px;accent-color:#d9b25b}
 .done{border:1px solid rgba(47,227,155,.45);background:rgba(47,227,155,.07);border-radius:12px;padding:14px;margin-bottom:16px;line-height:1.55}
 .done b{color:var(--green)}
+.notice{display:flex;gap:10px;align-items:center;border:1px solid var(--gold);background:linear-gradient(90deg,rgba(217,178,91,.16),rgba(217,178,91,.04));border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px;margin-bottom:8px;animation:rise .5s ease both;box-shadow:0 0 24px rgba(217,178,91,.2)}
+.hero>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.hero>*:nth-child(2){animation-delay:.1s}.hero>*:nth-child(3){animation-delay:.25s}.hero>*:nth-child(4){animation-delay:.4s}.hero>*:nth-child(5){animation-delay:.55s}.hero>*:nth-child(6){animation-delay:.7s}
 footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);padding:30px 0}
 </style>
 </head>
 <body class="grid">
 <div id="app">
-  <nav class="nav"><span id="navLogo"></span><b>KANE OIL &amp; ENERGY</b><a class="btn sm ghost" id="portalLink" href="database.html">DATABASE</a><a class="btn sm gold" href="#rsvp">RSVP</a></nav>
+  <nav class="nav"><span id="navLogo"></span><b>KANE OIL &amp; ENERGY</b><a class="btn sm ghost" id="portalLink" href="database.html">DATABASE</a><a class="btn sm gold" id="rsvpNav" href="#rsvp">RSVP</a></nav>
+  <div class="notice hidden" id="notice"><span class="pulse-dot"></span><span id="noticeText"></span></div>
   <header class="hero">
     <div class="logo" id="heroLogo"></div>
     <div class="kick">An invitation</div>
@@ -80,6 +84,7 @@ footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing
   <section class="panel gold" id="rsvp">
     <h2 class="sh">RSVP</h2>
     <div id="rsvpDone"></div>
+    <p class="note hidden" id="rsvpClosed" style="font-size:16px;margin:0">RSVPs are now closed. If your plans have changed, please contact the host directly.</p>
     <form id="rsvpForm" autocomplete="on">
       <div class="field"><label class="lbl" for="rName">Your name</label><input class="input" id="rName" name="name" required maxlength="60" autocomplete="name"></div>
       <div class="field"><span class="lbl">Will you attend?</span>
@@ -112,29 +117,38 @@ footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing
 <script src="party.js"></script>
 <script src="core.js"></script>
 <script>
-const P = window.PARTY || {};
-let backend, S = normRoot({});
+let backend, S = normRoot({}), lastSite = null;
 const myId = () => store.get('myRsvp');
 
-// static content
+// page content: party.js plus any live edits the host publishes from the dashboard
 $('#navLogo').innerHTML = LOGO(28); $('#heroLogo').innerHTML = LOGO(92);
-$('#inWorld').textContent = P.inWorld || '';
-$('#title').textContent = P.title || 'The Last Toast';
-$('#subtitle').textContent = P.subtitle || '';
-$('#hostBy').textContent = P.host ? 'Hosted by ' + P.host : '';
-document.title = (P.title || 'The Last Toast') + ' · Invitation';
-$('#details').innerHTML = [
-  ['When', P.date, P.time], ['Where', P.venue, P.address], ['Dress', P.dress, ''], ['RSVP by', P.rsvpBy, '']
-].filter(d => d[1]).map(([k, a, b]) => `<div class="det"><b>${k}</b><span>${esc(a)}</span>${b ? `<small>${esc(b)}</small>` : ''}</div>`).join('');
-$('#premise').innerHTML = (P.premise || []).map(p => `<p>${esc(p)}</p>`).join('');
-$('#expect').innerHTML = (P.expect || []).map(p => `<li>${esc(p)}</li>`).join('');
-$('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">STEP ${String(i + 1).padStart(2, '0')}</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
-// the database link shows unless party.js sets showDatabaseLink: false
-if (P.showDatabaseLink === false) { $('#portalLink').classList.add('hidden'); $('#portalPanel').classList.add('hidden'); }
-if (P.showRules && (P.rules || []).length) {
-  $('#rulesPanel').classList.remove('hidden');
-  $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
+function renderStatic() {
+  const sig = JSON.stringify(S.site || {}); if (sig === lastSite) return; lastSite = sig;
+  const P = mergeParty(window.PARTY, S.site);
+  $('#inWorld').textContent = P.inWorld || '';
+  $('#title').textContent = P.title || 'The Last Toast';
+  $('#subtitle').textContent = P.subtitle || '';
+  $('#hostBy').textContent = P.host ? 'Hosted by ' + P.host : '';
+  document.title = (P.title || 'The Last Toast') + ' · Invitation';
+  $('#notice').classList.toggle('hidden', !P.notice);
+  $('#noticeText').textContent = P.notice || '';
+  $('#details').innerHTML = [
+    ['When', P.date, P.time], ['Where', P.venue, P.address], ['Dress', P.dress, ''], ['RSVP by', P.rsvpBy, '']
+  ].filter(d => d[1]).map(([k, a, b]) => `<div class="det"><b>${k}</b><span>${esc(a)}</span>${b ? `<small>${esc(b)}</small>` : ''}</div>`).join('');
+  $('#premise').innerHTML = (P.premise || []).map(p => `<p>${esc(p)}</p>`).join('');
+  $('#expect').innerHTML = (P.expect || []).map(p => `<li>${esc(p)}</li>`).join('');
+  $('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">STEP ${String(i + 1).padStart(2, '0')}</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
+  const showDb = P.showDatabaseLink !== false;
+  $('#portalLink').classList.toggle('hidden', !showDb); $('#portalPanel').classList.toggle('hidden', !showDb);
+  const showRules = P.showRules && (P.rules || []).length;
+  $('#rulesPanel').classList.toggle('hidden', !showRules);
+  if (showRules) $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
+  const open = P.rsvpOpen !== false;
+  $('#rsvpForm').classList.toggle('hidden', !open);
+  $('#rsvpClosed').classList.toggle('hidden', open);
+  $('#rsvpNav').classList.toggle('hidden', !open);
 }
+renderStatic();
 
 // RSVP form
 const syncFields = () => {
@@ -181,7 +195,7 @@ syncFields();
 
 (async () => {
   backend = await connectBackend();
-  backend.on(raw => { S = normRoot(raw); showDone(); });
+  backend.on(raw => { S = normRoot(raw); renderStatic(); showDone(); });
 })();
 </script>
 </body>

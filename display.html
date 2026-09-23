@@ -82,6 +82,15 @@ body.idle{cursor:none}
 .notice .msg,.message .msg{font-size:clamp(28px,4.4vw,88px);font-weight:700;line-height:1.25;max-width:26ch}
 .notice .kicker{color:var(--gold)}
 
+.reveal{background:radial-gradient(circle at 50% 40%,rgba(70,6,18,.9),rgba(3,2,6,.98) 72%)}
+.reveal .kname{color:#fff;font-size:clamp(48px,8.5vw,170px);text-shadow:0 0 60px rgba(255,59,84,.85);animation:namein 1.8s .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes namein{from{opacity:0;letter-spacing:.5em;filter:blur(12px)}to{opacity:1;letter-spacing:.06em;filter:none}}
+.reveal .alias{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.6vw,48px);color:var(--gold2);animation:rise 1s 2.1s both}
+.reveal .rule,.reveal .verdict-line{animation:rise 1s 2.6s both}
+.reveal .sum{margin-top:2.5vh;max-width:min(80vw,1300px);font-size:clamp(15px,1.5vw,28px);line-height:1.55;color:#d8e2f3;animation:rise 1s 3.2s both}
+.reveal .solvers{margin-top:3vh;font-family:var(--mono);letter-spacing:.12em;font-size:clamp(12px,1.2vw,22px);color:var(--green);animation:rise 1s 3.8s both}
+.reveal .solvers span{color:var(--muted)}
+.accused .huge{animation:namein 1.4s .3s cubic-bezier(.2,.7,.2,1) both}
 #fsBtn{position:fixed;right:18px;bottom:18px;z-index:10;transition:opacity .4s}
 body.idle #fsBtn,body.idle #conn{opacity:0}
 #conn{position:fixed;left:18px;bottom:18px;z-index:10;transition:opacity .4s}
@@ -97,7 +106,7 @@ body.idle #fsBtn,body.idle #conn{opacity:0}
 <script src="story.locked.js"></script>
 <script src="core.js"></script>
 <script>
-const P = window.PARTY || {}, D = P.display || {};
+let P = window.PARTY || {}, D = P.display || {};
 const ROSTER = Object.fromEntries((window.STORY_ROSTER || []).map(r => [r.id, r]));
 const rname = id => (ROSTER[id] && ROSTER[id].name) || id;
 let backend, S = normRoot({}), last = { sig: null, kind: null }, seenEv = null;
@@ -130,10 +139,24 @@ function scene(kind) {
       const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]), max = rows.length ? rows[0][1] : 0;
       return { sig: 'tally' + JSON.stringify(rows), html: `<div class="scene"><div class="kicker">Official results</div><div class="huge gold" style="font-size:clamp(32px,5vw,100px)">THE ROOM ACCUSES</div>${rows.length ? `<div class="tbars">${rows.map(([id, n]) => `<div class="tbar ${n === max ? 'lead' : ''}"><span class="n">${esc(rname(id))}</span><div class="tr"><div class="f" style="width:${Math.round(n / max * 100)}%"></div></div><span class="c">${n}</span></div>`).join('')}</div>` : `<div class="lede">No accusations have been filed.</div>`}</div>` };
     }
+    case 'accused': {
+      const v = S.verdict; if (!v || !v.accused) return scene('company');
+      return { sig: 'acc' + v.accused, html: `<div class="scene accused"><div class="kicker">The room has spoken</div><div class="rule"></div><div class="kicker" style="color:var(--muted)">The accused</div><div class="huge gold">${esc(rname(v.accused))}</div><div class="lede">You have sixty seconds. Convince us.</div></div>` };
+    }
+    case 'reveal': {
+      const v = S.verdict; if (!v || v.stage !== 'reveal') return scene('company');
+      const caught = v.accused && v.accused === v.killer, sol = v.solvers || [];
+      return { sig: 'rev' + v.ts, html: `<div class="scene reveal"><div class="kicker">Case closed · The killer is</div>
+        <div class="huge kname">${esc(v.killerName)}</div>${v.alias ? `<div class="alias">${esc(v.alias)}</div>` : ''}
+        <div class="rule"></div>
+        <div class="lede verdict-line">${caught ? 'The room caught the killer.' : v.accused ? `The room accused ${esc(rname(v.accused))}. The killer walked free.` : ''}</div>
+        ${v.summary ? `<div class="sum">${esc(v.summary)}</div>` : ''}
+        <div class="solvers">${sol.length ? `<span>Solved by</span> ${sol.map(esc).join(' · ')}` : 'No one named the killer.'}</div></div>` };
+    }
     default: { // company page
       const mem = D.memoriamFor && (D.memoriamFor in deathsOf(S));
       const tick = (D.tickers || []).map(([s, v]) => `<span data-t="${esc(s)}" data-v="${v}">${esc(s)} <b>${v}</b> <i class="up">▲0.00%</i></span>`).join('');
-      return { sig: 'co' + mem, html: `<div class="scene ${mem ? 'memoriam' : ''}">
+      return { sig: 'co' + mem + JSON.stringify([D.welcome, D.slides]), html: `<div class="scene ${mem ? 'memoriam' : ''}">
         <div class="corp-top">${LOGO(64)}<b>${esc(D.company || 'KANE OIL & ENERGY')}</b><span class="clock" id="clock"></span></div>
         <div class="kicker">${mem ? 'Kane Oil & Energy' : 'Kane Oil & Energy presents'}</div>
         <div class="huge gold">${esc(mem ? D.memoriamText : D.welcome || 'Welcome')}</div>
@@ -145,6 +168,7 @@ function scene(kind) {
 }
 
 function render() {
+  P = mergeParty(window.PARTY, S.site); D = P.display || {};
   const kind = projectorState(S).kind, sc = scene(kind), realKind = sc.sig.slice(0, 3);
   if (sc.sig === last.sig) return;
   const stage = $('#stage');

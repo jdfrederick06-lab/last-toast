@@ -62,12 +62,14 @@ async function unlockStory(code) {
   const blob = L.blobs[id]; if (!blob) return null;
   return decryptJSON(key, blob);
 }
-/** Stable key (independent of story rebuilds) for the host's private role assignments. */
-async function deriveAssignKey(code) {
+/** Stable keys (independent of story rebuilds) derived from a code word. */
+async function _stableKey(code, purpose) {
   const base = await crypto.subtle.importKey('raw', _te.encode(normCode(code)), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: _te.encode('kane-assign|' + CONFIG.GAME_ID), iterations: 120000, hash: 'SHA-256' }, base, 256);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: _te.encode('kane-' + purpose + '|' + CONFIG.GAME_ID), iterations: 120000, hash: 'SHA-256' }, base, 256);
   return crypto.subtle.importKey('raw', bits, 'AES-GCM', false, ['encrypt', 'decrypt']);
 }
+const deriveAssignKey = code => _stableKey(code, 'assign');   // host's private role assignments
+const deriveMsgKey = code => _stableKey(code, 'msg');         // private messages to one player
 
 /* ---------- live sync backends: on(cb), update({path:value}), set(path, value) ---------- */
 function LocalBackend() {
@@ -86,6 +88,7 @@ function LocalBackend() {
     },
     update(paths) { const s = read(); for (const k in paths) setPath(s, k, paths[k]); write(s); return Promise.resolve(); },
     set(path, val) { const s = read(); setPath(s, path, val); write(s); return Promise.resolve(); },
+    setRoot(val) { write(val || {}); return Promise.resolve(); },
     onDisconnect() { }
   };
 }
@@ -104,15 +107,27 @@ async function FirebaseBackend(onConn) {
     on(fn) { root.on('value', s => fn(s.val() || {}), err => { console.error(err); toast('DATABASE ERROR', 'Permission denied. Check your Firebase rules.', 'err'); }); },
     update(p) { return root.update(p).catch(fail); },
     set(path, val) { return root.child(path).set(val).catch(fail); },
+    setRoot(val) { return root.set(val || null).catch(fail); },
     onDisconnect(path, val) { try { root.child(path).onDisconnect().set(val); } catch (e) { } }
   };
   db.ref('.info/connected').on('value', s => { be.connected = !!s.val(); onConn && onConn(); });
   return be;
 }
 async function connectBackend(onConn) {
-  try { return CONFIG.FIREBASE ? await FirebaseBackend(onConn) : LocalBackend(); }
-  catch (e) { console.error(e); toast('LIVE LINK FAILED', 'Could not reach Firebase. Running in local mode.', 'err'); return LocalBackend(); }
+  let be;
+  try { be = CONFIG.FIREBASE ? await FirebaseBackend(onConn) : LocalBackend(); }
+  catch (e) { console.error(e); toast('LIVE LINK FAILED', 'Could not reach Firebase. Running in local mode.', 'err'); be = LocalBackend(); }
+  // the host can force every open page to reload (after uploading a new version, or if something gets stuck)
+  const on = be.on.bind(be); let seen;
+  be.on = fn => on(raw => {
+    const v = (raw && raw.ctl && raw.ctl.reload) || 0;
+    if (seen === undefined) seen = v; else if (v !== seen) { location.reload(); return; }
+    fn(raw);
+  });
+  return be;
 }
+/** Append a line to the host's activity log. */
+function logEvent(be, text, kind = 'host') { return be.update({ ['live/log/' + uid('l')]: { ts: be.TS(), t: String(text).slice(0, 200), k: kind } }); }
 
 /* ---------- game state shape ---------- */
 function freshLive() {
@@ -129,9 +144,35 @@ function normRoot(r) {
     alert: s.alert || null,         // {id,type:'kill'|'notice',text,ts}
     display: s.display || { scene: 'company', ts: 0 },
     players: s.players || {},
+    revoked: s.revoked || {},       // id -> ts   (dossier access suspended)
+    kick: s.kick || {},             // id -> token (changing it signs that device out)
+    msgs: s.msgs || {},             // id -> {msgId: {iv,ct,ts}}  encrypted private messages
+    msgread: s.msgread || {},       // id -> {msgId: ts}
+    verdict: s.verdict || null,     // {stage:'accuse'|'reveal', accused, killer, killerName, alias, summary, solvers, ts}
+    show: s.show || {},             // run-of-show progress: stepId -> {done, acts:{i:ts}}
+    log: s.log || {},               // activity log
     rsvps: r.rsvps || {},
-    assign: r.assign || null        // encrypted role assignments (host only)
+    assign: r.assign || null,       // encrypted role assignments (host only)
+    site: r.site || {},             // live edits to the public pages
+    ctl: r.ctl || {}
   };
+}
+/** party.js, with any live edits the host made from the dashboard layered on top. */
+function mergeParty(P, site) {
+  const out = Object.assign({}, P || {});
+  const o = (site && site.party) || {};
+  for (const k in o) if (o[k] !== '' && o[k] !== null && o[k] !== undefined) out[k] = o[k];
+  const slides = site && site.slides ? (Array.isArray(site.slides) ? site.slides : Object.values(site.slides)) : null;
+  out.display = Object.assign({}, (P && P.display) || {}, slides && slides.length ? { slides } : {}, site && site.welcome ? { welcome: site.welcome } : {});
+  return out;
+}
+/** Smoothly count a number up/down inside an element. */
+function animateNum(el, to) {
+  if (!el) return; const from = +el.dataset.n || 0; el.dataset.n = to;
+  if (from === to) { el.textContent = to; return; }
+  const t0 = performance.now(), dur = 600;
+  const step = t => { const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(from + (to - from) * e); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
 }
 function deathsOf(S) { const d = Object.assign({}, S.deaths); if (S.kill && S.kill.victim) d[S.kill.victim] = S.kill.ts || 1; return d; }
 /** What the projector should show: lockdown > newest alert > host-chosen scene. */
@@ -154,13 +195,14 @@ function toast(title, msg, kind = '', onClick) {
   const t = document.createElement('div');
   t.className = 'toast ' + kind;
   t.innerHTML = `<b>${esc(title)}</b>${msg ? esc(msg) : ''}`;
-  t.onclick = () => { if (onClick) onClick(); t.remove(); };
+  const bye = () => { t.classList.add('out'); setTimeout(() => t.remove(), 300); };
+  t.onclick = () => { if (onClick) onClick(); bye(); };
   document.getElementById('toasts').appendChild(t);
-  setTimeout(() => t.remove(), 5200);
+  setTimeout(bye, 5200);
 }
-function openModal(html) {
+function openModal(html, wide) {
   const m = document.getElementById('modal');
-  m.innerHTML = `<div class="mcard" role="dialog" aria-modal="true"><button class="iconbtn mclose" data-close>CLOSE ✕</button>${html}</div>`;
+  m.innerHTML = `<div class="mcard ${wide ? 'wide' : ''}" role="dialog" aria-modal="true"><button class="iconbtn mclose" data-close>CLOSE ✕</button>${html}</div>`;
   m.classList.add('open'); m.scrollTop = 0;
 }
 function closeModal() { const m = document.getElementById('modal'); m.classList.remove('open'); m.innerHTML = ''; }
