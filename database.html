@@ -262,7 +262,7 @@ body.prompting{overflow:hidden}
 <div id="prompterRoot"></div>
 
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
-['config.js', 'party.js', 'story.locked.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
+['config.js', 'party.js', 'story.locked.js', 'core.js', 'printkit.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 /* =========================================================================
    KANE OIL DATABASE — player dossiers + the host's master control terminal
@@ -678,7 +678,7 @@ function adminShellHTML() {
   const evOpts = tiers.map(t => [t, HOST.evidence.filter(e => e.tier === t)]).concat(other.length ? [['Other', other]] : [])
     .filter(([, l]) => l.length).map(([t, l]) => `<optgroup label="${esc(t)}">${l.map(e => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}</optgroup>`).join('');
   const P = party();
-  return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="notesBtn">NOTES</button>`)}
+  return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="printBtn">PRINT</button><button class="iconbtn" id="notesBtn">NOTES</button>`)}
   <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${l}<span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
   <div id="modeNote"></div>
 
@@ -984,6 +984,7 @@ function bindAdmin() {
   };
   $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
   setTab(TABS.some(t => t[0] === ui.tab) ? ui.tab : 'show');
+  $('#printBtn').onclick = printModal;
   $('#notesBtn').onclick = () => openModal(`<div class="ph"><h2>Host-Only Notes</h2><span class="sub">DO NOT DISTRIBUTE</span></div><div class="host-notes">${HOST.notes || '<p class="note">No notes yet. Add hostNotes in story.js.</p>'}</div>`);
 
   // global click router (cast actions, copy, QR) — also covers modals
@@ -1124,6 +1125,31 @@ function bindAdmin() {
     yes.onclick = async () => { yes.disabled = true; yes.textContent = 'WIPING…'; await backend.set('live', freshLive()); log('HARD RESET: new game started'); toast('SYSTEM RESET', 'Game data cleared. Ready for a new game.', 'ok'); closeModal(); };
   });
   $('#emRsvps').onclick = () => confirmModal('Delete every RSVP?', 'All RSVPs and all role assignments are permanently removed.', 'DELETE ALL', async () => { await backend.update({ rsvps: null, assign: null }); log('All RSVPs deleted'); });
+}
+/* ---------------- host: printable game documents ---------------- */
+function printModal() {
+  const docs = [
+    ['host', 'Host Book', 'Case summary, run of show & scripts, evidence, private facts, cast & code words, emergency guide, checklist', true],
+    ['dossiers', 'Character Dossiers', `All ${HOST.list.length} personnel files, one per page, with what players can't see marked in red`, true],
+    ['invite', 'Invitation & Rules', 'Everything guests read, plus projector text. No spoilers: safe to share for proofreading', false],
+    ['all', 'Everything', 'All three documents in one file', true]
+  ];
+  openModal(`<div class="ph"><h2>Print the game</h2><span class="sub">OPENS IN A NEW TAB</span></div>
+    <p class="note" style="margin:0 0 12px">Built from the live story and your current page edits. In the new tab, press <b>Print</b>, or choose <b>Save as PDF</b> as the printer.</p>
+    <div class="relist">${docs.map(([k, t, d, secret]) => `<button class="reitem" style="text-align:left;cursor:pointer" data-print="${k}"><span class="pill ${secret ? 'red' : 'green'}">${secret ? 'SPOILERS' : 'SAFE'}</span><span class="t"><b>${t}</b><small style="font-family:var(--sans);font-size:12px">${d}</small></span></button>`).join('')}</div>`);
+  $$('[data-print]').forEach(b => b.onclick = () => { openPrint(b.dataset.print); closeModal(); });
+}
+function openPrint(which) {
+  if (!window.PrintKit) { toast('PRINT UNAVAILABLE', 'printkit.js is missing from the site. Upload it next to database.html.', 'err'); return; }
+  const story = { characters: HOST.list, evidence: HOST.evidence, facts: HOST.facts, show: HOST.show, solution: HOST.solution, hostNotes: HOST.notes };
+  const r = PrintKit.render(story, party(), which);
+  const w = window.open('', '_blank');
+  if (!w) { toast('POP-UP BLOCKED', 'Allow pop-ups for this site, then press PRINT again.', 'err'); return; }
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>The Last Toast · ${esc(r.label)}</title><style>${r.pageCSS}</style><style>${PrintKit.CSS}</style></head>
+    <body><nav class="toolbar"><b>${esc(r.label)}</b><span class="sp"></span><button onclick="print()">🖨 Print / Save as PDF</button><button onclick="close()">Close</button></nav><main class="sheet">${r.html}</main></body></html>`);
+  w.document.close();
+  log(`Printable document opened: ${r.label}`);
 }
 const linkUrl = k => ({ invite: siteBase(), db: siteBase() + 'database.html', display: siteBase() + 'display.html' })[k];
 function roleMessage(name, c) {
