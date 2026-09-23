@@ -16,7 +16,7 @@ window.CONFIG = {
   storageBucket: "last-toast.firebasestorage.app",
   messagingSenderId: "682371508780",
   appId: "1:682371508780:web:3071cb80d2679edb84bf89"
-};,
+},
 
   // Change this to start a completely separate game (fresh RSVPs, fresh state).
   GAME_ID: 'last-toast',
