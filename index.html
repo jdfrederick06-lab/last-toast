@@ -3,1426 +3,179 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kane Oil Database</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<!--
-  ============================================================================
-  KANE OIL DATABASE — "THE LAST TOAST" murder mystery companion app
-  ============================================================================
-  SETUP (read before party night)
-  1. Out of the box this runs in LOCAL mode: state lives in this browser's
-     localStorage and syncs instantly between tabs on the SAME device.
-     Perfect for rehearsing. It does NOT sync between different phones.
-  2. For the real party (many phones), create a free Firebase project:
-       console.firebase.google.com → Add project → Build → Realtime Database
-       → Create database → Start in *test mode*.
-       Project settings → General → Your apps → Web (</>) → copy firebaseConfig.
-     Paste that object into CONFIG.FIREBASE below (replace null).
-     Make sure it includes "databaseURL".
-  3. Paste this whole file into Google Sites → Insert → Embed → Embed code.
-  Master host code: CONFIG.ADMIN_CODE (default ADMIN2026).
-  ============================================================================
--->
+<title>The Last Toast · Invitation</title>
+<meta name="description" content="You're invited to The Last Toast, a murder mystery evening.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <style>
-:root{
-  --bg:#03050b;--bg2:#070c18;
-  --panel:rgba(11,19,37,.82);--panel-solid:#0a1222;--panel-hi:rgba(18,30,56,.9);
-  --line:rgba(88,140,255,.16);--line2:rgba(88,140,255,.34);
-  --blue:#3d8bff;--cyan:#5ad6ff;
-  --gold:#d9b25b;--gold2:#f5dc93;--gold-dim:rgba(217,178,91,.14);
-  --red:#ff3b54;--red2:#ff8494;--red-dim:rgba(255,59,84,.14);
-  --green:#2fe39b;
-  --text:#e8eefa;--muted:#94a3c2;--dim:#5d6c8c;
-  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --r:14px;
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
-body{
-  background:
-    radial-gradient(1100px 600px at 85% -10%,rgba(61,139,255,.18),transparent 60%),
-    radial-gradient(900px 520px at -10% 110%,rgba(217,178,91,.10),transparent 60%),
-    var(--bg);
-  background-attachment:fixed;overflow-x:hidden;
-}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(88,140,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(88,140,255,.055) 1px,transparent 1px);
-  background-size:42px 42px;
-  -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse at 50% 30%,#000 25%,transparent 78%)}
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
-#app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:16px 16px 96px}
-button{font:inherit;color:inherit}
-.mono{font-family:var(--mono)}
-.hidden{display:none!important}
-
-/* ---------- top bar ---------- */
-.topbar{display:flex;align-items:center;gap:12px;padding:10px 14px;margin-bottom:16px;border:1px solid var(--line);border-radius:var(--r);
-  background:linear-gradient(180deg,rgba(14,24,46,.9),rgba(8,14,28,.85));box-shadow:0 0 0 1px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);position:sticky;top:8px;z-index:20;backdrop-filter:blur(10px)}
-.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
-.brand svg{flex:none;filter:drop-shadow(0 0 8px rgba(217,178,91,.5))}
-.brand b{display:block;font-size:13px;letter-spacing:.18em;font-weight:800;color:var(--gold2);white-space:nowrap}
-.brand small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;padding:5px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
-.chip .d{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
-.chip.warn .d{background:var(--gold);box-shadow:0 0 8px var(--gold)}
-.chip.bad .d{background:var(--red);box-shadow:0 0 8px var(--red)}
-.iconbtn{border:1px solid var(--line2);background:transparent;border-radius:10px;padding:7px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);cursor:pointer}
-.iconbtn:hover{color:var(--text);border-color:var(--gold)}
-
-/* ---------- panels ---------- */
-.panel{position:relative;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:18px;margin-bottom:16px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 12px 34px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
-.panel::before{content:"";position:absolute;left:14px;right:14px;top:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(90,214,255,.55),transparent)}
-.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px}
-.ph h2{margin:0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);display:flex;align-items:center;gap:8px}
-.ph h2::before{content:"";width:6px;height:6px;background:var(--gold);box-shadow:0 0 10px var(--gold);transform:rotate(45deg)}
-.ph .sub{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.08em}
-.panel.red{border-color:rgba(255,59,84,.45);background:linear-gradient(180deg,rgba(60,8,18,.8),rgba(20,6,12,.85));box-shadow:0 0 40px rgba(255,59,84,.18),inset 0 0 40px rgba(255,59,84,.06)}
-.panel.red::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
-.panel.red .ph h2{color:var(--red2)}.panel.red .ph h2::before{background:var(--red);box-shadow:0 0 10px var(--red)}
-.panel.gold{border-color:rgba(217,178,91,.45);box-shadow:0 0 34px rgba(217,178,91,.12)}
-.panel.gold::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-
-/* ---------- buttons & inputs ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line2);background:rgba(61,139,255,.08);color:var(--text);
-  border-radius:11px;padding:12px 16px;font-weight:700;font-size:14px;letter-spacing:.04em;cursor:pointer;transition:.15s;min-height:46px}
-.btn:hover{border-color:var(--cyan);box-shadow:0 0 18px rgba(90,214,255,.18)}
-.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
-.btn.gold{background:linear-gradient(180deg,#f0d487,#c79b3f);color:#1a1204;border-color:#f5dc93;box-shadow:0 0 22px rgba(217,178,91,.3)}
-.btn.gold:hover{box-shadow:0 0 30px rgba(217,178,91,.5)}
-.btn.danger{background:linear-gradient(180deg,#ff5068,#c21c35);border-color:#ff8494;color:#fff;box-shadow:0 0 22px rgba(255,59,84,.35)}
-.btn.ghost{background:transparent}
-.btn.sm{padding:7px 11px;min-height:34px;font-size:12px;border-radius:9px}
-.btn.block{width:100%}
-label.lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin:0 0 7px}
-.input,select.input,textarea.input{width:100%;background:rgba(3,7,16,.8);border:1px solid var(--line2);border-radius:11px;color:var(--text);
-  padding:12px 14px;font-size:16px;font-family:var(--sans);outline:none;transition:.15s}
-select.input{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);
-  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:36px}
-select.input option,select.input optgroup{background:#0a1222;color:var(--text)}
-textarea.input{min-height:110px;resize:vertical;line-height:1.5}
-.input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,178,91,.15),0 0 18px rgba(217,178,91,.15)}
-.row-gap{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.field{margin-bottom:14px}
-.note{font-size:13px;color:var(--muted);line-height:1.5}
-.divider{height:1px;background:var(--line);margin:16px 0}
-
-/* ---------- login ---------- */
-.login-wrap{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:20px 0}
-.login{width:100%;max-width:440px;text-align:center}
-.login .logo{margin:0 auto 14px;width:84px;height:84px;filter:drop-shadow(0 0 18px rgba(217,178,91,.55));animation:float 5s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-4px)}}
-.login h1{margin:0;font-size:24px;letter-spacing:.24em;font-weight:800;color:var(--gold2);text-shadow:0 0 22px rgba(217,178,91,.35)}
-.login .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--cyan);margin:6px 0 20px;text-transform:uppercase}
-.term{text-align:left;font-family:var(--mono);font-size:12px;line-height:1.7;color:#7fb2ff;background:rgba(2,6,14,.85);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:16px;min-height:112px}
-.term .ok{color:var(--green)}.term .gold{color:var(--gold2)}.term .err{color:var(--red2)}
-.term .cursor{display:inline-block;width:8px;height:14px;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.code-input{text-align:center;letter-spacing:.3em;font-family:var(--mono);font-size:20px;text-transform:uppercase;font-weight:700}
-.login .foot{margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim)}
-.shake{animation:shake .4s}
-@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-.login-err{color:var(--red2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;min-height:18px;margin-top:10px}
-
-/* ---------- dossier ---------- */
-.dhead{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.hex{width:78px;height:88px;position:relative;display:grid;place-items:center;flex:none}
-.hex svg{position:absolute;inset:0}
-.hex span{position:relative;font-weight:800;font-size:24px;letter-spacing:.04em;color:var(--gold2);text-shadow:0 0 12px rgba(217,178,91,.6)}
-.dname{margin:0;font-size:clamp(22px,5.4vw,32px);line-height:1.1;font-weight:800;letter-spacing:-.01em}
-.dmeta{margin-top:6px;font-size:14px;color:var(--muted)}
-.cls{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;padding:5px 9px;border-radius:7px;border:1px solid rgba(217,178,91,.45);color:var(--gold2);background:var(--gold-dim);line-height:1.4}
-.cls.red{border-color:rgba(255,59,84,.6);color:var(--red2);background:var(--red-dim);box-shadow:0 0 16px rgba(255,59,84,.25)}
-.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
-.kv div{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:rgba(3,7,16,.5)}
-.kv b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:500;margin-bottom:3px;text-transform:uppercase}
-.kv span{font-size:14px;font-weight:600}
-.sec{padding:16px 0;border-top:1px dashed rgba(88,140,255,.18)}
-.sec:first-child{border-top:0}
-.sec h3{margin:0 0 8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
-.sec p{margin:0;font-size:16.5px;line-height:1.7;color:#dbe4f4;max-width:72ch}
-.sec.key{background:linear-gradient(90deg,rgba(217,178,91,.08),transparent);border-left:2px solid var(--gold);padding-left:14px;margin:0 -2px;border-top:0;border-radius:0 8px 8px 0}
-.sec.key h3{color:var(--gold2)}
-.sec.role p{font-style:italic;color:var(--muted)}
-.sealed{border:1px solid rgba(255,59,84,.35);border-radius:10px;padding:12px;background:repeating-linear-gradient(135deg,rgba(255,59,84,.07) 0 10px,transparent 10px 20px)}
-.sealed .bars{display:flex;flex-direction:column;gap:6px;margin-top:4px}
-.sealed .bars i{display:block;height:12px;background:#1a0a10;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(255,59,84,.25)}
-.sealed small{display:block;margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--red2)}
-.stamp{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--dim);text-align:center;margin-top:8px}
-
-/* ---------- evidence ---------- */
-.ev{border:1px solid var(--line2);border-radius:12px;background:rgba(3,7,16,.6);margin-bottom:10px;overflow:hidden}
-.ev summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;align-items:center;gap:10px}
-.ev summary::-webkit-details-marker{display:none}
-.ev summary .t{flex:1;font-weight:700;font-size:15px}
-.ev summary .when{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
-.ev summary::after{content:"+";font-family:var(--mono);color:var(--gold);font-size:18px}
-.ev[open] summary::after{content:"–"}
-.ev .body{padding:0 14px 14px;font-size:15.5px;line-height:1.7;color:#d8e2f3;white-space:pre-line}
-.ev .src{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--cyan);margin-bottom:8px}
-.ev.new{border-color:var(--gold);box-shadow:0 0 22px rgba(217,178,91,.3);animation:evglow 1.6s ease-in-out 3}
-@keyframes evglow{50%{box-shadow:0 0 36px rgba(217,178,91,.6)}}
-.pill{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;padding:3px 7px;border-radius:6px;border:1px solid var(--line2);color:var(--muted);text-transform:uppercase;white-space:nowrap}
-.pill.gold{border-color:rgba(217,178,91,.5);color:var(--gold2);background:var(--gold-dim)}
-.pill.red{border-color:rgba(255,59,84,.55);color:var(--red2);background:var(--red-dim)}
-.pill.green{border-color:rgba(47,227,155,.5);color:var(--green);background:rgba(47,227,155,.08)}
-
-/* ---------- vote / directive ---------- */
-.voted{border:1px solid rgba(47,227,155,.4);background:rgba(47,227,155,.06);border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:14px;line-height:1.5}
-.voted b{color:var(--green)}
-.targets{display:grid;gap:10px;margin:6px 0 16px}
-.target{display:flex;gap:12px;align-items:center;border:1px solid rgba(255,59,84,.35);border-radius:12px;padding:12px 14px;background:rgba(20,4,10,.6);cursor:pointer;text-align:left;width:100%;transition:.15s}
-.target:hover{border-color:var(--red)}
-.target.sel{border-color:var(--red);background:rgba(255,59,84,.14);box-shadow:0 0 22px rgba(255,59,84,.3)}
-.target .rad{width:18px;height:18px;border-radius:50%;border:2px solid var(--red2);flex:none;display:grid;place-items:center}
-.target.sel .rad::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red)}
-.target b{display:block;font-size:16px}
-.target small{display:block;font-size:13px;color:var(--red2);font-family:var(--mono);letter-spacing:.04em;margin-top:2px}
-.deadstrip{border:1px solid var(--red);background:var(--red-dim);color:var(--red2);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-align:center}
-
-/* ---------- admin ---------- */
-.grid2{display:grid;grid-template-columns:1fr;gap:0 16px}
-@media(min-width:900px){.grid2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
-.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
-.stat b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
-.stat b em{font-style:normal;font-size:14px;color:var(--dim);font-weight:600}
-.stat span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
-.ctl{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.ctl:first-of-type{border-top:0;padding-top:0}
-.ctl .txt{flex:1;min-width:0}
-.ctl .txt b{display:block;font-size:15px}
-.ctl .txt small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.4}
-.toggle{position:relative;width:60px;height:32px;border-radius:999px;border:1px solid var(--line2);background:#060b16;cursor:pointer;flex:none;transition:.2s}
-.toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#4a5775;transition:.2s}
-.toggle[aria-pressed="true"]{background:rgba(47,227,155,.2);border-color:var(--green);box-shadow:0 0 14px rgba(47,227,155,.35)}
-.toggle[aria-pressed="true"]::after{left:31px;background:var(--green)}
-.toggle.red[aria-pressed="true"]{background:rgba(255,59,84,.22);border-color:var(--red);box-shadow:0 0 16px rgba(255,59,84,.45)}
-.toggle.red[aria-pressed="true"]::after{background:var(--red)}
-.state{font-family:var(--mono);font-size:10px;letter-spacing:.12em;width:44px;text-align:right;color:var(--dim)}
-.state.on{color:var(--green)}.state.on.r{color:var(--red2)}
-.relist{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-.reitem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:rgba(3,7,16,.5);font-size:14px}
-.reitem .t{flex:1;min-width:0}
-.reitem .t small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
-.bars{display:flex;flex-direction:column;gap:10px}
-.bar{display:grid;grid-template-columns:minmax(90px,150px) 1fr 34px;gap:10px;align-items:center;font-size:14px}
-.bar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar .track{height:14px;border-radius:7px;background:rgba(88,140,255,.08);overflow:hidden;border:1px solid var(--line)}
-.bar .fill{height:100%;border-radius:7px;background:linear-gradient(90deg,#3d8bff,#5ad6ff);transition:width .5s ease}
-.bar.lead .fill{background:linear-gradient(90deg,#c79b3f,#f5dc93);box-shadow:0 0 14px rgba(217,178,91,.6)}
-.bar.lead .n{color:var(--gold2);font-weight:700}
-.bar .c{font-family:var(--mono);font-weight:700;text-align:right}
-.empty{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--dim);padding:14px;text-align:center;border:1px dashed var(--line2);border-radius:10px}
-.roster-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);margin:14px 0 8px;text-transform:uppercase}
-.rrow{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:4px 10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:7px;background:rgba(3,7,16,.5);cursor:pointer;transition:.15s}
-.rrow:hover{border-color:var(--gold);background:rgba(217,178,91,.06)}
-.rrow .nm{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rrow .nm small{font-weight:500;color:var(--dim);font-family:var(--mono);font-size:10.5px;margin-left:6px;letter-spacing:.06em}
-.rrow .tags{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
-.rrow .vote{grid-column:2 / 4;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rrow .vote b{color:var(--gold2);font-weight:600}
-.dot{width:10px;height:10px;border-radius:50%;background:#3a4560}
-.dot.on{background:var(--green);box-shadow:0 0 10px var(--green)}
-.rrow.dead .nm{color:var(--red2);text-decoration:line-through;text-decoration-color:rgba(255,59,84,.5)}
-.host-notes{font-size:14.5px;line-height:1.65;color:#d8e2f3}
-.host-notes li{margin-bottom:6px}
-details.fold>summary{cursor:pointer;list-style:none}
-details.fold>summary::-webkit-details-marker{display:none}
-
-/* ---------- overlays ---------- */
-#alertbar{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none}
-.alert{pointer-events:auto;margin:8px;border-radius:12px;padding:12px 44px 12px 14px;position:relative;font-weight:700;font-size:14.5px;line-height:1.4;
-  border:1px solid var(--red);background:linear-gradient(180deg,#5c0716,#2a030a);color:#fff;box-shadow:0 0 40px rgba(255,59,84,.55);animation:flash 1s steps(1) infinite}
-.alert .h{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--red2);margin-bottom:3px}
-.alert.notice{border-color:var(--gold);background:linear-gradient(180deg,#3a2c0c,#1b1405);box-shadow:0 0 30px rgba(217,178,91,.45);animation:none}
-.alert.notice .h{color:var(--gold2)}
-.alert .x{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:transparent;cursor:pointer;color:#fff;font-size:16px}
-@keyframes flash{0%{background:linear-gradient(180deg,#8a0b20,#3c040e)}50%{background:linear-gradient(180deg,#2a030a,#14020a)}}
-.overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
-#lockdown{background:radial-gradient(circle at 50% 40%,rgba(120,8,24,.96),rgba(10,2,6,.99) 70%);flex-direction:column}
-#lockdown::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,59,84,.07) 0 22px,transparent 22px 44px);animation:slide 3s linear infinite}
-@keyframes slide{to{background-position:62px 0}}
-.lk{position:relative;max-width:560px}
-.lk .ring{width:120px;height:120px;margin:0 auto 22px;border-radius:50%;border:3px solid var(--red);display:grid;place-items:center;box-shadow:0 0 50px rgba(255,59,84,.7),inset 0 0 30px rgba(255,59,84,.5);animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{50%{transform:scale(1.07);box-shadow:0 0 80px rgba(255,59,84,.95),inset 0 0 40px rgba(255,59,84,.7)}}
-.lk h1{margin:0 0 10px;font-size:clamp(28px,8vw,46px);letter-spacing:.14em;font-weight:800;color:#fff;text-shadow:0 0 24px rgba(255,59,84,.9)}
-.lk p{margin:0 auto;font-size:clamp(17px,4.4vw,21px);line-height:1.5;color:#ffd6dc;max-width:30ch}
-.lk .m{margin-top:20px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--red2)}
-.bypass{margin-top:26px}
-.fullmsg{background:rgba(2,4,10,.96);flex-direction:column}
-.fullmsg .box{max-width:520px;position:relative}
-.fullmsg h1{margin:0 0 12px;font-size:clamp(26px,7vw,40px);letter-spacing:.1em;font-weight:800}
-.fullmsg p{font-size:17px;line-height:1.6;color:#d8e2f3;margin:0 0 12px}
-.fullmsg .k{font-family:var(--mono);font-size:11px;letter-spacing:.22em;margin-bottom:14px}
-.fullmsg.dead{background:radial-gradient(circle at 50% 40%,rgba(90,0,14,.97),rgba(4,0,2,.99) 70%)}
-.fullmsg.dead h1{color:#fff;text-shadow:0 0 30px var(--red)}
-.fullmsg.dead .k{color:var(--red2)}
-.fullmsg.reveal h1{color:var(--red2);text-shadow:0 0 30px rgba(255,59,84,.7)}
-.fullmsg.reveal .k{color:var(--gold2)}
-.typed{font-family:var(--mono);font-size:13px;line-height:1.8;color:#9fc3ff;text-align:left;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 18px}
-#modal{position:fixed;inset:0;z-index:90;background:rgba(1,3,8,.82);backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px}
-#modal.open{display:flex}
-.mcard{width:100%;max-width:760px;border:1px solid var(--line2);border-radius:16px;background:linear-gradient(180deg,#0c1528,#070d1a);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 40px rgba(61,139,255,.12);padding:20px;position:relative;animation:pop .2s ease}
-@keyframes pop{from{transform:translateY(10px);opacity:0}}
-.mclose{position:absolute;right:12px;top:12px;z-index:2}
-#toasts{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:95;display:flex;flex-direction:column;gap:8px;width:min(92vw,440px);pointer-events:none}
-.toast{pointer-events:auto;border:1px solid var(--gold);background:rgba(18,14,4,.95);border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(217,178,91,.25);animation:pop .25s ease;cursor:pointer}
-.toast b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--gold2);margin-bottom:2px}
-.toast.err{border-color:var(--red);background:rgba(30,4,10,.95)}.toast.err b{color:var(--red2)}
-.toast.ok{border-color:var(--green);background:rgba(4,22,14,.95)}.toast.ok b{color:var(--green)}
-@media(max-width:520px){
-  .topbar .chip .lbl{display:none}
-  .dhead{grid-template-columns:1fr;text-align:left}
-  .hex{width:64px;height:72px}
-  .panel{padding:15px}
-}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+#app{max-width:880px;padding-top:0}
+.nav{display:flex;align-items:center;gap:10px;padding:14px 0}
+.nav b{font-size:12px;letter-spacing:.24em;color:var(--gold2);flex:1}
+.nav svg{filter:drop-shadow(0 0 8px rgba(217,178,91,.5))}
+.hero{text-align:center;padding:6vh 0 5vh}
+.hero .logo{width:92px;height:92px;margin:0 auto 18px;filter:drop-shadow(0 0 22px rgba(217,178,91,.55))}
+.kick{font-family:var(--mono);font-size:11px;letter-spacing:.32em;color:var(--cyan);text-transform:uppercase}
+.inworld{font-family:var(--serif);font-style:italic;font-size:clamp(19px,3.4vw,26px);line-height:1.45;color:#d6deef;max-width:34ch;margin:18px auto 0}
+.hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(52px,13vw,112px);line-height:.95;margin:22px 0 6px;color:var(--gold2);letter-spacing:.02em;text-shadow:0 0 50px rgba(217,178,91,.3)}
+.hero .sub{font-family:var(--serif);font-style:italic;font-size:clamp(20px,4vw,30px);color:var(--text)}
+.hero .by{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase}
+.orn{width:min(70%,360px);height:1px;margin:26px auto;background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative}
+.orn::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;background:var(--gold);transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 12px var(--gold)}
+.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.det{border:1px solid rgba(217,178,91,.35);border-radius:14px;padding:16px;background:rgba(14,20,36,.75)}
+.det b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+.det span{font-size:16px;line-height:1.45;font-weight:600}
+.det small{display:block;color:var(--muted);font-size:14px;margin-top:2px;font-weight:400}
+h2.sh{font-family:var(--serif);font-weight:600;font-size:clamp(30px,6vw,42px);margin:0 0 14px;color:var(--gold2);letter-spacing:.01em}
+.prose p{font-size:17px;line-height:1.75;color:#d8e2f3;margin:0 0 14px}
+.prose p:last-child{margin-bottom:0}
+.list{margin:0;padding:0;list-style:none}
+.list li{position:relative;padding:10px 0 10px 28px;border-top:1px solid var(--line);font-size:16px;line-height:1.55}
+.list li:first-child{border-top:0}
+.list li::before{content:"";position:absolute;left:4px;top:18px;width:7px;height:7px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 8px var(--gold)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.step{border:1px solid var(--line2);border-radius:14px;padding:16px;background:rgba(3,7,16,.55)}
+.step .n{font-family:var(--mono);color:var(--cyan);font-size:12px;letter-spacing:.2em}
+.step b{display:block;font-size:17px;margin:6px 0}
+.step p{margin:0;color:var(--muted);font-size:15px;line-height:1.55}
+.rules{counter-reset:r;margin:0;padding:0;list-style:none}
+.rules li{counter-increment:r;display:grid;grid-template-columns:44px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.rules li:first-child{border-top:0}
+.rules li::before{content:counter(r,decimal-leading-zero);font-family:var(--mono);font-size:20px;color:var(--gold);font-weight:700}
+.rules b{display:block;font-size:16.5px;margin-bottom:3px}
+.rules p{margin:0;color:#c9d4e8;font-size:15.5px;line-height:1.6}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;text-align:center;border:1px solid var(--line2);border-radius:11px;padding:12px 6px;font-weight:700;font-size:14px;transition:.15s}
+.seg input:checked+span{border-color:var(--gold);background:var(--gold-dim);color:var(--gold2);box-shadow:0 0 16px rgba(217,178,91,.25)}
+.seg input:focus-visible+span{outline:2px solid var(--cyan)}
+.check{display:flex;gap:10px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:#d9b25b}
+.done{border:1px solid rgba(47,227,155,.45);background:rgba(47,227,155,.07);border-radius:12px;padding:14px;margin-bottom:16px;line-height:1.55}
+.done b{color:var(--green)}
+footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);padding:30px 0}
 </style>
 </head>
-<body>
-<div id="app"></div>
-<div id="alertbar"></div>
-<div id="lockdown" class="overlay hidden" role="alertdialog" aria-live="assertive">
-  <div class="lk">
-    <div class="ring"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="15.5" r="1.2" fill="#fff"/></svg></div>
-    <h1>LOCKDOWN</h1>
-    <p>All personnel: put down your device and direct your attention to the front of the room.</p>
-    <div class="m">KANE OIL SECURITY PROTOCOL 7 · TERMINALS SUSPENDED</div>
-    <div class="bypass hidden" id="bypassWrap"><button class="btn ghost sm" id="bypassBtn">HOST OVERRIDE · BYPASS ON THIS DEVICE</button></div>
-  </div>
-</div>
-<div id="fullmsg"></div>
-<div id="modal"></div>
-<div id="toasts"></div>
+<body class="grid">
+<div id="app">
+  <nav class="nav"><span id="navLogo"></span><b>KANE OIL &amp; ENERGY</b><a class="btn sm gold" href="#rsvp">RSVP</a></nav>
+  <header class="hero">
+    <div class="logo" id="heroLogo"></div>
+    <div class="kick">An invitation</div>
+    <p class="inworld" id="inWorld"></p>
+    <h1 id="title"></h1>
+    <div class="sub" id="subtitle"></div>
+    <div class="by" id="hostBy"></div>
+  </header>
 
-<script>
-/* =========================================================================
-   CONFIG — edit these
-   ========================================================================= */
-const CONFIG = {
-  ADMIN_CODE: 'ADMIN2026',
-  // Paste your Firebase web config here to sync across phones, e.g.
-  // FIREBASE: { apiKey:"...", authDomain:"...", databaseURL:"https://xxx-default-rtdb.firebaseio.com", projectId:"...", appId:"..." },
-  FIREBASE: null,
-  GAME_ID: 'last-toast',          // change to run a separate game on the same database
-  HEARTBEAT_MS: 5000,              // how often players ping "I'm here"
-  ONLINE_WINDOW_MS: 15000,         // considered online if pinged within this window
-  KILLER_ID: 'nathaniel',
-  VICTIM_SHORTLIST: [
-    { id:'daniel', why:'The journalist. He is closing in on the truth.' },
-    { id:'edgar',  why:'The butler. He remembers too much about that night.' },
-    { id:'lucia',  why:'The whistleblower. She has hard evidence.' }
-  ]
-};
+  <section class="panel gold"><div class="details" id="details"></div></section>
 
-/* =========================================================================
-   CHARACTER FILES
-   sealed: shown redacted to the killer until the host enables Killer Phase
-   hostOnly: hidden from the player (playerText shown instead); host sees all
-   ========================================================================= */
-const CHARACTERS = [
-{ id:'alex', file:'01', name:'Alexandra "Alex" Kane', code:'MIDNIGHT', tier:'core', dead:true,
-  cls:'SUBJECT (DECEASED — THE VICTIM)', age:32, occ:'CEO, Kane Oil & Energy',
-  sections:[
-  {h:'Residence', t:`The Kane Estate, main house — she has lived alone in a house built for a family of six since she was 18.`},
-  {h:'Family', t:`Only child of Richard Kane (oil magnate, died when Alex was 18, ruled a heart attack) and Marion Kane (died of cancer when Alex was 9). No siblings. Raised after 18 by a rotating cast of lawyers, board members, and "family friends" rather than actual family — a fact she is bitterly funny about at parties and quietly devastated by in private. Her stepmother, Victoria, is technically still "family" in name only.`},
-  {h:'Home life', t:`Lives with two aging Weimaraners, Bishop and Rook — named for chess pieces, a nod to her father, who taught her to play as a kid and always said "control the center of the board and you control everything." She keeps her father's old chess set on her office desk, never played on, just displayed. No romantic partner living with her, though her girlfriend Camille stays over most nights.`},
-  {h:'Physicality & presence', t:`Moves like someone who was taught posture as a weapon — shoulders back, chin level, a handshake that's slightly too firm on purpose. Walks fast, even in heels, as if she's always fifteen minutes late to something important (she usually is). Fidgets with a signet ring that was her father's when she's thinking.`},
-  {h:'Voice & speech', t:`Direct to the point of bluntness. Says "here's the thing" before delivering hard truths. Uses people's full names when she's serious ("Gordon Whitfield, sit down"). Laughs once, loudly, and stops abruptly — a tell that she caught herself being unguarded.`},
-  {h:'Hobbies & interests', t:`Competitive amateur chess player (online, under a pseudonym, tells almost no one). Collects vintage watches, not for status but because she likes mechanical things that can be fixed when broken — an irony she's aware of. Reads true crime, which people find either morbid or, now, tragically ironic.`},
-  {h:'Public reputation', t:`Brilliant, generous, unpredictable. Famous for solving other people's problems with checks, favors, and quiet phone calls — and for expecting nothing in return, which somehow makes people trust her less, not more.`},
-  {h:'Private life', t:`Deeply lonely under the competence. In therapy for two years with Dr. Simone Asante, who is a guest tonight. Has spent the last year secretly investigating her father's death and found real evidence it was murder.`},
-  {h:'The secret at the center of everything', key:true, t:`Tonight she planned to announce she's selling Kane Oil and publicly confessing every bribe, cover-up, and favor she's arranged over the years — to finally live a life her father would recognize as honest. She told almost no one the full plan. She never gets the chance to give the speech.`},
-  {h:'Roleplay note', role:true, t:`This character doesn't get played much — she's the victim — but her presence should loom over the whole night through how other characters talk about her.`}
-]},
-{ id:'nathaniel', file:'02', name:'Nathaniel Cross', code:'CLOCKWORK', tier:'core',
-  cls:'SUBJECT — UNRESOLVED IDENTITY DISCREPANCY (THE KILLER)', clsPublic:'SUBJECT — UNRESOLVED IDENTITY DISCREPANCY', age:34, occ:'Independent investor',
-  sections:[
-  {h:'Residence', t:`A tasteful, deliberately unremarkable condo downtown — nothing in it gives away much about him, which is the point.`},
-  {h:'Family', t:`Publicly: modest upbringing in Ohio, self-made, parents "passed years ago, nothing dramatic." Privately: born Daniel "Danny" Ferris. His father, Walter Ferris, was one of the men who murdered Richard Kane, and confessed it to Nathaniel on his deathbed when Nathaniel was 19. Nathaniel legally changed his name at 20 and has spent 15 years making sure no one connects the two identities. He has a younger sister he no longer speaks to, who kept the Ferris name.`,
-    sealed:`Publicly: modest upbringing in Ohio, self-made, parents "passed years ago, nothing dramatic."`},
-  {h:'Home life', t:`Lives alone. Has a cat, Whiskey, mostly because a cat requires no explanations and asks no questions — a joke he's made once or twice that lands differently than people realize. No serious relationship currently, by design; he's careful about how close he lets anyone get.`},
-  {h:'Physicality & presence', t:`Relaxed, unhurried, good posture without trying. The kind of person who makes eye contact a beat longer than expected and somehow makes it feel warm instead of intense. Moves calmly under pressure — genuinely, not performed, which is its own kind of red flag if anyone's paying attention.`},
-  {h:'Voice & speech', t:`Warm, easy, remembers small details about people (their coffee order, their kid's name) and uses them to build trust fast. Deflects personal questions with gentle humor ("let's not ruin a nice night with my boring childhood"). Under real pressure, gets calmer, not more agitated — the opposite of what a nervous person does.`},
-  {h:'Hobbies & interests', t:`Restores old watches and clocks as a private hobby — mechanical, patient, solitary work. Runs long distances alone, early mornings, no headphones. Plays poker well and rarely for real stakes; he says he "doesn't need the money," which is true, and "doesn't like what winning does to people," which is closer to the truth about himself than he'd admit.`},
-  {h:'Public reputation', t:`Well-liked, a little mysterious in a charming way, considered one of Alex's most trustworthy friends.`},
-  {h:'Private life', t:`Has rebuilt an entire identity from nothing. Alex has helped his career twice — co-signed a loan once, made an introduction that changed his life once — with no idea who she actually helped.`,
-    sealed:`Built his life from nothing. Alex has helped his career twice — co-signed a loan once, made an introduction that changed his life once.`},
-  {h:'The secret at the center of everything', key:true, t:`If Alex's investigation into her father's murder goes public, his real name comes with it, and everything he's built collapses along with his father's memory. He does not see himself as a villain — he sees himself as protecting an innocent man's second chance from a crime he never committed himself.`, sealed:true},
-  {h:'Roleplay note', role:true, t:`Play this warm and likable the entire night. The reveal should land as a betrayal, not a twist anyone saw coming from his manner. Get calmer, not shiftier, as accusations pile up.`,
-    sealed:`Play this warm and likable the entire night. Get calmer, not shiftier, as accusations pile up.`}
-]},
-{ id:'gordon', file:'03', name:'Gordon Whitfield', code:'BOURBON', tier:'core', dead:true,
-  cls:'SUBJECT (DECEASED — SECOND VICTIM)', age:58, occ:'President & Co-Owner, Kane Oil',
-  sections:[
-  {h:'Residence', t:`A large, slightly dated house in the old-money part of town, unchanged since his kids moved out.`},
-  {h:'Family', t:`Married 30 years to Patricia Whitfield, who is "feeling unwell" tonight — a convenient and recurring excuse for these events lately. Two adult children, Marcus Jr. and Diane Whitfield, neither of whom calls much. Co-founded Kane Oil's modern era alongside Richard Kane decades ago.`},
-  {h:'Home life', t:`Owns two aging golden retrievers, Scotch and Soda, that his wife actually takes care of. Drinks more than he used to, alone, in his study, most nights. Collects vintage hunting rifles he never uses — a hobby that's really about the room they're displayed in, not the guns themselves.`},
-  {h:'Physicality & presence', t:`Big, booming, takes up space in a room without meaning to. Claps people on the shoulder too hard. Has a laugh that carries across a party. Gets visibly smaller and quieter the moment anyone brings up "the old days" of the company for too long.`},
-  {h:'Voice & speech', t:`Talks over people, tells long stories about "the early years" that conveniently skip certain stretches of time. Gets defensive fast — voice rising, hands moving — if his loyalty to the Kane family is ever questioned, even lightly.`},
-  {h:'Hobbies & interests', t:`Golf, badly and often. Collects rare bourbon he mostly hoards rather than drinks. Was, decades ago, a genuinely talented amateur boxer — a detail almost no one at this party would guess.`},
-  {h:'Public reputation', t:`Old-guard, respected, a little exhausting at parties. Widely assumed to be Alex's most loyal ally in the company.`},
-  {h:'Private life', t:`Privately terrified of the company sale — not just financially, but because it strips him of the only identity he's had for thirty years. Drowns a much heavier guilt in work and reputation-management.`},
-  {h:'The secret at the center of everything', key:true, t:`He was one of the men who helped kill Richard Kane fourteen years ago and has carried it every day since.`},
-  {h:'Fate', t:`Murdered second by Nathaniel, staged to look like Gordon killed Alex to protect the company, then took his own life from guilt — a convincing false answer meant to end the investigation early.`,
-    hostOnly:true, playerText:`You will not survive the night. The host will tell you when and how. Until then, play him alive, loud, and afraid.`},
-  {h:'Roleplay note', role:true, t:`Play him warm-blustery and a little sad underneath, like a man who's been performing confidence for thirty years and is tired.`}
-]},
-{ id:'victoria', file:'04', name:'Victoria Kane-Marsh', code:'POODLE', tier:'core', cls:'SUBJECT', age:61, occ:'Philanthropist, sits on two charity boards',
-  sections:[
-  {h:'Residence', t:`A well-appointed but noticeably smaller house than the Kane estate — a fact she is aware everyone knows.`},
-  {h:'Family', t:`Richard Kane's second wife, married when Alex was 6, divorced two years before his death after a bitter, quiet split. Cut out of any inheritance entirely. One adult son from a previous marriage, Julian Marsh, who resents the Kane wealth on her behalf more than she does out loud.`},
-  {h:'Home life', t:`Owns a small, immaculately groomed poodle named Chanel that goes everywhere with her, including — against house rules — tonight's gala. Lives alone since her second divorce (post-Richard) five years ago.`},
-  {h:'Physicality & presence', t:`Elegant, deliberate, enters a room like she's still announcing herself even when no one's paying attention anymore. Air-kisses everyone, complimenting outfits with a warmth that has a blade folded into it.`},
-  {h:'Voice & speech', t:`Refers to Richard as "your father, God rest him" in a tone that never quite settles whether she means it kindly. Namedrops old family history to reassert relevance in conversations that have moved past her.`},
-  {h:'Hobbies & interests', t:`Chairs a gala committee for a children's hospital, genuinely good work she does partly for the tax benefit and partly because she likes being needed. Collects antique jewelry, some of it actually Richard's old gifts to her that she never returned.`},
-  {h:'Public reputation', t:`Charming, a little exhausting, "trying too hard" according to the people who talk about her behind her back.`},
-  {h:'Private life', key:true, t:`Genuinely believes she was owed more from the estate and has never fully let it go. Recalls that in his final year, Richard seemed "afraid of his own business partners" — a detail she's never shared with anyone, including Alex, because she never thought it mattered until tonight.`},
-  {h:'Motive read', t:`Financial resentment, long-simmering grudge — a strong red herring, not the killer.`},
-  {h:'Roleplay note', role:true, t:`Play the warmth as real but thin — like good perfume covering something a little sour underneath.`}
-]},
-{ id:'harold', file:'05', name:'Harold Bennett', code:'KOIPOND', tier:'core', cls:'SUBJECT', age:65, occ:'Estate attorney and personal fixer to the Kane family for three decades',
-  sections:[
-  {h:'Residence', t:`A quiet condo near his office; has never married, never needed more space.`},
-  {h:'Family', t:`No spouse, no children. Has said, more than once, that "the Kanes are the only family I've needed" — a line that lands differently depending on who's in the room.`},
-  {h:'Home life', t:`Owns a tank of koi fish he finds more relaxing than any pet that requires attention. Works most weekends. Reads legal thrillers, ironically, and complains they're never accurate.`},
-  {h:'Physicality & presence', t:`Precise in every movement — sits the same way every time, buttons his jacket the same way every time. Never fidgets, which some people find reassuring and others find unsettling.`},
-  {h:'Voice & speech', t:`Answers questions with questions. Hedges everything ("to my knowledge," "as far as I'm aware"). Extremely polite in a way that gives away nothing.`},
-  {h:'Hobbies & interests', t:`Amateur wine collector, mostly for the ritual of it rather than the taste. Plays bridge weekly with the same three friends for twenty years running — his one genuinely unguarded social outlet.`},
-  {h:'Public reputation', t:`Respected for competence, not warmth. People trust his judgment and never quite trust his candor.`},
-  {h:'Private life', t:`His firm's single largest client is Alex; a falling-out or a company sale threatens decades of retainer income and his entire professional identity.`},
-  {h:'The secret at the center of everything', key:true, t:`Drafted Alex's new will this week and knows exactly what's in it. Also privately suspected, years ago, that Richard's death wasn't natural — and chose silence over inquiry to protect his career, a decision he's never forgiven himself for.`},
-  {h:'Roleplay note', role:true, t:`Play everything close to the vest. Let players work hard for every piece of information — but reward genuinely clever questioning with a real answer.`}
-]},
-{ id:'diane', file:'06', name:'Diane Okafor', code:'MARATHON', tier:'core', cls:'SUBJECT', age:47, occ:'CFO, Kane Oil',
-  sections:[
-  {h:'Residence', t:`A modern townhouse, immaculate, chosen for the good school district for her daughter.`},
-  {h:'Family', t:`Divorced four years ago, amicably enough on paper. One teenage daughter, Zoe, in a private school Diane is determined to keep funded no matter what happens to the company.`},
-  {h:'Home life', t:`Owns no pets — "I don't have the bandwidth," she says, and means it. Runs at 5 a.m. most days, the only hour of the day that's entirely hers.`},
-  {h:'Physicality & presence', t:`Composed, exact, sits with her back straight and her phone face-down but always within reach. Watches people's hands and eyes more than their faces when they talk.`},
-  {h:'Voice & speech', t:`Numbers-first. Redirects emotional conversations back to "practical concerns." Gets clipped and shorter, not louder, when nervous.`},
-  {h:'Hobbies & interests', t:`Marathon running — has finished four, training for a fifth she's not sure she'll get to run now. Enjoys cooking elaborate meals for exactly one person, most nights, as a form of decompression.`},
-  {h:'Public reputation', t:`Respected for competence, not warmth. Colleagues describe her as "impossible to read and worse to cross."`},
-  {h:'Private life', t:`Has been quietly moving company funds in ways that would not survive a serious audit — nothing catastrophic, but enough to end her career, and possibly worse, if new ownership looks closely.`},
-  {h:'The secret at the center of everything', key:true, t:`Terrified of losing her daughter's stability more than she's afraid of losing status. This, not greed, is her real motive for quietly opposing the sale.`},
-  {h:'Motive read', t:`Financial exposure — solid red herring, not the killer.`},
-  {h:'Roleplay note', role:true, t:`Play tightly controlled, someone one bad question away from cracking, without ever quite cracking.`}
-]},
-{ id:'preston', file:'07', name:'Senator Preston Hale', code:'LIBERTY', tier:'core', cls:'SUBJECT', age:55, occ:'U.S. Senator',
-  sections:[
-  {h:'Residence', t:`Splits time between a Washington apartment and a family home upstate that appears in every campaign ad he's ever run.`},
-  {h:'Family', t:`Married to Diane Hale (no relation to Diane Okafor — a running joke at every party they're both at), heavily involved in managing his public image. Two kids in college who mostly avoid politics themselves.`},
-  {h:'Home life', t:`Owns a golden retriever named Liberty, chosen entirely for the campaign photos, though he's grown genuinely fond of the dog despite himself. Checks his phone constantly, even at a memorial-adjacent gala.`},
-  {h:'Physicality & presence', t:`Practiced warmth — a politician's handshake, a photographer's smile deployed slightly before it's needed. Underneath: visibly tired, a man performing energy he doesn't have.`},
-  {h:'Voice & speech', t:`Campaign cadence even in private ("hardworking families," "doing right by the people who trusted us"). Circles back to a talking point when cornered rather than answering directly.`},
-  {h:'Hobbies & interests', t:`Golf, for the donor networking more than the sport. Reads biographies of past presidents, looking for a version of ambition that felt cleaner than his own turned out to be.`},
-  {h:'Public reputation', t:`Publicly beloved, a rising name in his party.`},
-  {h:'Private life', t:`Alex quietly funded a large share of his last campaign — a fact both know and neither has ever said aloud in public.`},
-  {h:'The secret at the center of everything', key:true, t:`There's a bribe, years ago, tied to a Kane Oil pipeline permit, that Alex has documentation of. If it surfaces tonight along with everything else, his career is over.`},
-  {h:'Motive read', t:`Political self-preservation — strong red herring, not the killer.`},
-  {h:'Roleplay note', role:true, t:`Play the charm as genuine but exhausted — a man who's been "on" so long he's forgotten what off feels like.`}
-]},
-{ id:'marion', file:'08', name:'Judge Marion Vale', code:'ROSEBUSH', tier:'core', cls:'SUBJECT', age:60, occ:'State appellate judge',
-  sections:[
-  {h:'Residence', t:`A quiet, austere house she's lived in alone for five years.`},
-  {h:'Family', t:`Widowed five years ago (her husband, a retired professor, died of a stroke). One estranged adult son who moved across the country and calls twice a year.`},
-  {h:'Home life', t:`Owns no pets, keeps an immaculate house, and has thrown herself into work and reputation since her husband's death — the closest thing she has to company most nights.`},
-  {h:'Physicality & presence', t:`Measured, still, the most composed person in any room by long habit. When she's uncomfortable, it shows for exactly one second and then vanishes completely.`},
-  {h:'Voice & speech', t:`Formal, precise, avoids absolutes ("it's possible," "I couldn't say for certain"). Treats every question like cross-examination and answers accordingly — carefully, minimally.`},
-  {h:'Hobbies & interests', t:`Gardens obsessively, especially roses, something she describes as "the only thing in my life I fully control." Plays classical piano, badly, for no one.`},
-  {h:'Public reputation', t:`Respected, a little feared, not close to anyone in this room by her own choice.`},
-  {h:'Private life', t:`Ruled in Kane Oil's favor years ago in a case that should have gone the other way — and was quietly compensated for it, a fact that has weighed on her more than she'll admit.`},
-  {h:'The secret at the center of everything', key:true, t:`Owes Alex her silence and, functionally, her entire career and reputation.`},
-  {h:'Motive read', t:`Reputational exposure — solid red herring, not the killer.`},
-  {h:'Roleplay note', role:true, t:`Play total control on the outside; let one specific, well-asked question be the only thing that visibly rattles her.`}
-]},
-{ id:'elias', file:'09', name:'Elias Thorne', code:'BISCUIT', tier:'core', cls:'SUBJECT', age:35, occ:'"Consultant" — vague, between real jobs more often than not',
-  sections:[
-  {h:'Residence', t:`A rental apartment nicer than he can comfortably afford.`},
-  {h:'Family', t:`Middle-class upbringing; parents still together, mildly disappointed in how his engagement to Alex ended and how little he's done since.`},
-  {h:'Home life', t:`Owns a cat, Biscuit, who he's had since before the engagement — one of the few things from that era of his life he kept. Drinks more at parties like this than anywhere else.`},
-  {h:'Physicality & presence', t:`Charming when he wants something, visibly sulky when he doesn't get it. Leans in a doorway rather than fully entering a room — half-committed to everything, including conversations.`},
-  {h:'Voice & speech', t:`Passive-aggressive jokes disguised as nostalgia. Brings up "the old days" as a weapon more than a memory.`},
-  {h:'Hobbies & interests', t:`Was, once, a promising amateur photographer — Alex funded a gallery show for him early in their relationship that never led anywhere. Plays a lot of video games alone now.`},
-  {h:'Public reputation', t:`Widely seen as "still not over it," which he denies loudly and often, unconvincingly.`},
-  {h:'Private life', t:`The prenup he signed three years ago left him with far less than he expected when the engagement broke off. Watches Alex's new relationship with Camille with poorly hidden jealousy.`},
-  {h:'The secret at the center of everything', key:true, t:`Recently sent Alex an angry, bitter message about money that would look very bad taken out of context — and he has no idea whether she showed it to anyone before tonight.`},
-  {h:'Motive read', t:`Money and wounded pride — a strong, classic red herring.`},
-  {h:'Roleplay note', role:true, t:`Play the bitterness as thin cover for real hurt — he wanted this life back more than he wanted revenge.`}
-]},
-{ id:'camille', file:'10', name:'Camille Dubois', code:'BISCOTTE', tier:'core', cls:'SUBJECT — KEY WITNESS', age:30, occ:'Architect',
-  sections:[
-  {h:'Residence', t:`Her own apartment across town, though she stays at Alex's most nights — a normal, unglamorous relationship rhythm that stands out in this crowd.`},
-  {h:'Family', t:`Middle-class French-Canadian family, close with her parents (both still call her every Sunday) and two younger brothers she talks about fondly and often.`},
-  {h:'Home life', t:`Owns a scruffy rescue mutt named Biscotte, who Alex has grown unexpectedly attached to. Cooks real dinners most nights — one of the things Alex says drew her in, someone who wanted nothing from the money at all.`},
-  {h:'Physicality & presence', t:`Grounded, unhurried, watches a room more than she performs in it. Protective of Alex in small, physical ways — a hand on her arm, positioning herself near the door in a crowd.`},
-  {h:'Voice & speech', t:`Direct, warm, slips into French when emotional or caught off guard. Finds this room's social games exhausting and doesn't hide it well.`},
-  {h:'Hobbies & interests', t:`Designs treehouses and small pavilions pro bono for a community nonprofit on weekends — genuinely good work, genuinely hers. Plays guitar badly and happily.`},
-  {h:'Public reputation', t:`The "old guard" (Victoria, Elias, some board members) treat her as an outsider who doesn't belong, which she finds more funny than hurtful most days.`},
-  {h:'Private life', t:`Financially independent from Alex by choice — has turned down money more than once, to the old guard's visible confusion.`},
-  {h:'The secret at the center of everything', key:true, t:`She is the one person who knows the exact content of the speech Alex planned to give tonight, because Alex told her everything, days ago, in bed, half-joking that it might "blow up the whole room."`},
-  {h:'Roleplay note', role:true, t:`The single most valuable interview in the game if players earn her trust — play her as guarded with strangers, genuinely open with anyone who approaches with real warmth or grief rather than interrogation energy.`}
-]},
-{ id:'renee', file:'11', name:'Renee Ashford', code:'PIXEL', tier:'core', cls:'SUBJECT', age:33, occ:'Executive Director, a children\'s education charity Alex heavily funds',
-  sections:[
-  {h:'Residence', t:`A modest apartment, deliberately unchanged since college, a point of quiet pride.`},
-  {h:'Family', t:`College roommate of Alex's, essentially family by now. Comes from a working-class background and has never fully adjusted to the wealth that surrounds her now.`},
-  {h:'Home life', t:`Owns a very anxious rescue greyhound named Pixel who mirrors her own nervous energy a little too well. Lives alone, mostly by choice, mostly by circumstance.`},
-  {h:'Physicality & presence', t:`Warm, a little jumpy, over-apologizes with her body language — steps back too fast, laughs a beat too early to smooth over silence.`},
-  {h:'Voice & speech', t:`Talks fast when nervous. Circles back to reassure people she's "not upset" about things she very clearly is upset about.`},
-  {h:'Hobbies & interests', t:`Volunteers hands-on at her own charity's programs, not just administratively — genuinely loves the kids she works with. Bakes elaborate desserts she's too anxious to actually serve to guests half the time.`},
-  {h:'Public reputation', t:`Well-liked, seen as Alex's closest and most loyal friend.`},
-  {h:'Private life', t:`Her charity's entire operating budget depends on Alex's continued funding — funding Alex recently, quietly, discussed redirecting.`},
-  {h:'The secret at the center of everything', key:true, t:`Found out last week, by accident, that Alex was planning to redirect a large donation elsewhere. Felt genuinely betrayed and hasn't told Alex she knows.`},
-  {h:'Motive read', t:`Hurt and financial anxiety — a sympathetic red herring, not the killer.`},
-  {h:'Roleplay note', role:true, t:`Play the warmth as real and the hurt as something she's actively trying (and failing) to hide all night.`}
-]},
-{ id:'tasha', file:'12', name:'Tasha Morrow', code:'MOCHI', tier:'core', cls:'SUBJECT', age:32, occ:'"Social consultant" — informally, Alex\'s event fixer and hype-woman',
-  sections:[
-  {h:'Residence', t:`A stylish apartment that costs more than her stated income would suggest.`},
-  {h:'Family', t:`Childhood friend of Alex's from the same hometown, from before either of them had money. Parents still live in that hometown; Tasha rarely visits anymore.`},
-  {h:'Home life', t:`Owns a small, extremely photogenic dog, Mochi, that appears constantly on her social media. Lives well beyond her visible means, quietly subsidized by Alex in ways she downplays.`},
-  {h:'Physicality & presence', t:`Bright, animated, always slightly performing for an invisible audience — checks how she looks in reflective surfaces without seeming to notice she's doing it.`},
-  {h:'Voice & speech', t:`Namedrops her closeness to Alex often and easily. Slightly exaggerates details of recent conversations to seem more "in the loop" than she actually is — not maliciously, just habitually.`},
-  {h:'Hobbies & interests', t:`Curates her social media persona as a genuine hobby/skill. Loves throwing parties for other people more than attending them, which is part of why she's useful to Alex.`},
-  {h:'Public reputation', t:`Well-liked on the surface; privately seen by some as insecure and attention-seeking.`},
-  {h:'Private life', t:`Competitive, quietly, with Renee for the title of Alex's "real" best friend — a competition Renee mostly doesn't realize is happening.`},
-  {h:'The secret at the center of everything', key:true, t:`Has exaggerated or misremembered a recent conversation with Alex, creating a contradiction with Renee's account that investigators will need to untangle — an honest mistake, not a lie, though it won't look that way at first.`},
-  {h:'Motive read', t:`None serious — social friction, not violence.`},
-  {h:'Roleplay note', role:true, t:`Play the confidence as a little brittle — she needs to be "in the know" more than the facts support.`}
-]},
-{ id:'imogen', file:'13', name:'Imogen Pierce', code:'NOTEBOOK', tier:'core', cls:'SUBJECT', age:26, occ:'Personal Assistant to Alex Kane',
-  sections:[
-  {h:'Residence', t:`A small shared apartment with two roommates from college, a stark contrast to her work environment.`},
-  {h:'Family', t:`Recent college graduate; close with her parents back home, who are quietly thrilled and a little intimidated that she works for "the Kanes."`},
-  {h:'Home life', t:`Doesn't have a pet — her roommates have a cat, Nacho, that she's grown attached to anyway. Works far more hours than she's technically paid for and hasn't figured out how to say no yet.`},
-  {h:'Physicality & presence', t:`Eager, slightly overwhelmed-looking, double-checks her own phone and notes constantly, like she's afraid of forgetting something critical.`},
-  {h:'Voice & speech', t:`Apologizes reflexively, even for things that aren't her fault. Speaks carefully around anything involving Alex's private schedule, clearly worried about overstepping or getting in trouble.`},
-  {h:'Hobbies & interests', t:`Journals every night, partly to process her genuinely stressful job. Runs a small, anonymous online book club that has nothing to do with her real life — her one true escape.`},
-  {h:'Public reputation', t:`Barely known socially in this room — she's staff, and everyone here knows it, which stings more than she admits.`},
-  {h:'Private life', t:`Feels like a permanent outsider among Alex's wealthy circle, caught between genuine loyalty to Alex and constant low-grade anxiety about her job security.`},
-  {h:'The secret at the center of everything', key:true, t:`Overheard part of Alex's plan for tonight while prepping her schedule earlier this week, and mentioned it to exactly one other person, thinking it was harmless small talk. She knows exactly who she told.`},
-  {h:'Roleplay note', role:true, t:`Play nervous and helpful — someone who wants to do right by everyone and is quietly terrified of having made a mistake.`}
-]},
-{ id:'marcus', file:'14', name:'Marcus Reid', code:'SENTRY', tier:'core', cls:'SUBJECT', age:44, occ:'Head of Estate Security',
-  sections:[
-  {h:'Residence', t:`A modest house twenty minutes from the estate, chosen for the commute.`},
-  {h:'Family', t:`Former military, married to Angela Reid for twelve years, two young kids not in attendance tonight. Calls home once during every shift like this, without fail.`},
-  {h:'Home life', t:`Owns a retired police dog, Duke, that failed out of active service for being "too friendly" — a fact Marcus finds funnier than he lets on at work. Takes his job at the estate very seriously despite the joke of a dog waiting for him at home.`},
-  {h:'Physicality & presence', t:`Watchful, terse, stands slightly apart from social clusters even when technically off-duty tonight. Scans exits and doorways out of pure habit.`},
-  {h:'Voice & speech', t:`Short, factual answers. Gets visibly defensive, jaw tightening, if his competence or attentiveness is questioned.`},
-  {h:'Hobbies & interests', t:`Coaches his kids' youth soccer team on weekends — the version of himself he actually likes best. Restores old cars slowly, in a garage that's more sanctuary than hobby space.`},
-  {h:'Public reputation', t:`Not really part of "the room" socially — staff with real authority, an odd, slightly isolating position at a party like this.`},
-  {h:'Private life', t:`Nothing scandalous — just a man trying to do a hard job well and provide for his family.`},
-  {h:'The secret at the center of everything', key:true, t:`There's a gap in tonight's official movement log — a blind spot in coverage that he created by cutting a corner earlier in the evening to deal with a minor, unrelated issue. He's far more afraid of admitting that mistake than he is of being suspected of murder.`},
-  {h:'Roleplay note', role:true, t:`Play professional and guarded; let genuine, respectful pressure (not accusation) be what gets him to admit the gap in the log.`}
-]},
-{ id:'constance', file:'15', name:'Constance Velez', code:'COMPASS', tier:'core', cls:'SUBJECT', age:50, occ:'CEO, a rival energy company',
-  sections:[
-  {h:'Residence', t:`A sleek, minimalist penthouse she rarely has time to enjoy.`},
-  {h:'Family', t:`Self-made, estranged from most of her family after a bitter fight years ago over the company she built without their help or belief in her. No children by choice.`},
-  {h:'Home life', t:`No pets — travels too much to justify one, something she says without regret. A workaholic in the most literal sense; the office is closer to home than home is.`},
-  {h:'Physicality & presence', t:`Commands a room by simply not performing for it — still, direct, unbothered by silence. Doesn't do the social choreography this crowd expects.`},
-  {h:'Voice & speech', t:`Business-first, allergic to small talk. Refers to people by their company titles rather than their names more often than she probably realizes.`},
-  {h:'Hobbies & interests', t:`Competitive sailing, one of the only arenas where she says "the wind doesn't care who your father was." Reads business biographies almost exclusively.`},
-  {h:'Public reputation', t:`Widely seen as cold and opportunistic — not incorrect, just not sinister.`},
-  {h:'Private life', key:true, t:`Has a term sheet already drafted for acquiring parts of Kane Oil, prepared before tonight, opportunistic rather than murderous — but it looks terrible if found in her bag.`},
-  {h:'Motive read', t:`Business opportunity — a strong, obvious-feeling red herring.`},
-  {h:'Roleplay note', role:true, t:`Play total confidence and zero grief performance — she barely knew Alex and isn't going to pretend otherwise, which will read as suspicious to the table even though it isn't.`}
-]},
-{ id:'daniel', file:'16', name:'Daniel Ortiz', code:'HEADLINE', tier:'core', cls:'SUBJECT', age:38, occ:'Investigative journalist',
-  sections:[
-  {h:'Residence', t:`A cluttered one-bedroom apartment that doubles as his office — files everywhere, most of them about the Kane family.`},
-  {h:'Family', t:`Working-class background; parents proud but worried about the instability of his career. No spouse, no kids — the job doesn't leave room.`},
-  {h:'Home life', t:`Owns an old, unbothered cat named Scoop that sleeps on his research notes constantly. Lives on coffee and deadline adrenaline.`},
-  {h:'Physicality & presence', t:`Watchful, patient, good at fading into a room's background until he wants to be noticed. Takes mental notes visibly — a small notebook he "forgets" to put away.`},
-  {h:'Voice & speech', t:`Asks a lot of "harmless" follow-up questions in a friendly, unhurried tone. Never quite answers what he's actually working on when asked directly.`},
-  {h:'Hobbies & interests', t:`Long-distance running, mostly to think through a story. Collects old newspapers and archival documents — genuinely, obsessively.`},
-  {h:'Public reputation', t:`An outsider here by class and by design — invited under the pretense of "family friend," a lie he's fully aware of and comfortable maintaining.`},
-  {h:'Private life', t:`Financially unremarkable; his currency is information, not money, and he's used to being underestimated because of it.`},
-  {h:'The secret at the center of everything', key:true, t:`Has been independently investigating Richard Kane's death for over a year and has partial evidence of his own, separate from Alex's, that corroborates part of the original conspiracy.`},
-  {h:'Roleplay note', role:true, t:`Play curious and disarming, never predatory — he gets more from people by seeming harmless than by pushing.`}
-]},
-{ id:'wesley', file:'17', name:'Wesley Kane', code:'LONGSHOT', tier:'core', cls:'SUBJECT', age:29, occ:'Between jobs, currently "consulting" for a friend\'s startup that isn\'t really paying him',
-  sections:[
-  {h:'Residence', t:`A cramped apartment he describes, generously, as "temporary."`},
-  {h:'Family', t:`Distant cousin on Richard Kane's side; his branch of the family fell out of favor and money two generations back, a fact he brings up more than anyone wants him to.`},
-  {h:'Home life', t:`Owns a scrappy, well-loved mutt named Tank, honestly the most stable relationship in his life right now. Behind on rent more often than he admits out loud.`},
-  {h:'Physicality & presence', t:`Overeager, restless energy, laughs a little too loud at things that aren't that funny. Dresses one notch too formal, trying visibly hard to fit in.`},
-  {h:'Voice & speech', t:`Oversells his closeness to the family ("we're basically family, obviously"). Gets prickly and defensive if reminded how distant that relationship actually is.`},
-  {h:'Hobbies & interests', t:`Plays in an amateur band that's never played a real venue. Genuinely good with numbers, a skill nobody in the family has ever taken seriously or given him a chance to use.`},
-  {h:'Public reputation', t:`Not really accepted as "real family" by anyone else in the room, and it visibly stings every time it comes up.`},
-  {h:'Private life', t:`Struggling financially more than he lets on; would be next in line for a modest inheritance if Alex died without a revised will — a fact he's uncomfortably aware of.`},
-  {h:'The secret at the center of everything', key:true, t:`Recently asked a lawyer, not Harold, about inheritance law "hypothetically" — looks bad out of context, means very little in reality.`},
-  {h:'Motive read', t:`Weak, financial, more pathetic than sinister — good comic-relief suspect for the table.`},
-  {h:'Roleplay note', role:true, t:`Play the desperation to belong as sincere, not sinister — he wants a family, not a fortune, even if he'd never admit that out loud.`}
-]},
-{ id:'edgar', file:'18', name:'Edgar Voss', code:'GARDENER', tier:'core', cls:'SUBJECT', age:70, occ:'Retired household butler/driver for the Kane family, over 20 years of service',
-  sections:[
-  {h:'Residence', t:`A small cottage on the far edge of the Kane estate grounds, a gift from Richard Kane himself decades ago.`},
-  {h:'Family', t:`Widower; his late wife also worked for the Kane household for years. One adult son, a schoolteacher two states away, who calls every Sunday.`},
-  {h:'Home life', t:`Owns an old, gentle basset hound named Duchess, the only creature he fully relaxes around anymore. Tends a small vegetable garden with real, quiet pride.`},
-  {h:'Physicality & presence', t:`Formal, gentle, moves a little slower than he used to but carries himself with old-world dignity regardless. Stands when anyone approaches him, out of decades of habit he can't unlearn.`},
-  {h:'Voice & speech', t:`Measured, respectful, occasionally drifts unprompted into reminiscence about "Mr. Kane" with real, uncomplicated love in his voice. Clams up completely if approached with rudeness or accusation.`},
-  {h:'Hobbies & interests', t:`Gardening, chess (though he always let Richard win, a private joke he's never told anyone). Reads mystery novels, with some irony he's aware of tonight.`},
-  {h:'Public reputation', t:`Universally liked, considered a trusted, gentle fixture of the family for two decades.`},
-  {h:'Private life', t:`Was present the night Richard Kane died and has always privately doubted the official story, but never had proof — until Alex started quietly asking him questions in recent months.`},
-  {h:'The secret at the center of everything', key:true, t:`Holds a genuine, specific memory from that night that he's never shared with anyone, and will only share if approached with real respect rather than pressure or accusation.`},
-  {h:'Roleplay note', role:true, t:`Play warmth and dignity throughout — reward players who treat him kindly with real information; shut down completely for anyone who's rude to him.`}
-]},
-{ id:'lucia', file:'19', name:'Lucia Ferrante', code:'LEDGER', tier:'core', cls:'SUBJECT', age:63, occ:'Retired; one of Kane Oil\'s first employees, decades ago',
-  sections:[
-  {h:'Residence', t:`A comfortable but modest condo, paid off years ago.`},
-  {h:'Family', t:`No family in attendance tonight; the company was effectively her family for most of her working life. One niece she's close to but rarely sees.`},
-  {h:'Home life', t:`Owns two elderly cats, Penny and Dime, named during her accounting years — a small joke she still finds funny. Lives quietly, watches a lot of old movies alone.`},
-  {h:'Physicality & presence', t:`Sharp-eyed, quiet, watches far more than she participates in conversation. Sits near the edges of rooms, out of decades-old habit.`},
-  {h:'Voice & speech', t:`Careful, deliberate, chooses her words like she's still worried about being overheard by someone from thirty years ago.`},
-  {h:'Hobbies & interests', t:`Genealogy research — ironic, given how carefully she's buried a piece of her own company's history. Bakes for neighbors more than for herself.`},
-  {h:'Public reputation', t:`Mostly forgotten by the current social circle; invited more out of politeness and history than genuine closeness.`},
-  {h:'Private life', t:`Financially secure, but her sense of self and safety has always depended on the company's good name and stability.`},
-  {h:'The secret at the center of everything', key:true, t:`Saw something suspicious involving company money around the time of Richard Kane's death and buried it out of fear for her job and safety at the time. Has never told anyone, until tonight, maybe.`},
-  {h:'Roleplay note', role:true, t:`Play quiet and watchful most of the night — the reveal of what she knows should feel like something finally being set down after thirty years of carrying it.`}
-]},
-{ id:'simone', file:'20', name:'Dr. Simone Asante', code:'ORCHID', tier:'core', cls:'SUBJECT', age:45, occ:'Licensed therapist, Alex\'s personal confidant and clinician for two years',
-  sections:[
-  {h:'Residence', t:`A calm, understated house that looks exactly like you'd expect a therapist's home to look.`},
-  {h:'Family', t:`Married to her wife, Jordan, an artist, quietly and happily for eight years. No children by choice, a decision she's completely at peace with.`},
-  {h:'Home life', t:`Owns a very calm, very large orange cat named Freud — a joke she rolls her eyes at every time someone makes it, which is often. Genuinely relaxes at home in a way her professional life doesn't allow.`},
-  {h:'Physicality & presence', t:`Calm, observant, professionally guarded posture even in social settings — reads people for a living and it shows in how she holds a room.`},
-  {h:'Voice & speech', t:`Careful generalities when asked direct personal questions about Alex ("I really can't discuss that"). Occasionally lets something genuine slip when she's truly moved or provoked, more than she'd like.`},
-  {h:'Hobbies & interests', t:`Practices yoga daily, more for mental discipline than fitness. Paints badly and privately, purely for herself, never shown to anyone including her wife.`},
-  {h:'Public reputation', t:`Respected, a little apart from the social fabric of this crowd by professional necessity.`},
-  {h:'Private life', t:`Financially independent of Alex, though Alex has been a long-standing, high-profile client — a fact she never advertises and treats with real seriousness.`},
-  {h:'The secret at the center of everything', key:true, t:`Knows Alex's exact state of mind heading into tonight, including specifically who Alex had recently become wary of — information bound by confidentiality, but real grief and real stakes tonight might crack that open.`},
-  {h:'Roleplay note', role:true, t:`The strongest possible nudge toward suspicion of Nathaniel, if a player can get her to break professional distance through genuine emotional connection rather than interrogation.`}
-]},
+  <section class="panel"><h2 class="sh">The evening</h2><div class="prose" id="premise"></div></section>
+  <section class="panel"><h2 class="sh">What to expect</h2><ul class="list" id="expect"></ul></section>
+  <section class="panel"><h2 class="sh">The Kane Oil Database</h2><p class="note" style="margin:0 0 14px;font-size:15px">This party runs on a secure web app that works on any phone. Nothing to install.</p><div class="steps" id="how"></div></section>
+  <section class="panel hidden" id="rulesPanel"><h2 class="sh">Rules of the night</h2><ol class="rules" id="rules"></ol></section>
 
-/* ---------- EXTENDED CAST (lighter files) ---------- */
-{ id:'bunny', file:'X1', name:'Bunny Vanderhoff', code:'GOSSIP', tier:'ext', cls:'GUEST — SOCIALITE', age:54, occ:'Socialite, professional attendee of galas',
-  sections:[
-  {h:'Defining trait', t:`Cannot hold a secret longer than it takes to finish a canapé. Loves being the first to know, far more than being right.`},
-  {h:'Home life', t:`Two Pomeranians, Fifi and Truffle, with a larger wardrobe than most guests here. Summers in a house she calls "the cottage" that has nine bedrooms.`},
-  {h:'Gossip you are carrying', key:true, t:`Swears Victoria is wearing jewelry Richard gave her decades ago and "never gave back" (true, as it happens). Also swears Senator Hale is quietly getting divorced (completely false — you heard it from a manicurist).`},
-  {h:'Roleplay note', role:true, t:`You arrived with your husband, Chip. Finish each other's sentences, then contradict each other's details. Half your information is wrong; deliver all of it with total confidence.`}
-]},
-{ id:'chip', file:'X2', name:'Chip Vanderhoff', code:'YACHT', tier:'ext', cls:'GUEST — SOCIALITE', age:57, occ:'"Retired from something in shipping"',
-  sections:[
-  {h:'Defining trait', t:`Agrees loudly with whatever Bunny said last, then embellishes it until it's a different story entirely.`},
-  {h:'Home life', t:`Has been "restoring" a sailboat for eleven years. It has never left the dock. Makes his own terrible limoncello and gives it as gifts.`},
-  {h:'Gossip you are carrying', key:true, t:`Heard that Constance Velez and Alex had "a screaming match" at an energy conference last year. It was a polite disagreement on a panel about offshore drilling. You were not there.`},
-  {h:'Roleplay note', role:true, t:`Harmless, jolly, and a truly unreliable witness. Treat every rumor like breaking news.`}
-]},
-{ id:'martin', file:'X3', name:'Martin Pruitt', code:'DIVIDEND', tier:'ext', cls:'GUEST — MINOR SHAREHOLDER', age:61, occ:'Retired dentist; holds a small stake in Kane Oil',
-  sections:[
-  {h:'Defining trait', t:`Anxious about his money in a way that leaks into every conversation. Checks the stock ticker on his phone constantly, even though the markets are closed.`},
-  {h:'Home life', t:`Widower. Builds an elaborate model railway in his basement, modeled on the town where he grew up.`},
-  {h:'Gossip you are carrying', key:true, t:`Before dinner, you overheard Gordon Whitfield and Diane Okafor arguing in a hallway. Gordon: "You can't hide it forever." Diane: "Not tonight, Gordon." You're sure it's about money. (It is. It isn't about murder.)`},
-  {h:'Roleplay note', role:true, t:`Tell your hallway story to anyone who'll listen, and ask everyone whether they think the stock will recover.`}
-]},
-{ id:'gloria', file:'X4', name:'Gloria Anand', code:'PORTFOLIO', tier:'ext', cls:'GUEST — MINOR SHAREHOLDER', age:49, occ:'Pension fund manager with a modest Kane Oil position',
-  sections:[
-  {h:'Defining trait', t:`Blunt, numerate, suspicious of anyone who uses the word "synergy." Believes every mystery is a spreadsheet in disguise.`},
-  {h:'Home life', t:`Two teenagers, one very old tortoise named Warren Buffett. Does crossword puzzles in pen.`},
-  {h:'Gossip you are carrying', key:true, t:`You heard the same Gordon/Diane argument as Martin — but a different part. Diane said, "If the sale goes through, the auditors will see everything." Gordon said, "Then we tell her together." You think it sounds like fraud. It's about accounting, not murder.`},
-  {h:'Roleplay note', role:true, t:`You and Martin will disagree about what you heard. Neither of you is lying.`}
-]},
-{ id:'beatrice', file:'X5', name:'Beatrice Kane', code:'HEIRLOOM', tier:'ext', cls:'GUEST — EXTENDED FAMILY', age:78, occ:'Richard Kane\'s elderly cousin',
-  sections:[
-  {h:'Defining trait', t:`A sharp memory and a sharper tongue. Remembers every family scandal back to 1962 and considers it her duty to bring them up.`},
-  {h:'Home life', t:`Still lives in the old Kane farmhouse where the family fortune started. Keeps chickens, all named after former presidents.`},
-  {h:'Family history you carry', key:true, t:`Richard taught Alex chess at this very estate: "control the center of the board and you control everything." In his last year, Richard told you over Thanksgiving pie that "the partners aren't who I thought they were." You thought he meant business ethics. You've wondered since.`},
-  {h:'Roleplay note', role:true, t:`Good for color and old family history. Not a suspect. Deeply unimpressed by Wesley's claims to be "basically family."`}
-]},
-{ id:'soren', file:'X6', name:'Soren Blake', code:'SEATING', tier:'ext', cls:'GUEST — EVENT PLANNER', age:36, occ:'Event planner for tonight\'s gala',
-  sections:[
-  {h:'Defining trait', t:`A perfectionist in a permanent low-grade panic. Clipboard, earpiece, and a smile that's doing a lot of work.`},
-  {h:'Home life', t:`Lives with a boyfriend who is patient beyond reason and a fiddle-leaf fig that is always dying.`},
-  {h:'Gossip you are carrying', key:true, t:`Something was off about tonight's seating chart: Alex asked for last-minute changes this afternoon. Camille was moved to the head table, and Victoria was bumped out to table nine. You're sure it's social drama and a deliberate snub. (It's social drama. It isn't murder.)`},
-  {h:'Roleplay note', role:true, t:`Treat every problem tonight as a catering emergency, including the murders.`}
-]},
-{ id:'amara', file:'X7', name:'Amara Diallo', code:'SOUFFLE', tier:'ext', cls:'STAFF — HOUSEHOLD CHEF', age:41, occ:'Private chef to the Kane household',
-  sections:[
-  {h:'Defining trait', t:`Fiercely territorial about her kitchen. Guests who wander in uninvited get put to work peeling things.`},
-  {h:'Home life', t:`Two kids, one husband, and a sourdough starter named Gerald that she has kept alive for nine years.`},
-  {h:'Gossip you are carrying', key:true, t:`This morning Alex made an unusual request: an extra, empty place setting at the head table "for Dad," and her father's favorite vintage champagne for the toast. She seemed emotional, as if tonight really mattered. You don't know why.`},
-  {h:'Roleplay note', role:true, t:`Warm but brisk. You loved working for Alex and you're furious someone ruined your dinner service.`}
-]},
-{ id:'rosa', file:'X8', name:'Rosa Delgado', code:'DUSTPAN', tier:'ext', cls:'STAFF — HOUSEKEEPER', age:52, occ:'Head housekeeper, Kane Estate',
-  sections:[
-  {h:'Defining trait', t:`Sees everything, says very little, and knows exactly which guests leave their rooms a mess.`},
-  {h:'Home life', t:`Grandmother of three. Sings in a church choir on Sundays and is quietly very good.`},
-  {h:'Gossip you are carrying', key:true, t:`While cleaning Alex's office this afternoon, you found a torn page under the chess set with "Tonight — the whole board" written on it and a list of chess moves you don't understand. You put it back where you found it.`},
-  {h:'Roleplay note', role:true, t:`Only share what you found with someone who's polite to staff. You have a long memory for rudeness.`}
-]},
-{ id:'hannah', file:'X9', name:'Hannah Brooks', code:'DORMROOM', tier:'ext', cls:'GUEST — OLD FRIEND', age:32, occ:'Veterinarian in Vermont; Alex\'s freshman-year roommate',
-  sections:[
-  {h:'Defining trait', t:`Pure nostalgia. Hasn't seen Alex in years, and every sentence starts with "Remember when…"`},
-  {h:'Home life', t:`Three rescue dogs, a barn cat, and a partner who makes maple syrup on weekends.`},
-  {h:'Gossip you are carrying', key:true, t:`Freshman year, Alex slept with her dad's old watch under her pillow and would take it apart and put it back together when she couldn't sleep. You also remember she beat the whole dorm at chess without ever looking at the board.`},
-  {h:'Roleplay note', role:true, t:`You have zero motive and an enormous amount of heart. Remind everyone that Alex was a person.`}
-]},
-{ id:'theo', file:'X10', name:'Theo Lang', code:'MEMO', tier:'ext', cls:'GUEST — POLITICAL AIDE', age:27, occ:'Senior aide to Senator Preston Hale',
-  sections:[
-  {h:'Defining trait', t:`Convinced that everyone suspects him of something. They don't. He is, however, guilty of expensing the hotel minibar.`},
-  {h:'Home life', t:`Lives in a studio in D.C. with a succulent and four phone chargers. Hasn't taken a vacation in two years.`},
-  {h:'Gossip you are carrying', key:true, t:`The Senator took a tense phone call on the terrace before dinner and told you to "keep the press away from Daniel Ortiz." You have no idea why. It's about a pipeline permit, not a murder.`},
-  {h:'Roleplay note', role:true, t:`Over-explain your whereabouts to anyone who looks at you for more than two seconds.`}
-]},
-{ id:'vivienne', file:'X11', name:'Vivienne Sharpe', code:'INKWELL', tier:'ext', cls:'GUEST — PRESS (SOCIETY)', age:44, occ:'Gossip columnist, "The Velvet Rope"',
-  sections:[
-  {h:'Defining trait', t:`Always fishing for a story. Will happily trade a fabricated "scoop" for a real piece of information.`},
-  {h:'Home life', t:`Lives in a penthouse she can't afford, with a hairless cat named Scandal.`},
-  {h:'Gossip you are carrying', key:true, t:`Your invented scoop for tonight: "Alex was secretly engaged to Camille and planned to announce it." (You made it up. You'll trade it for anything real.) You also think Daniel Ortiz is "not really a family friend." That part happens to be true.`},
-  {h:'Roleplay note', role:true, t:`Keep a notepad. Write down everything anyone tells you, especially the lies.`}
-]},
-{ id:'jamie', file:'X12', name:'Jamie Park', code:'PLUSONE', tier:'ext', cls:'GUEST — PLUS-ONE', age:29, occ:'Club DJ; Tasha Morrow\'s date',
-  sections:[
-  {h:'Defining trait', t:`Knows absolutely no one here and is having the time of their life anyway.`},
-  {h:'Home life', t:`Shares a loft with two other DJs and a very judgmental parrot.`},
-  {h:'Gossip you are carrying', key:true, t:`None. You're just here for the open bar. You did notice that everyone at this party seems scared of someone.`},
-  {h:'Roleplay note', role:true, t:`Ask the obvious questions nobody else will ask. Sometimes outsiders see the most.`}
-]},
-{ id:'morgan', file:'X13', name:'Morgan Ellis', code:'CONFETTI', tier:'ext', cls:'GUEST — PLUS-ONE', age:31, occ:'Drummer in Wesley Kane\'s band',
-  sections:[
-  {h:'Defining trait', t:`Loyal to Wesley to a fault, and determined to get the band a gig out of tonight somehow.`},
-  {h:'Home life', t:`Lives above a music shop. Owns fourteen drum kits and one fork.`},
-  {h:'Gossip you are carrying', key:true, t:`Wesley has been really stressed about money lately and made you swear not to mention that he "talked to a lawyer." You'll mention it by accident.`},
-  {h:'Roleplay note', role:true, t:`Hand out imaginary business cards for the band. Defend Wesley loudly and badly.`}
-]}
-];
-
-/* =========================================================================
-   EVIDENCE FILES — the host pushes these live
-   ========================================================================= */
-const EVIDENCE = [
-{ id:'will', tier:'Opening', title:'The Will Draft', src:'Office of Harold Bennett, Esq. · Draft dated Monday of this week',
-  body:`Draft revision of the Last Will and Testament of Alexandra M. Kane. UNSIGNED. Execution scheduled for Friday.
-
-Key changes from the prior will:
-• Controlling interest in Kane Oil & Energy to be sold in full. Proceeds go to a newly formed "Richard Kane Accountability Foundation."
-• Prior bequest to "surviving Kane relations" (which benefits Wesley Kane) is struck.
-• Charitable grant to Renee Ashford's education charity is reduced and restructured.
-• References a personal letter "to be read aloud at the gala." No copy attached.
-
-Margin note in Alex's handwriting: "Harold — after Saturday none of this will be a secret anyway."` },
-{ id:'tox', tier:'Opening', title:'Preliminary Toxicology — A. Kane', src:'Medical examiner · Field report',
-  body:`A fast-acting cardiac toxin was detected in the residue of Alex Kane's champagne flute.
-
-No trace was found in the bottle or in any neighboring glass, so the flute was poisoned individually, after pouring and before the toast.
-
-Examiner's note: the presentation "closely resembles a sudden heart attack."` },
-{ id:'seclog', tier:'Mid-game', title:'Security Movement Log', src:'Estate Security · Supervisor M. Reid',
-  body:`East wing, tonight:
-8:58 PM — Guests seated for dinner.
-9:12 PM — Corridor camera 4: FEED OFFLINE.
-9:31 PM — Camera 4 restored.
-9:34 PM — Champagne service begins for the toast.
-9:41 PM — Alex Kane collapses.
-
-No incident report was filed for the camera outage. Supervisor initials: M.R.` },
-{ id:'ledgers', tier:'Mid-game', title:'Financial Ledgers — Richard Kane\'s Final Year', src:'Kane Oil archives · Accounts Payable (recovered)',
-  body:`Three payments in the six weeks before Richard Kane's death, each coded "site consulting," each co-signed by the office of the President (G. Whitfield).
-
-Payee: W. FERRIS CONTRACTING — OHIO.
-No invoices on file. No work orders on file.
-
-The vendor account was closed the week after Richard's funeral and never used again. Someone in a different hand has pencilled a small tick mark beside each entry, as if someone noticed long ago.` },
-{ id:'speech', tier:'Mid-game', title:'Alex\'s Speech Notes (torn page)', src:'Recovered from the inside pocket of Alex Kane\'s jacket',
-  body:`Handwritten, heavily crossed out:
-
-"Start with Dad. Then the permit. Then the ruling. Then the money. Say the names OUT LOUD — no more checks, no more quiet phone calls.
-
-The contractor — W.F. Dead now. Had a son. Ohio. Changed his name??
-Ask Daniel what he found. Ask Edgar about the car that night.
-
-Control the center."` },
-{ id:'gordonnote', tier:'Late', title:'Gordon Whitfield\'s "Confession"', src:'Recovered beside Gordon Whitfield\'s body, in the study',
-  body:`Typed and unsigned. Printed on the estate office printer earlier this evening.
-
-"I did it. I couldn't let her destroy what Richard and I built. I'm sorry."
-
-Examiner's notes:
-• No ink or paper residue on Whitfield's hands.
-• His assistant says Gordon "never typed a thing in thirty years. He dictated everything."
-• A glass of his rare bourbon sits beside him, untouched.` },
-{ id:'coroner', tier:'Late', title:'Richard Kane — Coroner\'s File', src:'County Coroner · Archived 14 years ago',
-  body:`Cause of death: myocardial infarction. Case closed within 48 hours at the family's request.
-
-Coroner's handwritten addendum, never entered into the official record:
-"Bruising at left wrist and upper arm inconsistent with collapse. Recommend toxicology."
-
-No toxicology was ever ordered.
-Household staff present that night: E. Voss (driver).` },
-{ id:'photo', tier:'Late', title:'Photograph — Kane Oil Site Crew', src:'Pinned inside Lucia Ferrante\'s old accounting files',
-  body:`A faded photo from Richard Kane's final summer: Richard Kane, Gordon Whitfield, and a contractor in a work shirt.
-
-Pencilled on the back: "Walt F. + son."
-
-The boy is about nineteen and stands a little apart. He is relaxed and unhurried, and he looks into the lens a beat longer than anyone else.` },
-{ id:'namechange', tier:'Finale', title:'Ohio Court Record — Petition for Change of Name', src:'Court of Common Pleas, Ohio · Public record',
-  body:`PETITION GRANTED.
-Former name: Daniel Walter FERRIS.
-New name: [page torn]
-Petitioner's age at filing: 20.
-Reason given: "Personal. To begin again."
-
-Last known address on file: a downtown condominium in this city.` },
-{ id:'permit', tier:'Red herring', title:'Pipeline Permit Memo', src:'Kane Oil · Office of the CEO · Marked PRIVILEGED',
-  body:`"Senator's office confirms the Dunmore pipeline permit will clear committee. Transfer to the PAC completed as agreed."
-
-Initialed: A.K.
-Stapled behind it is a sticky note in Alex's hand: "Tonight. All of it."` },
-{ id:'termsheet', tier:'Red herring', title:'Velez Energy — Draft Term Sheet', src:'Found in a clutch bag in the coat check',
-  body:`CONFIDENTIAL DRAFT, dated two weeks ago.
-Proposed acquisition of Kane Oil's Gulf assets by Velez Energy.
-
-Clause 4(b): "Offer contingent upon a change in Kane Oil executive leadership."
-
-Handwritten in the margin: "Sooner than we think?"` }
-];
-
-const HOST_NOTES = `
-<ul>
-<li><b>Victim #3 shortlist</b> (Nathaniel chooses live once you enable the Killer Phase): Daniel Ortiz (journalist closing in), Edgar Voss (butler who remembers too much), or Lucia Ferrante (whistleblower with hard evidence). Whoever survives should surface their key clue late in the night.</li>
-<li><b>Critical path:</b> Camille (speech contents) → Imogen (who else knew in advance) → Edgar / Lucia / Daniel (evidence about the father's murder) → the identity inconsistency seeded on Nathaniel. Everyone else is texture, red herring, or a secondary thread.</li>
-<li><b>Suggested evidence order:</b> Opening (Will, Toxicology) → Mid-game (Security Log, Ledgers, Speech Notes) → after Gordon's death (Gordon's "Confession", Coroner's File, Photograph) → Finale (Name Change Record). Drop red herrings whenever the room needs a detour.</li>
-<li>Nathaniel's dossier hides his killer status, his true name, and his secret until you enable the Killer Phase. Gordon's "Fate" is also hidden from his player.</li>
-</ul>`;
-
-/* =========================================================================
-   UTILITIES
-   ========================================================================= */
-const $ = (s, r=document) => r.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const CH = Object.fromEntries(CHARACTERS.map(c => [c.id, c]));
-const EV = Object.fromEntries(EVIDENCE.map(e => [e.id, e]));
-const byCode = code => CHARACTERS.find(c => c.code === code);
-const initials = n => n.replace(/^(Dr\.|Senator|Judge)\s+/,'').replace(/"[^"]*"\s*/,'').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-const fmtTime = ts => { if(typeof ts!=='number') return 'just now'; const d=new Date(ts); return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); };
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-function patch(el, sig, html){ if(!el) return; if(el._sig !== sig){ el._sig = sig; el.innerHTML = html; } }
-function setPath(obj, path, val){
-  const parts = path.split('/'); let o = obj;
-  for(let i=0;i<parts.length-1;i++){ if(typeof o[parts[i]]!=='object' || o[parts[i]]===null) o[parts[i]]={}; o=o[parts[i]]; }
-  const k = parts[parts.length-1];
-  if(val===null || val===undefined) delete o[k]; else o[k] = JSON.parse(JSON.stringify(val));
-}
-function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error('Failed to load '+src)); document.head.appendChild(s); }); }
-
-/* per-device storage (localStorage with in-memory fallback for sandboxed iframes) */
-const MEM = {};
-const store = {
-  k: k => 'kane:' + CONFIG.GAME_ID + ':' + k,
-  get(k){ const key=this.k(k); try{ const v=localStorage.getItem(key); if(v!==null) return v; }catch(e){} return key in MEM ? MEM[key] : null; },
-  set(k,v){ const key=this.k(k); MEM[key]=v; try{ localStorage.setItem(key, v); }catch(e){} },
-  del(k){ const key=this.k(k); delete MEM[key]; try{ localStorage.removeItem(key); }catch(e){} }
-};
-
-/* =========================================================================
-   SYNC BACKENDS — same interface: start(cb), update({path:value}), reset(state)
-   ========================================================================= */
-function LocalBackend(){
-  const FULL = store.k('state'); let bc=null, cb=null, last=null;
-  try{ bc = new BroadcastChannel(FULL); }catch(e){}
-  const read = () => { try{ return JSON.parse(store.get('state') || '{}'); }catch(e){ return {}; } };
-  const emit = () => { const raw = store.get('state') || '{}'; if(raw !== last){ last = raw; let v={}; try{ v=JSON.parse(raw); }catch(e){} cb && cb(v); } };
-  const write = s => { store.set('state', JSON.stringify(s)); if(bc) bc.postMessage(1); emit(); };
-  return {
-    mode:'local', connected:true, now:()=>Date.now(), TS:()=>Date.now(),
-    start(fn){ cb=fn; if(bc) bc.onmessage=emit; window.addEventListener('storage', e=>{ if(e.key===FULL) emit(); }); setInterval(emit, 1000); emit(); },
-    update(paths){ const s=read(); for(const k in paths) setPath(s, k, paths[k]); write(s); return Promise.resolve(); },
-    reset(init){ write(init); return Promise.resolve(); },
-    onDisconnect(){}
-  };
-}
-async function FirebaseBackend(){
-  const v = '10.12.2';
-  await loadScript(`https://www.gstatic.com/firebasejs/${v}/firebase-app-compat.js`);
-  await loadScript(`https://www.gstatic.com/firebasejs/${v}/firebase-database-compat.js`);
-  if(!firebase.apps.length) firebase.initializeApp(CONFIG.FIREBASE);
-  const db = firebase.database();
-  const root = db.ref('games/' + CONFIG.GAME_ID);
-  let offset = 0;
-  db.ref('.info/serverTimeOffset').on('value', s => { offset = s.val() || 0; });
-  const be = {
-    mode:'firebase', connected:false, now:()=>Date.now()+offset, TS:()=>firebase.database.ServerValue.TIMESTAMP,
-    start(fn){ root.on('value', s => fn(s.val() || {}), err => { console.error(err); toast('DATABASE ERROR', 'Permission denied — check your Firebase rules.', 'err'); }); },
-    update(p){ return root.update(p).catch(e => { console.error(e); toast('WRITE FAILED', e.message, 'err'); }); },
-    reset(init){ return root.set(init); },
-    onDisconnect(path, val){ try{ root.child(path).onDisconnect().set(val); }catch(e){} }
-  };
-  db.ref('.info/connected').on('value', s => { be.connected = !!s.val(); renderConn(); });
-  return be;
-}
-
-/* =========================================================================
-   STATE
-   ========================================================================= */
-function freshState(){
-  return { epoch: 'e' + Date.now().toString(36), flags:{ lockdown:false, killer:false, voting:false } };
-}
-function norm(s){
-  s = s || {};
-  return {
-    epoch: s.epoch || '0',
-    flags: Object.assign({ lockdown:false, killer:false, voting:false }, s.flags || {}),
-    evidence: s.evidence || {},
-    kill: s.kill || null,
-    alert: s.alert || null,
-    players: s.players || {}
-  };
-}
-let backend = null, S = norm({}), ready = false;
-// session: per-tab (sessionStorage) so several tabs can rehearse different roles; localStorage copy survives a closed tab
-const TAB_KEY = store.k('session');
-let session = (() => { let raw = null; try{ raw = sessionStorage.getItem(TAB_KEY); }catch(e){} if(!raw) raw = store.get('session'); try{ return JSON.parse(raw || 'null'); }catch(e){ return null; } })();
-const ui = { built:null, bypass:false, selTarget:null, seenEvidence:null };
-
-const saveSession = s => {
-  session = s; const raw = s ? JSON.stringify(s) : null;
-  try{ raw ? sessionStorage.setItem(TAB_KEY, raw) : sessionStorage.removeItem(TAB_KEY); }catch(e){}
-  if(raw) store.set('session', raw); else store.del('session');
-};
-const isHostDevice = () => store.get('hostDevice') === '1';
-const me = () => session && session.role==='player' ? CH[session.id] : null;
-const deadIds = () => { const d = new Set(CHARACTERS.filter(c=>c.dead).map(c=>c.id)); if(S.kill && S.kill.victim) d.add(S.kill.victim); return d; };
-function playerRec(id){ const p = S.players[id]; return (p && p.epoch === S.epoch) ? p : null; }
-function isOnline(id){ const p = playerRec(id); return !!(p && typeof p.lastSeen==='number' && backend && backend.now() - p.lastSeen < CONFIG.ONLINE_WINDOW_MS); }
-
-/* =========================================================================
-   BOOT
-   ========================================================================= */
-async function boot(){
-  render();
-  try{
-    backend = CONFIG.FIREBASE ? await FirebaseBackend() : LocalBackend();
-  }catch(e){
-    console.error(e); backend = LocalBackend();
-    toast('LIVE LINK FAILED', 'Could not reach Firebase. Running in local mode.', 'err');
-  }
-  backend.start(raw => {
-    const prev = S, wasReady = ready;
-    S = norm(raw); ready = true;
-    onState(prev, wasReady);
-  });
-  setInterval(heartbeat, CONFIG.HEARTBEAT_MS);
-  setInterval(() => { if(session && session.role==='admin') renderAdmin(); }, 2000);
-  document.addEventListener('visibilitychange', () => { if(!document.hidden) heartbeat(); });
-}
-
-function onState(prev, wasReady){
-  // hard reset → kick players back to login
-  if(session && session.role==='player' && session.epoch !== S.epoch){
-    saveSession(null); ui.built = null;
-    toast('SESSION TERMINATED', 'The system was reset by the administrator. Enter your code word again.', 'err');
-  }
-  if(!S.flags.lockdown) ui.bypass = false;
-  const c = me();
-  if(wasReady && c){
-    const newEv = Object.keys(S.evidence).filter(id => !prev.evidence[id] && EV[id]);
-    if(newEv.length) toast('NEW EVIDENCE RELEASED', EV[newEv[0]].title + (newEv.length>1 ? ` (+${newEv.length-1} more)` : ''), '', () => scrollToId('evidencePanel'));
-    if(S.flags.voting && !prev.flags.voting) toast('VOTING IS NOW OPEN', 'Submit your official accusation.', 'ok', () => scrollToId('votePanel'));
-  }
-  if(wasReady && S.alert && (!prev.alert || prev.alert.id !== S.alert.id) && S.alert.type==='kill'){
-    try{ navigator.vibrate && navigator.vibrate([300,120,300,120,500]); }catch(e){}
-  }
-  if(session && session.role==='player' && !prev.players[session.id] ) heartbeat();
-  render();
-}
-
-function heartbeat(){
-  if(!backend || !ready || !session || session.role!=='player') return;
-  if(session.epoch !== S.epoch) return;
-  const p = 'players/' + session.id;
-  const upd = { [p+'/lastSeen']: backend.TS(), [p+'/epoch']: session.epoch, [p+'/unlocked']: true };
-  const rec = S.players[session.id];
-  if(!rec || rec.epoch !== session.epoch || !rec.unlockedAt) upd[p+'/unlockedAt'] = backend.TS();
-  backend.update(upd);
-}
-
-/* =========================================================================
-   RENDER ROOT
-   ========================================================================= */
-function render(){
-  const app = $('#app');
-  if(!session){
-    if(ui.built !== 'login'){ ui.built = 'login'; app.innerHTML = loginHTML(); bindLogin(); }
-    updateLoginReady();
-  } else if(session.role === 'admin'){
-    if(ui.built !== 'admin'){ ui.built = 'admin'; app.innerHTML = adminShellHTML(); bindAdmin(); }
-    renderAdmin();
-  } else {
-    if(ui.built !== 'p:'+session.id){ ui.built = 'p:'+session.id; app.innerHTML = playerShellHTML(); bindPlayer(); }
-    renderPlayer();
-  }
-  renderOverlays();
-  renderConn();
-}
-function renderConn(){
-  const el = $('#connChip'); if(!el) return;
-  let cls='warn', txt='CONNECTING';
-  if(backend){
-    if(backend.mode==='local'){ cls='warn'; txt='LOCAL MODE'; }
-    else if(backend.connected){ cls=''; txt='LINK SECURE'; }
-    else { cls='bad'; txt='RECONNECTING'; }
-  }
-  el.className = 'chip ' + cls;
-  el.innerHTML = `<span class="d"></span><span class="lbl">${txt}</span>`;
-  el.title = backend && backend.mode==='local' ? 'Local mode: syncs between tabs on this device only. Add a Firebase config for multi-device play.' : '';
-}
-const LOGO = s => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="lg${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5dc93"/><stop offset="1" stop-color="#b8862e"/></linearGradient></defs><path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" stroke="url(#lg${s})" stroke-width="2.5"/><path d="M32 12 49 22v20L32 52 15 42V22z" stroke="rgba(90,214,255,.55)" stroke-width="1"/><path d="M25 20v24M25 32l11-12M28.5 29 38 44" stroke="url(#lg${s})" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const topbar = (sub, extra='') => `<header class="topbar"><div class="brand">${LOGO(34)}<div><b>KANE OIL</b><small>${sub}</small></div></div><span class="chip" id="connChip"></span>${extra}<button class="iconbtn" id="logoutBtn">LOG OUT</button></header>`;
-
-/* =========================================================================
-   LOGIN
-   ========================================================================= */
-function loginHTML(){
-  return `<div class="login-wrap"><div class="login panel gold">
-    <div class="logo">${LOGO(84)}</div>
-    <h1>KANE OIL</h1>
-    <div class="tag">Personnel Intelligence Database</div>
-    <div class="term" id="term"></div>
-    <form id="loginForm" autocomplete="off">
-      <label class="lbl" for="codeIn" style="text-align:left">Enter code word</label>
-      <input class="input code-input" id="codeIn" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="••••••••" maxlength="24">
-      <div style="height:12px"></div>
-      <button class="btn gold block" id="authBtn" type="submit">AUTHENTICATE</button>
-      <div class="login-err" id="loginErr"></div>
+  <section class="panel gold" id="rsvp">
+    <h2 class="sh">RSVP</h2>
+    <div id="rsvpDone"></div>
+    <form id="rsvpForm" autocomplete="on">
+      <div class="field"><label class="lbl" for="rName">Your name</label><input class="input" id="rName" name="name" required maxlength="60" autocomplete="name"></div>
+      <div class="field"><span class="lbl">Will you attend?</span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="att" value="yes" checked><span>Yes</span></label>
+          <label><input type="radio" name="att" value="maybe"><span>Maybe</span></label>
+          <label><input type="radio" name="att" value="no"><span>Can't make it</span></label>
+        </div></div>
+      <div id="attendingFields">
+        <div class="field"><label class="check"><input type="checkbox" id="rPlus"> I'm bringing a plus-one</label></div>
+        <div class="field hidden" id="plusWrap"><label class="lbl" for="rPlusName">Plus-one's name</label><input class="input" id="rPlusName" maxlength="60"></div>
+        <div class="field"><label class="lbl" for="rPref">What kind of role would you like?</label>
+          <select class="input" id="rPref"><option value="surprise">Surprise me</option><option value="big">Big, dramatic role: I want to be in the thick of it</option><option value="medium">Medium role</option><option value="small">Small, low-pressure role</option></select></div>
+        <div class="field"><label class="lbl" for="rDiet">Dietary needs</label><input class="input" id="rDiet" maxlength="120" placeholder="Optional"></div>
+      </div>
+      <div class="field"><label class="lbl" for="rNote">A note for the host</label><textarea class="input" id="rNote" maxlength="400" placeholder="Optional" style="min-height:80px"></textarea></div>
+      <button class="btn gold block" type="submit" id="rBtn">SEND RSVP</button>
+      <p class="note" style="margin:10px 0 0;text-align:center">Your RSVP goes to the host. Please don't include phone numbers, addresses, or anything private.</p>
     </form>
-    <div class="foot">RESTRICTED SYSTEM · ALL ACCESS IS MONITORED · NODE GALA-01</div>
-  </div></div>`;
-}
-function bindLogin(){
-  const lines = [
-    ['','> KANE-OS v7.3 secure boot'],
-    ['','> handshake: kane-oil.internal … '],
-    ['ok','  [ OK ] encrypted channel established'],
-    ['gold','> 33 personnel files sealed · clearance required'],
-  ];
-  const term = $('#term'); let i = 0;
-  (function next(){ if(ui.built!=='login' || !term.isConnected) return;
-    if(i < lines.length){ term.innerHTML = lines.slice(0, ++i).map(([c,t]) => `<div class="${c}">${esc(t)}</div>`).join('') + '<span class="cursor"></span>'; setTimeout(next, 380); }
-  })();
-  $('#loginForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const code = $('#codeIn').value.trim().toUpperCase().replace(/\s+/g,'');
-    const err = $('#loginErr'), card = $('.login');
-    if(!code) return;
-    if(!ready){ err.textContent = 'ESTABLISHING SECURE LINK… TRY AGAIN IN A MOMENT'; return; }
-    const btn = $('#authBtn'); btn.disabled = true; btn.textContent = 'VERIFYING…';
-    term.innerHTML += `<div>&gt; verify credential ${'*'.repeat(code.length)}</div>`;
-    await sleep(650);
-    if(code === CONFIG.ADMIN_CODE.toUpperCase()){
-      term.innerHTML += `<div class="ok">  [ OK ] ADMINISTRATOR CLEARANCE GRANTED</div>`;
-      await sleep(450);
-      store.set('hostDevice','1');
-      saveSession({ role:'admin' }); render(); return;
-    }
-    const c = byCode(code);
-    if(c){
-      term.innerHTML += `<div class="ok">  [ OK ] FILE ${c.file} UNSEALED · decrypting dossier…</div>`;
-      await sleep(600);
-      saveSession({ role:'player', id:c.id, epoch:S.epoch });
-      backend.onDisconnect('players/'+c.id+'/lastSeen', 0);
-      heartbeat(); render(); window.scrollTo(0,0); return;
-    }
-    term.innerHTML += `<div class="err">  [FAIL] ACCESS DENIED · credential not recognized</div>`;
-    err.textContent = 'ACCESS DENIED'; card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
-    btn.disabled = false; btn.textContent = 'AUTHENTICATE';
-  });
-}
-function updateLoginReady(){
-  const e = $('#loginErr'); if(!e) return;
-  if(!ready && !e.textContent) e.textContent = 'ESTABLISHING SECURE LINK…';
-  else if(ready && e.textContent === 'ESTABLISHING SECURE LINK…') e.textContent = '';
-}
-function bindLogout(){
-  $('#logoutBtn').addEventListener('click', () => {
-    if(session && session.role==='player') backend.update({ ['players/'+session.id+'/lastSeen']: 0 });
-    saveSession(null); ui.built=null; render(); window.scrollTo(0,0);
-  });
+  </section>
+  <footer>KANE OIL &amp; ENERGY · EST. 1974 · PRIVATE EVENT</footer>
+</div>
+
+<script src="config.js"></script>
+<script src="party.js"></script>
+<script src="core.js"></script>
+<script>
+const P = window.PARTY || {};
+let backend, S = normRoot({});
+const myId = () => store.get('myRsvp');
+
+// static content
+$('#navLogo').innerHTML = LOGO(28); $('#heroLogo').innerHTML = LOGO(92);
+$('#inWorld').textContent = P.inWorld || '';
+$('#title').textContent = P.title || 'The Last Toast';
+$('#subtitle').textContent = P.subtitle || '';
+$('#hostBy').textContent = P.host ? 'Hosted by ' + P.host : '';
+document.title = (P.title || 'The Last Toast') + ' · Invitation';
+$('#details').innerHTML = [
+  ['When', P.date, P.time], ['Where', P.venue, P.address], ['Dress', P.dress, ''], ['RSVP by', P.rsvpBy, '']
+].filter(d => d[1]).map(([k, a, b]) => `<div class="det"><b>${k}</b><span>${esc(a)}</span>${b ? `<small>${esc(b)}</small>` : ''}</div>`).join('');
+$('#premise').innerHTML = (P.premise || []).map(p => `<p>${esc(p)}</p>`).join('');
+$('#expect').innerHTML = (P.expect || []).map(p => `<li>${esc(p)}</li>`).join('');
+$('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">STEP ${String(i + 1).padStart(2, '0')}</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
+if (P.showRules && (P.rules || []).length) {
+  $('#rulesPanel').classList.remove('hidden');
+  $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
 }
 
-/* =========================================================================
-   DOSSIER
-   ========================================================================= */
-function hexBadge(c, red){
-  const col = red ? '#ff3b54' : '#d9b25b';
-  return `<div class="hex"><svg viewBox="0 0 78 88"><path d="M39 2 75 22.5v43L39 86 3 65.5v-43z" fill="rgba(3,7,16,.7)" stroke="${col}" stroke-width="2"/><path d="M39 10 68 26.5v35L39 78 10 61.5v-35z" fill="none" stroke="rgba(90,214,255,.35)"/></svg><span style="${red?'color:#ff8494;text-shadow:0 0 12px rgba(255,59,84,.7)':''}">${esc(initials(c.name))}</span></div>`;
-}
-function sealedHTML(h){
-  return `<div class="sec"><h3>${esc(h)}</h3><div class="sealed"><div class="bars"><i style="width:96%"></i><i style="width:88%"></i><i style="width:72%"></i></div><small>▲ SEALED · CLEARANCE INSUFFICIENT</small></div></div>`;
-}
-function dossierHTML(c, opts={}){
-  const host = !!opts.host;
-  const reveal = host || (c.id===CONFIG.KILLER_ID && S.flags.killer);
-  const cls = (!reveal && c.clsPublic) ? c.clsPublic : c.cls;
-  const isKillerCls = reveal && c.id===CONFIG.KILLER_ID;
-  const killedNow = S.kill && S.kill.victim===c.id;
-  const secs = c.sections.map(s => {
-    if(s.hostOnly && !host) return s.playerText ? `<div class="sec"><h3>${esc(s.h)}</h3><p>${esc(s.playerText)}</p></div>` : '';
-    if(s.sealed && !reveal){
-      if(s.sealed === true) return sealedHTML(s.h);
-      return `<div class="sec ${s.role?'role':''}"><h3>${esc(s.h)}</h3><p>${esc(s.sealed)}</p><div class="sealed" style="margin-top:10px;padding:8px 12px"><div class="bars"><i style="width:80%"></i></div><small>▲ ADDITIONAL RECORDS SEALED</small></div></div>`;
-    }
-    const hostTag = s.hostOnly ? ' <span class="pill gold">HOST ONLY</span>' : '';
-    return `<div class="sec ${s.key?'key':''} ${s.role?'role':''}"><h3>${esc(s.h)}${hostTag}</h3><p>${esc(s.t)}</p></div>`;
-  }).join('');
-  return `
-    <div class="dhead">${hexBadge(c, isKillerCls || killedNow)}
-      <div><div class="mono" style="font-size:11px;letter-spacing:.2em;color:var(--dim)">PERSONNEL FILE ${esc(c.file)}${c.tier==='ext'?' · EXTENDED CAST':''}</div>
-      <h1 class="dname">${esc(c.name)}</h1>
-      <div class="cls ${isKillerCls||killedNow?'red':''}">CLASSIFICATION: ${esc(cls)}${killedNow && !/DECEASED/.test(cls)?' · DECEASED':''}</div></div>
-    </div>
-    <div class="kv">
-      <div><b>Code word</b><span class="mono">${esc(c.code)}</span></div>
-      <div><b>Age</b><span>${esc(c.age)}</span></div>
-      <div style="grid-column:span 2"><b>Occupation</b><span>${esc(c.occ)}</span></div>
-    </div>
-    <div style="margin-top:6px">${secs}</div>
-    <div class="stamp">████ END OF FILE ████ OPERATION: THE LAST TOAST ████</div>`;
-}
-
-/* =========================================================================
-   PLAYER VIEW
-   ========================================================================= */
-function playerShellHTML(){
-  const c = me();
-  return `${topbar('SECURE DOSSIER · FILE ' + esc(c.file))}
-    <div id="deadStrip"></div>
-    <section class="panel red hidden" id="directivePanel"></section>
-    <section class="panel gold hidden" id="votePanel">
-      <div class="ph"><h2>Official Accusation</h2><span class="sub">VOTING OPEN</span></div>
-      <div id="voteStatus"></div>
-      <form id="voteForm">
-        <div class="field"><label class="lbl" for="suspectSel">Name your suspect</label><select class="input" id="suspectSel"></select></div>
-        <div class="field"><label class="lbl" for="stmtIn">Official statement for the record</label><textarea class="input" id="stmtIn" maxlength="800" placeholder="What did you see? Why them? Motive, means, opportunity…"></textarea></div>
-        <button class="btn gold block" type="submit" id="voteBtn">SUBMIT ACCUSATION</button>
-      </form>
-    </section>
-    <section class="panel hidden" id="evidencePanel"><div class="ph"><h2>Evidence Locker</h2><span class="sub" id="evCount"></span></div><div id="evList"></div></section>
-    <section class="panel" id="dossierPanel"><div class="ph"><h2>Personnel Dossier</h2><span class="sub">EYES ONLY</span></div><div id="dossierBody"></div></section>`;
-}
-function bindPlayer(){
-  bindLogout();
-  ui.selTarget = null; ui.seenEvidence = null;
-  $('#voteForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const suspect = $('#suspectSel').value, statement = $('#stmtIn').value.trim();
-    if(!suspect){ toast('INCOMPLETE', 'Select a suspect first.', 'err'); return; }
-    if(!S.flags.voting){ toast('VOTING CLOSED', 'The host has closed voting.', 'err'); return; }
-    backend.update({ ['players/'+session.id+'/vote']: { suspect, statement, ts: backend.TS() } });
-    toast('ACCUSATION LOGGED', 'Your statement is on the record. You can update it until voting closes.', 'ok');
-  });
-}
-function renderPlayer(){
-  const c = me(); if(!c) return;
-  const dead = deadIds();
-  const iAmKilled = S.kill && S.kill.victim === c.id;
-  patch($('#deadStrip'), iAmKilled ? 'dead' : 'alive', iAmKilled ? `<div class="deadstrip">STATUS: DECEASED · STAY IN CHARACTER · AWAIT HOST INSTRUCTIONS</div>` : '');
-
-  // --- dossier
-  patch($('#dossierBody'), [c.id, S.flags.killer, S.kill && S.kill.victim].join('|'), dossierHTML(c));
-
-  // --- termination directive (killer only, killer phase only)
-  const dp = $('#directivePanel');
-  const showDir = c.id === CONFIG.KILLER_ID && S.flags.killer;
-  dp.classList.toggle('hidden', !showDir);
-  if(showDir){
-    if(S.kill){
-      const v = CH[S.kill.victim];
-      patch(dp, 'done:'+S.kill.victim, `<div class="ph"><h2>Termination Directive</h2><span class="sub">EXECUTED ${fmtTime(S.kill.ts)}</span></div>
-        <p style="font-size:17px;line-height:1.6;margin:0 0 8px"><b style="color:var(--red2)">${esc(v ? v.name : 'Target')}</b> has been eliminated.</p>
-        <p class="note" style="margin:0">Return to the party. Show the room the grief they expect to see. Get calmer, not shiftier. Nobody can know.</p>`);
-    } else {
-      const sig = 'pick:' + (ui.selTarget||'') + ':' + CONFIG.VICTIM_SHORTLIST.map(t=>dead.has(t.id)?'x':'o').join('');
-      patch(dp, sig, `<div class="ph"><h2>Termination Directive</h2><span class="sub">AUTHORIZATION: ██████</span></div>
-        <p style="margin:0 0 12px;font-size:15.5px;line-height:1.6;color:#ffd6dc">Someone in this room is getting too close to your real name. Choose <b>one</b> target. Once you execute, every screen in the building gets the alert instantly. Do it where no one is watching you.</p>
-        <div class="targets">${CONFIG.VICTIM_SHORTLIST.filter(t=>CH[t.id] && !dead.has(t.id)).map(t => `
-          <button type="button" class="target ${ui.selTarget===t.id?'sel':''}" data-target="${t.id}"><span class="rad"></span><span><b>${esc(CH[t.id].name)}</b><small>${esc(t.why)}</small></span></button>`).join('')}</div>
-        <button class="btn danger block" id="execBtn" ${ui.selTarget?'':'disabled'}>EXECUTE DIRECTIVE</button>`);
-      dp.querySelectorAll('[data-target]').forEach(b => b.onclick = () => { ui.selTarget = b.dataset.target; renderPlayer(); });
-      const eb = $('#execBtn'); if(eb) eb.onclick = confirmKill;
-    }
+// RSVP form
+const syncFields = () => {
+  const att = document.querySelector('input[name=att]:checked').value;
+  $('#attendingFields').classList.toggle('hidden', att === 'no');
+  $('#plusWrap').classList.toggle('hidden', !$('#rPlus').checked);
+};
+document.querySelectorAll('input[name=att]').forEach(r => r.addEventListener('change', syncFields));
+$('#rPlus').addEventListener('change', syncFields);
+let prefilled = false;
+function showDone() {
+  const r = myId() && S.rsvps[myId()];
+  const lbl = { yes: "you're coming", maybe: "you're a maybe", no: "you can't make it" };
+  $('#rsvpDone').innerHTML = r ? `<div class="done"><b>✓ RSVP received.</b> ${esc(r.name)}, we have you down as: ${lbl[r.attending] || r.attending}${r.plusOne ? ', plus one' : ''}. You can change your answer below any time.</div>` : '';
+  $('#rBtn').textContent = r ? 'UPDATE RSVP' : 'SEND RSVP';
+  if (r && !prefilled) {
+    prefilled = true;
+    $('#rName').value = r.name || '';
+    const radio = document.querySelector(`input[name=att][value="${r.attending}"]`); if (radio) radio.checked = true;
+    $('#rPlus').checked = !!r.plusOne; $('#rPlusName').value = r.plusOneName || '';
+    $('#rPref').value = r.pref || 'surprise'; $('#rDiet').value = r.diet || ''; $('#rNote').value = r.note || '';
+    syncFields();
   }
-
-  // --- voting
-  const vp = $('#votePanel');
-  const canVote = S.flags.voting && !iAmKilled;
-  vp.classList.toggle('hidden', !canVote);
-  if(canVote){
-    const opts = CHARACTERS.filter(x => x.id!==c.id && x.id!=='alex' && !(S.kill && S.kill.victim===x.id));
-    const sel = $('#suspectSel'), cur = sel.value;
-    const optSig = opts.map(o=>o.id).join(',');
-    if(sel._sig !== optSig){
-      sel._sig = optSig;
-      const grp = (label, list) => list.length ? `<optgroup label="${label}">${list.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</optgroup>` : '';
-      sel.innerHTML = `<option value="">— Select a suspect —</option>` + grp('Principal subjects', opts.filter(o=>o.tier==='core')) + grp('Other guests', opts.filter(o=>o.tier==='ext'));
-      const mine = playerRec(c.id);
-      sel.value = cur || (mine && mine.vote ? mine.vote.suspect : '');
-      if(!$('#stmtIn').value && mine && mine.vote) $('#stmtIn').value = mine.vote.statement || '';
-    }
-    const mine = playerRec(c.id), v = mine && mine.vote;
-    patch($('#voteStatus'), v ? v.suspect + v.ts : 'none', v
-      ? `<div class="voted"><b>✓ ACCUSATION ON RECORD:</b> ${esc(CH[v.suspect] ? CH[v.suspect].name : v.suspect)} <span class="mono" style="color:var(--dim);font-size:11px">· ${fmtTime(v.ts)}</span><br><span style="color:var(--muted)">You can change it until the host closes voting.</span></div>`
-      : `<p class="note" style="margin:0 0 14px">The investigation is open to formal accusations. Choose carefully: your statement goes directly to the command center.</p>`);
-    $('#voteBtn').textContent = v ? 'UPDATE ACCUSATION' : 'SUBMIT ACCUSATION';
-  }
-
-  // --- evidence
-  const evIds = Object.keys(S.evidence).filter(id => EV[id]).sort((a,b) => (S.evidence[b]||0) - (S.evidence[a]||0));
-  const ep = $('#evidencePanel');
-  ep.classList.toggle('hidden', !evIds.length);
-  const prevSeen = ui.seenEvidence;
-  ui.seenEvidence = new Set(evIds);
-  $('#evCount').textContent = evIds.length ? `${evIds.length} FILE${evIds.length>1?'S':''} RELEASED` : '';
-  patch($('#evList'), evIds.join(','), evIds.map((id, i) => {
-    const e = EV[id], isNew = prevSeen && !prevSeen.has(id);
-    return `<details class="ev ${isNew?'new':''}" ${i===0?'open':''}><summary><span class="pill ${isNew?'gold':''}">${isNew?'NEW':'FILE'}</span><span class="t">${esc(e.title)}</span><span class="when">${fmtTime(S.evidence[id])}</span></summary>
-      <div class="body"><div class="src">SOURCE · ${esc(e.src)}</div>${esc(e.body)}</div></details>`;
-  }).join(''));
 }
-function confirmKill(){
-  const t = CH[ui.selTarget]; if(!t) return;
-  openModal(`<div class="ph"><h2 style="color:var(--red2)">Confirm Execution</h2></div>
-    <p style="font-size:17px;line-height:1.6;margin:0 0 8px">Target: <b style="color:var(--red2)">${esc(t.name)}</b></p>
-    <p class="note" style="margin:0 0 18px">This can't be undone. A red alert goes out to every screen immediately.</p>
-    <div class="row-gap"><button class="btn danger" id="doKill">EXECUTE</button><button class="btn ghost" data-close>ABORT</button></div>`);
-  $('#doKill').onclick = () => {
-    if(S.kill){ closeModal(); return; }
-    backend.update({
-      kill: { victim: t.id, ts: backend.TS() },
-      alert: { id: 'a' + Date.now().toString(36), type: 'kill', text: `${t.name} has been found dead. All personnel remain where you are. Do not leave the premises.` }
-    });
-    closeModal();
+$('#rsvpForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!backend) { toast('ONE MOMENT', 'Still connecting. Try again in a second.', 'err'); return; }
+  const name = $('#rName').value.trim(); if (!name) return;
+  const att = document.querySelector('input[name=att]:checked').value;
+  const id = myId() || uid('r');
+  const rec = {
+    name, attending: att, ts: backend.TS(),
+    plusOne: att !== 'no' && $('#rPlus').checked, plusOneName: att !== 'no' && $('#rPlus').checked ? $('#rPlusName').value.trim() : '',
+    pref: att !== 'no' ? $('#rPref').value : '', diet: att !== 'no' ? $('#rDiet').value.trim() : '', note: $('#rNote').value.trim()
   };
-}
-function scrollToId(id){ const el = document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  const btn = $('#rBtn'); btn.disabled = true;
+  await backend.set('rsvps/' + id, rec);
+  store.set('myRsvp', id);
+  btn.disabled = false;
+  toast('RSVP SENT', att === 'no' ? "We'll miss you." : 'See you at the gala.', 'ok');
+  showDone();
+});
+syncFields();
 
-/* =========================================================================
-   ADMIN VIEW
-   ========================================================================= */
-function adminShellHTML(){
-  const tiers = ['Opening','Mid-game','Late','Finale','Red herring'];
-  const evOpts = tiers.map(t => `<optgroup label="${t}">${EVIDENCE.filter(e=>e.tier===t).map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('')}</optgroup>`).join('');
-  return `${topbar('COMMAND CENTER · ADMINISTRATOR', `<button class="iconbtn" id="notesBtn">HOST NOTES</button>`)}
-  <div id="modeNote"></div>
-  <div class="stats" id="stats"></div>
-  <div class="grid2">
-    <div>
-      <section class="panel"><div class="ph"><h2>Global Controls</h2><span class="sub">LIVE</span></div>
-        <div class="ctl"><div class="txt"><b>Lockdown</b><small>Blocks all player screens and sends everyone's attention to the front. Your device is not affected.</small></div><span class="state" id="st-lockdown"></span><button class="toggle red" data-flag="lockdown" aria-label="Lockdown"></button></div>
-        <div class="ctl"><div class="txt"><b>Killer Phase</b><small>Reveals Nathaniel's true file and the Termination Directive on his device only.</small></div><span class="state" id="st-killer"></span><button class="toggle red" data-flag="killer" aria-label="Killer phase"></button></div>
-        <div class="ctl"><div class="txt"><b>Voting</b><small>Opens the accusation form on every player's screen.</small></div><span class="state" id="st-voting"></span><button class="toggle" data-flag="voting" aria-label="Voting"></button></div>
-        <div class="divider"></div>
-        <button class="btn danger block" id="resetBtn">HARD RESET — WIPE ALL GAME DATA</button>
-      </section>
-
-      <section class="panel"><div class="ph"><h2>Evidence Distribution</h2><span class="sub" id="evSub"></span></div>
-        <label class="lbl" for="evSel">Select evidence file</label>
-        <div class="row-gap"><select class="input" id="evSel" style="flex:1;min-width:180px">${evOpts}</select><button class="btn gold" id="pushBtn">PUSH LIVE</button></div>
-        <details class="fold" style="margin-top:10px"><summary class="mono" style="font-size:11px;letter-spacing:.12em;color:var(--cyan)">▸ PREVIEW SELECTED FILE</summary><div id="evPreview" class="note" style="white-space:pre-line;margin-top:8px"></div></details>
-        <div class="relist" id="pushedList"></div>
-      </section>
-
-      <section class="panel"><div class="ph"><h2>Incidents &amp; Broadcast</h2></div>
-        <div id="killStatus"></div>
-        <div class="divider"></div>
-        <label class="lbl" for="bcIn">Broadcast a notice to all screens</label>
-        <div class="row-gap"><input class="input" id="bcIn" maxlength="200" placeholder="e.g. Dinner is served in the Great Hall." style="flex:1;min-width:180px"><button class="btn" id="bcBtn">SEND</button></div>
-        <div id="alertStatus" style="margin-top:10px"></div>
-      </section>
-    </div>
-    <div>
-      <section class="panel gold"><div class="ph"><h2>Live Accusation Tally</h2><span class="sub" id="tallySub"></span></div><div id="tally"></div></section>
-      <section class="panel"><div class="ph"><h2>Master Roster</h2><span class="sub">TAP A NAME FOR THE FULL DOSSIER</span></div><div id="roster"></div></section>
-    </div>
-  </div>`;
-}
-function bindAdmin(){
-  bindLogout();
-  document.querySelectorAll('[data-flag]').forEach(b => b.addEventListener('click', () => {
-    const f = b.dataset.flag, val = !S.flags[f];
-    backend.update({ ['flags/'+f]: val });
-    toast(f.toUpperCase() + (val ? ' ENGAGED' : ' LIFTED'), '', val && f!=='voting' ? 'err' : 'ok');
-  }));
-  const evSel = $('#evSel'), prev = () => { const e = EV[evSel.value]; $('#evPreview').textContent = e ? e.src + '\n\n' + e.body : ''; };
-  evSel.addEventListener('change', prev); prev();
-  $('#pushBtn').addEventListener('click', () => {
-    const id = evSel.value; if(!id) return;
-    if(S.evidence[id]){ toast('ALREADY LIVE', EV[id].title + ' is already in the locker.', 'err'); return; }
-    backend.update({ ['evidence/'+id]: backend.TS() });
-    toast('EVIDENCE PUSHED', EV[id].title, 'ok');
-  });
-  $('#pushedList').addEventListener('click', e => {
-    const b = e.target.closest('[data-retract]'); if(!b) return;
-    backend.update({ ['evidence/'+b.dataset.retract]: null });
-  });
-  $('#bcBtn').addEventListener('click', () => {
-    const t = $('#bcIn').value.trim(); if(!t) return;
-    backend.update({ alert: { id:'a'+Date.now().toString(36), type:'notice', text:t } });
-    $('#bcIn').value = ''; toast('BROADCAST SENT', t, 'ok');
-  });
-  $('#killStatus').addEventListener('click', e => {
-    if(!e.target.closest('#undoKill')) return;
-    openModal(`<div class="ph"><h2>Undo kill?</h2></div><p class="note">Clears the executed victim so Nathaniel can choose again. Use this only if the kill was a mistake.</p><div class="row-gap" style="margin-top:14px"><button class="btn danger" id="undoYes">UNDO KILL</button><button class="btn ghost" data-close>CANCEL</button></div>`);
-    $('#undoYes').onclick = () => { backend.update({ kill:null }); closeModal(); };
-  });
-  $('#alertStatus').addEventListener('click', e => { if(e.target.closest('#clearAlert')) backend.update({ alert:null }); });
-  $('#roster').addEventListener('click', e => { const r = e.target.closest('[data-char]'); if(r) openDossierModal(r.dataset.char); });
-  $('#notesBtn').addEventListener('click', () => openModal(`<div class="ph"><h2>Host-Only Notes</h2><span class="sub">DO NOT DISTRIBUTE</span></div><div class="host-notes">${HOST_NOTES}</div>`));
-  $('#resetBtn').addEventListener('click', () => {
-    openModal(`<div class="ph"><h2 style="color:var(--red2)">Hard Reset</h2></div>
-      <p style="line-height:1.6">This wipes <b>all</b> votes, kills, alerts, released evidence, online status and dossier unlocks, and turns every control off. Every player is logged out.</p>
-      <label class="lbl" for="resetConfirm">Type RESET to confirm</label>
-      <input class="input mono" id="resetConfirm" autocomplete="off" autocapitalize="characters">
-      <div class="row-gap" style="margin-top:14px"><button class="btn danger" id="resetYes" disabled>WIPE EVERYTHING</button><button class="btn ghost" data-close>CANCEL</button></div>`);
-    const inp = $('#resetConfirm'), yes = $('#resetYes');
-    inp.focus(); inp.oninput = () => { yes.disabled = inp.value.trim().toUpperCase() !== 'RESET'; };
-    yes.onclick = async () => {
-      yes.disabled = true; yes.textContent = 'WIPING…';
-      try{ await backend.reset(freshState()); toast('SYSTEM RESET', 'All game data cleared. Ready for a new game.', 'ok'); }
-      catch(err){ toast('RESET FAILED', err.message, 'err'); }
-      closeModal();
-    };
-  });
-}
-function renderAdmin(){
-  if(!$('#stats')) return;
-  // mode note
-  patch($('#modeNote'), backend ? backend.mode : 'x', backend && backend.mode==='local'
-    ? `<div class="panel" style="border-color:rgba(217,178,91,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> changes sync instantly between tabs on <i>this device only</i>, which is good for rehearsal. For the party itself, add your Firebase config to <span class="mono">CONFIG.FIREBASE</span> so every phone connects to one shared game.</p></div>` : '');
-  // toggles
-  ['lockdown','killer','voting'].forEach(f => {
-    const on = !!S.flags[f];
-    $(`[data-flag="${f}"]`).setAttribute('aria-pressed', on);
-    const st = $('#st-'+f); st.textContent = on ? 'ON' : 'OFF'; st.className = 'state' + (on ? ' on' + (f!=='voting'?' r':'') : '');
-  });
-  // stats
-  const unlocked = CHARACTERS.filter(c => playerRec(c.id) && playerRec(c.id).unlocked);
-  const online = CHARACTERS.filter(c => isOnline(c.id));
-  const votes = CHARACTERS.map(c => playerRec(c.id)).filter(p => p && p.vote && p.vote.suspect);
-  const evN = Object.keys(S.evidence).filter(id=>EV[id]).length;
-  patch($('#stats'), [online.length, unlocked.length, votes.length, evN].join(), `
-    <div class="stat"><b>${online.length}<em> online</em></b><span>Active now</span></div>
-    <div class="stat"><b>${unlocked.length}<em> / ${CHARACTERS.length}</em></b><span>Dossiers unlocked</span></div>
-    <div class="stat"><b>${votes.length}</b><span>Accusations cast</span></div>
-    <div class="stat"><b>${evN}<em> / ${EVIDENCE.length}</em></b><span>Evidence released</span></div>`);
-  // pushed evidence
-  const evIds = Object.keys(S.evidence).filter(id=>EV[id]).sort((a,b)=>(S.evidence[b]||0)-(S.evidence[a]||0));
-  $('#evSub').textContent = evIds.length + ' LIVE';
-  patch($('#pushedList'), evIds.join(), evIds.length ? evIds.map(id => `<div class="reitem"><span class="pill green">LIVE</span><div class="t">${esc(EV[id].title)}<small>${esc(EV[id].tier)} · pushed ${fmtTime(S.evidence[id])}</small></div><button class="btn sm ghost" data-retract="${id}">RETRACT</button></div>`).join('') : `<div class="empty">NO EVIDENCE RELEASED YET</div>`);
-  // kill status
-  const k = S.kill;
-  patch($('#killStatus'), k ? 'k'+k.victim+k.ts : 'none'+S.flags.killer,
-    k ? `<div class="reitem" style="border-color:rgba(255,59,84,.5)"><span class="pill red">KILL</span><div class="t"><b style="color:var(--red2)">${esc(CH[k.victim]?CH[k.victim].name:k.victim)}</b> was executed by Nathaniel<small>${fmtTime(k.ts)}</small></div><button class="btn sm ghost" id="undoKill">UNDO</button></div>`
-      : `<div class="reitem"><span class="pill ${S.flags.killer?'red':''}">${S.flags.killer?'ARMED':'IDLE'}</span><div class="t">No third kill yet<small>${S.flags.killer?'Killer Phase is active. Nathaniel can strike at any moment.':'Enable the Killer Phase to arm Nathaniel.'}</small></div></div>`);
-  const a = S.alert;
-  patch($('#alertStatus'), a ? a.id : 'none', a ? `<div class="reitem"><span class="pill ${a.type==='kill'?'red':'gold'}">${a.type==='kill'?'ALERT':'NOTICE'}</span><div class="t">${esc(a.text)}<small>Showing on all screens</small></div><button class="btn sm ghost" id="clearAlert">CLEAR</button></div>` : '');
-  // tally
-  const counts = {}; votes.forEach(p => { counts[p.vote.suspect] = (counts[p.vote.suspect]||0) + 1; });
-  const rows = Object.entries(counts).sort((x,y) => y[1]-x[1]);
-  const max = rows.length ? rows[0][1] : 0;
-  $('#tallySub').textContent = (S.flags.voting ? 'VOTING OPEN · ' : 'VOTING CLOSED · ') + votes.length + ' CAST';
-  patch($('#tally'), S.flags.voting + JSON.stringify(rows), rows.length ? `<div class="bars">${rows.map(([id,n]) => `
-      <div class="bar ${n===max?'lead':''}"><span class="n" title="${esc(CH[id]?CH[id].name:id)}">${esc(CH[id]?CH[id].name:id)}</span><div class="track"><div class="fill" style="width:${Math.round(n/max*100)}%"></div></div><span class="c">${n}</span></div>`).join('')}</div>`
-    : `<div class="empty">${S.flags.voting ? 'AWAITING FIRST ACCUSATION…' : 'VOTING HAS NOT OPENED'}</div>`);
-  // roster
-  const dead = deadIds();
-  const row = c => {
-    const p = playerRec(c.id), on = isOnline(c.id), v = p && p.vote;
-    const tags = [
-      dead.has(c.id) ? `<span class="pill red">DECEASED</span>` : '',
-      c.id===CONFIG.KILLER_ID ? `<span class="pill red">KILLER</span>` : '',
-      p && p.unlocked ? `<span class="pill green">UNLOCKED</span>` : `<span class="pill">LOCKED</span>`
-    ].join('');
-    return `<button class="rrow ${dead.has(c.id)?'dead':''}" data-char="${c.id}"><span class="dot ${on?'on':''}" title="${on?'Online':'Offline'}"></span><span class="nm">${esc(c.name)}<small>${esc(c.code)}</small></span><span class="tags">${tags}</span>
-      <span class="vote">${v ? `Accuses → <b>${esc(CH[v.suspect]?CH[v.suspect].name:v.suspect)}</b>` : '<span style="color:var(--dim)">No vote</span>'}</span></button>`;
-  };
-  const sig = CHARACTERS.map(c => { const p = playerRec(c.id); return [c.id, isOnline(c.id)?1:0, p&&p.unlocked?1:0, p&&p.vote?p.vote.suspect:'' , dead.has(c.id)?1:0].join(':'); }).join('|');
-  patch($('#roster'), sig, `<div class="roster-h">Principal subjects · 20 files</div>${CHARACTERS.filter(c=>c.tier==='core').map(row).join('')}
-    <div class="roster-h">Extended cast · lighter files</div>${CHARACTERS.filter(c=>c.tier==='ext').map(row).join('')}`);
-}
-function openDossierModal(id){
-  const c = CH[id]; if(!c) return;
-  const p = playerRec(id), v = p && p.vote, on = isOnline(id);
-  const status = `<div class="row-gap" style="margin-bottom:16px"><span class="pill ${on?'green':''}">${on?'● ONLINE':'○ OFFLINE'}</span><span class="pill ${p&&p.unlocked?'green':''}">${p&&p.unlocked?'DOSSIER UNLOCKED '+fmtTime(p.unlockedAt):'NOT YET UNLOCKED'}</span></div>
-    ${v ? `<div class="voted"><b>ACCUSATION:</b> ${esc(CH[v.suspect]?CH[v.suspect].name:v.suspect)} <span class="mono" style="color:var(--dim);font-size:11px">· ${fmtTime(v.ts)}</span>${v.statement?`<div style="margin-top:6px;color:var(--text);white-space:pre-line">“${esc(v.statement)}”</div>`:''}</div>` : ''}`;
-  openModal(status + dossierHTML(c, { host:true }));
-}
-
-/* =========================================================================
-   OVERLAYS: lockdown, alert banner, killed / killer reveal
-   ========================================================================= */
-function renderOverlays(){
-  // lockdown — never on the admin view; host device can bypass on the player view
-  const lk = $('#lockdown');
-  const lockOn = S.flags.lockdown && !(session && session.role==='admin') && !ui.bypass;
-  lk.classList.toggle('hidden', !lockOn);
-  $('#bypassWrap').classList.toggle('hidden', !isHostDevice());
-  document.body.style.overflow = lockOn ? 'hidden' : '';
-
-  // alert banner
-  const a = S.alert, bar = $('#alertbar');
-  const dismissed = store.get('alertDismissed');
-  const showAlert = a && a.id !== dismissed;
-  patch(bar, showAlert ? a.id : 'none', showAlert ? `<div class="alert ${a.type==='notice'?'notice':''}" role="alert"><span class="h">${a.type==='kill'?'⚠ CRITICAL INCIDENT · ALL PERSONNEL':'◆ PRIORITY NOTICE · COMMAND CENTER'}</span>${esc(a.text)}<button class="x" aria-label="Dismiss" id="alertX">✕</button></div>` : '');
-  const x = $('#alertX'); if(x) x.onclick = () => { store.set('alertDismissed', a.id); renderOverlays(); };
-  $('#app').style.paddingTop = showAlert ? (bar.offsetHeight + 12) + 'px' : '';
-
-  // killed victim & killer reveal (player only)
-  const fm = $('#fullmsg'), c = me();
-  let html = '', sig = 'none';
-  if(c && S.kill && S.kill.victim === c.id && store.get('termAck') !== S.epoch + S.kill.ts){
-    sig = 'dead';
-    html = `<div class="overlay fullmsg dead"><div class="box">
-      <div class="k">KANE-OS · PERSONNEL STATUS UPDATE</div>
-      <h1>YOU HAVE BEEN<br>TERMINATED</h1>
-      <p>You've been murdered. Stay where you are. When it feels right, collapse dramatically, and stay in character as the body until the host tells you otherwise.</p>
-      <p style="color:var(--red2)">Don't reveal what your screen says to anyone.</p>
-      <button class="btn danger" id="termAck" style="margin-top:8px">ACKNOWLEDGE</button></div></div>`;
-  } else if(c && c.id === CONFIG.KILLER_ID && S.flags.killer && store.get('revealSeen') !== S.epoch){
-    sig = 'reveal';
-    html = `<div class="overlay fullmsg reveal"><div class="box">
-      <div class="k">CLEARANCE ELEVATED · FILE 02 UNSEALED</div>
-      <h1>YOU ARE THE KILLER</h1>
-      <div class="typed">&gt; subject: CROSS, NATHANIEL<br>&gt; birth name: FERRIS, DANIEL ████<br>&gt; status: responsible for the deaths of A. KANE, G. WHITFIELD<br>&gt; new directive: available</div>
-      <p>Your full file is now unsealed. A Termination Directive is waiting for you. Keep your screen hidden. Stay warm. Stay calm.</p>
-      <button class="btn danger" id="revealAck">OPEN MY FILE</button></div></div>`;
-  }
-  patch(fm, sig, html);
-  const ta = $('#termAck'); if(ta) ta.onclick = () => { store.set('termAck', S.epoch + S.kill.ts); renderOverlays(); };
-  const ra = $('#revealAck'); if(ra) ra.onclick = () => { store.set('revealSeen', S.epoch); renderOverlays(); window.scrollTo({top:0, behavior:'smooth'}); };
-}
-$('#bypassBtn').addEventListener('click', () => { ui.bypass = true; renderOverlays(); toast('HOST OVERRIDE', 'Lockdown bypassed on this device only.', 'ok'); });
-
-/* =========================================================================
-   MODAL & TOASTS
-   ========================================================================= */
-function openModal(html){
-  const m = $('#modal');
-  m.innerHTML = `<div class="mcard" role="dialog" aria-modal="true"><button class="iconbtn mclose" data-close>CLOSE ✕</button>${html}</div>`;
-  m.classList.add('open'); m.scrollTop = 0;
-}
-function closeModal(){ const m = $('#modal'); m.classList.remove('open'); m.innerHTML = ''; }
-$('#modal').addEventListener('click', e => { if(e.target.id==='modal' || e.target.closest('[data-close]')) closeModal(); });
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-function toast(title, msg, kind='', onClick){
-  const t = document.createElement('div');
-  t.className = 'toast ' + kind;
-  t.innerHTML = `<b>${esc(title)}</b>${msg ? esc(msg) : ''}`;
-  t.onclick = () => { if(onClick) onClick(); t.remove(); };
-  $('#toasts').appendChild(t);
-  setTimeout(() => t.remove(), 5200);
-}
-
-boot();
+(async () => {
+  backend = await connectBackend();
+  backend.on(raw => { S = normRoot(raw); showDone(); });
+})();
 </script>
 </body>
 </html>

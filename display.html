@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kane Oil Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+html,body{height:100%;overflow:hidden}
+body{cursor:default}
+body.idle{cursor:none}
+#stage{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5vh 6vw}
+.scene.enter{animation:sceneIn .9s cubic-bezier(.2,.7,.2,1)}
+@keyframes sceneIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
+.kicker{font-family:var(--mono);letter-spacing:.35em;text-transform:uppercase;color:var(--cyan);font-size:clamp(12px,1.25vw,22px)}
+.huge{font-weight:900;letter-spacing:.06em;line-height:1.02;font-size:clamp(40px,7.5vw,150px);margin:.25em 0}
+.gold{color:var(--gold2);text-shadow:0 0 40px rgba(217,178,91,.35)}
+.lede{font-size:clamp(18px,2.1vw,40px);color:var(--muted);max-width:60ch;line-height:1.4}
+.rule{width:min(40vw,520px);height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh auto}
+
+/* company page */
+.corp-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:1.2vw;padding:3vh 4vw}
+.corp-top svg{width:clamp(36px,3.6vw,68px);height:auto;filter:drop-shadow(0 0 12px rgba(217,178,91,.5))}
+.corp-top b{font-size:clamp(16px,1.6vw,30px);letter-spacing:.3em;color:var(--gold2)}
+.corp-top .clock{margin-left:auto;font-family:var(--mono);font-size:clamp(16px,1.8vw,34px);color:var(--text);letter-spacing:.08em}
+.bulletin{margin-top:5vh;border:1px solid var(--line2);border-radius:16px;padding:2.2vh 3vw;background:rgba(8,14,28,.7);min-width:min(70vw,1100px)}
+.bulletin .k{font-family:var(--mono);letter-spacing:.3em;font-size:clamp(11px,1vw,18px);color:var(--gold)}
+.bulletin .s{font-size:clamp(18px,2.2vw,42px);font-weight:600;margin-top:1vh;transition:opacity .5s}
+.ticker{position:absolute;left:0;right:0;bottom:0;border-top:1px solid var(--line2);background:rgba(3,6,14,.92);overflow:hidden;height:clamp(40px,5vh,70px);display:flex;align-items:center}
+.ticker .track{display:flex;gap:4vw;white-space:nowrap;animation:tick 40s linear infinite;padding-left:100%}
+.ticker span{font-family:var(--mono);font-size:clamp(14px,1.5vw,28px);letter-spacing:.06em}
+.ticker .up{color:var(--green)}.ticker .dn{color:var(--red2)}
+@keyframes tick{to{transform:translateX(-100%)}}
+.memoriam .huge{font-family:var(--serif);font-weight:600;letter-spacing:.02em;font-style:italic}
+
+/* title card */
+.title .huge{font-family:var(--serif);font-weight:700;letter-spacing:.04em;font-size:clamp(56px,10vw,200px)}
+.title .glass{width:clamp(50px,6vw,110px);height:auto;margin-bottom:2vh;filter:drop-shadow(0 0 20px rgba(217,178,91,.6))}
+.title .sub{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3vw,58px);color:var(--text)}
+.title .host{font-family:var(--mono);letter-spacing:.3em;color:var(--muted);font-size:clamp(12px,1.2vw,22px);margin-top:3vh;text-transform:uppercase}
+
+/* evidence */
+.evcard{max-width:min(88vw,1500px);width:100%;text-align:left;border:1px solid rgba(217,178,91,.5);border-radius:20px;background:linear-gradient(180deg,rgba(14,22,42,.92),rgba(6,10,20,.92));padding:4vh 4vw;box-shadow:0 0 80px rgba(217,178,91,.15)}
+.stampx{display:inline-block;font-family:var(--mono);letter-spacing:.3em;font-size:clamp(12px,1.2vw,22px);color:var(--red2);border:2px solid var(--red);padding:.4em .8em;border-radius:8px;transform:rotate(-2deg);margin-bottom:2vh;box-shadow:0 0 24px rgba(255,59,84,.35)}
+.evcard h1{margin:0 0 1vh;font-size:clamp(28px,4vw,76px);line-height:1.08;color:var(--gold2)}
+.evcard .src{font-family:var(--mono);color:var(--cyan);font-size:clamp(12px,1.2vw,22px);letter-spacing:.06em;margin-bottom:3vh}
+.evcard .body{white-space:pre-line;line-height:1.5;color:#e2e9f7}
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(28vw,480px),1fr));gap:2vh 2vw;width:100%;max-width:1700px;margin-top:3vh;text-align:left}
+.wall .w{border:1px solid var(--line2);border-radius:14px;padding:2vh 1.6vw;background:rgba(8,14,28,.85)}
+.wall .w b{display:block;font-size:clamp(16px,1.7vw,32px);color:var(--gold2)}
+.wall .w span{display:block;font-family:var(--mono);font-size:clamp(11px,.95vw,17px);color:var(--muted);margin-top:.6vh}
+.wall .w.new{border-color:var(--gold);box-shadow:0 0 30px rgba(217,178,91,.3)}
+
+/* voting & results */
+.count{font-size:clamp(60px,12vw,240px);font-weight:900;color:var(--gold2);line-height:1;text-shadow:0 0 50px rgba(217,178,91,.4)}
+.tbars{width:min(86vw,1400px);display:flex;flex-direction:column;gap:2.2vh;margin-top:4vh}
+.tbar{display:grid;grid-template-columns:minmax(0,30%) 1fr 5vw;gap:1.5vw;align-items:center;font-size:clamp(16px,2vw,38px);text-align:left}
+.tbar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.tbar .tr{height:clamp(16px,3vh,40px);border-radius:999px;background:rgba(88,140,255,.1);overflow:hidden;border:1px solid var(--line)}
+.tbar .f{height:100%;border-radius:999px;background:linear-gradient(90deg,#3d8bff,#5ad6ff);transition:width 1s ease}
+.tbar.lead .f{background:linear-gradient(90deg,#c79b3f,#f5dc93);box-shadow:0 0 30px rgba(217,178,91,.7)}
+.tbar.lead .n{color:var(--gold2)}
+.tbar .c{font-family:var(--mono);font-weight:700;text-align:right}
+
+/* takeovers */
+.lock{background:radial-gradient(circle at 50% 45%,rgba(130,8,26,.97),rgba(8,1,4,1) 72%)}
+.lock::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,59,84,.08) 0 40px,transparent 40px 80px);animation:slide 3s linear infinite}
+@keyframes slide{to{background-position:113px 0}}
+.lock .huge{color:#fff;text-shadow:0 0 60px rgba(255,59,84,.95);position:relative}
+.lock .lede{color:#ffd6dc;position:relative}
+.ring{position:relative;width:clamp(100px,12vw,220px);aspect-ratio:1;border-radius:50%;border:4px solid var(--red);display:grid;place-items:center;box-shadow:0 0 80px rgba(255,59,84,.8),inset 0 0 40px rgba(255,59,84,.5);animation:pulse 1.4s ease-in-out infinite;margin-bottom:3vh}
+.ring svg{width:45%;height:auto}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.incident{animation:flashbg 1.2s steps(1) infinite}
+@keyframes flashbg{0%{background:radial-gradient(circle,#7a0a1d,#1a0207 75%)}50%{background:radial-gradient(circle,#2a030a,#070103 75%)}}
+.incident .kicker{color:var(--red2)}
+.incident .msg{font-size:clamp(28px,4.4vw,88px);font-weight:800;line-height:1.2;max-width:24ch;color:#fff;text-shadow:0 0 40px rgba(255,59,84,.8)}
+.notice .msg,.message .msg{font-size:clamp(28px,4.4vw,88px);font-weight:700;line-height:1.25;max-width:26ch}
+.notice .kicker{color:var(--gold)}
+
+#fsBtn{position:fixed;right:18px;bottom:18px;z-index:10;transition:opacity .4s}
+body.idle #fsBtn,body.idle #conn{opacity:0}
+#conn{position:fixed;left:18px;bottom:18px;z-index:10;transition:opacity .4s}
+</style>
+</head>
+<body class="grid">
+<div id="stage"></div>
+<span class="chip warn" id="conn"><span class="d"></span><span class="lbl">CONNECTING</span></span>
+<button class="iconbtn" id="fsBtn">⛶ FULL SCREEN</button>
+
+<script src="config.js"></script>
+<script src="party.js"></script>
+<script src="story.locked.js"></script>
+<script src="core.js"></script>
+<script>
+const P = window.PARTY || {}, D = P.display || {};
+const ROSTER = Object.fromEntries((window.STORY_ROSTER || []).map(r => [r.id, r]));
+const rname = id => (ROSTER[id] && ROSTER[id].name) || id;
+let backend, S = normRoot({}), last = { sig: null, kind: null }, seenEv = null;
+
+const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="15.5" r="1.2" fill="#fff"/></svg>`;
+const GLASS = `<svg class="glass" viewBox="0 0 48 80" fill="none" stroke="#f5dc93" stroke-width="2" stroke-linecap="round"><path d="M12 4h24l-2 26a10 10 0 0 1-20 0z"/><path d="M13 16h22"/><path d="M24 40v28M14 76h20"/><circle cx="21" cy="24" r="1.2" fill="#f5dc93"/><circle cx="27" cy="20" r="1" fill="#f5dc93"/><circle cx="24" cy="27" r=".9" fill="#f5dc93"/></svg>`;
+
+function scene(kind) {
+  const ps = projectorState(S), evs = releasedEvidence(S);
+  switch (kind) {
+    case 'lockdown': return { sig: 'lock', html: `<div class="scene lock"><div class="ring">${LOCK_SVG}</div><div class="huge">LOCKDOWN</div><div class="lede">All personnel: devices down. Eyes to the front of the room.</div></div>` };
+    case 'incident': return { sig: 'inc' + ps.alert.id, html: `<div class="scene incident"><div class="kicker">⚠ Critical incident · All personnel</div><div class="rule" style="background:linear-gradient(90deg,transparent,var(--red),transparent)"></div><div class="msg">${esc(ps.alert.text)}</div></div>` };
+    case 'notice': return { sig: 'not' + ps.alert.id, html: `<div class="scene notice"><div class="kicker">◆ Announcement</div><div class="rule"></div><div class="msg">${esc(ps.alert.text)}</div></div>` };
+    case 'message': return { sig: 'msg' + (ps.d.text || ''), html: `<div class="scene message"><div class="kicker">Kane Oil & Energy</div><div class="rule"></div><div class="msg">${esc(ps.d.text || '')}</div></div>` };
+    case 'title': return { sig: 'title', html: `<div class="scene title">${GLASS}<div class="huge gold">${esc(P.title || 'The Last Toast')}</div><div class="sub">${esc(P.subtitle || 'A Murder Mystery Evening')}</div><div class="rule"></div><div class="host">${P.host ? 'Hosted by ' + esc(P.host) : ''}</div></div>` };
+    case 'evidence': {
+      const e = (ps.d.evidenceId && S.evidence[ps.d.evidenceId]) ? Object.assign({ id: ps.d.evidenceId }, S.evidence[ps.d.evidenceId]) : evs[0];
+      if (!e) return scene('company');
+      const len = (e.body || '').length, fs = len > 700 ? 'clamp(15px,1.45vw,28px)' : len > 400 ? 'clamp(17px,1.75vw,34px)' : 'clamp(19px,2.1vw,40px)';
+      return { sig: 'ev' + e.id, html: `<div class="scene"><div class="evcard"><div class="stampx">EVIDENCE RELEASED</div><h1>${esc(e.title)}</h1><div class="src">SOURCE · ${esc(e.src)}</div><div class="body" style="font-size:${fs}">${esc(e.body)}</div></div></div>` };
+    }
+    case 'wall': return { sig: 'wall' + evs.map(e => e.id).join(), html: `<div class="scene"><div class="kicker">Kane Oil Database · Evidence on file</div><div class="huge gold" style="font-size:clamp(32px,4.6vw,90px)">THE EVIDENCE</div>${evs.length ? `<div class="wall">${evs.slice().reverse().map((e, i, a) => `<div class="w ${i === a.length - 1 ? 'new' : ''}"><b>${esc(e.title)}</b><span>${esc(e.src)}</span></div>`).join('')}</div>` : `<div class="lede">No evidence has been released yet.</div>`}</div>` };
+    case 'voting': {
+      const n = Object.values(S.players).filter(p => p && p.epoch === S.epoch && p.vote && p.vote.suspect).length;
+      return { sig: 'vote' + n + S.flags.voting, html: `<div class="scene"><div class="kicker">The investigation</div><div class="huge gold">THE ACCUSATION</div><div class="lede">${S.flags.voting ? 'Voting is open. Name your suspect on your device.' : 'Voting will open shortly.'}</div><div class="rule"></div><div class="count">${n}</div><div class="kicker" style="color:var(--muted)">accusation${n === 1 ? '' : 's'} filed</div></div>` };
+    }
+    case 'tally': {
+      const counts = {};
+      Object.values(S.players).forEach(p => { if (p && p.epoch === S.epoch && p.vote && p.vote.suspect) counts[p.vote.suspect] = (counts[p.vote.suspect] || 0) + 1; });
+      const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]), max = rows.length ? rows[0][1] : 0;
+      return { sig: 'tally' + JSON.stringify(rows), html: `<div class="scene"><div class="kicker">Official results</div><div class="huge gold" style="font-size:clamp(32px,5vw,100px)">THE ROOM ACCUSES</div>${rows.length ? `<div class="tbars">${rows.map(([id, n]) => `<div class="tbar ${n === max ? 'lead' : ''}"><span class="n">${esc(rname(id))}</span><div class="tr"><div class="f" style="width:${Math.round(n / max * 100)}%"></div></div><span class="c">${n}</span></div>`).join('')}</div>` : `<div class="lede">No accusations have been filed.</div>`}</div>` };
+    }
+    default: { // company page
+      const mem = D.memoriamFor && (D.memoriamFor in deathsOf(S));
+      const tick = (D.tickers || []).map(([s, v]) => `<span data-t="${esc(s)}" data-v="${v}">${esc(s)} <b>${v}</b> <i class="up">▲0.00%</i></span>`).join('');
+      return { sig: 'co' + mem, html: `<div class="scene ${mem ? 'memoriam' : ''}">
+        <div class="corp-top">${LOGO(64)}<b>${esc(D.company || 'KANE OIL & ENERGY')}</b><span class="clock" id="clock"></span></div>
+        <div class="kicker">${mem ? 'Kane Oil & Energy' : 'Kane Oil & Energy presents'}</div>
+        <div class="huge gold">${esc(mem ? D.memoriamText : D.welcome || 'Welcome')}</div>
+        <div class="lede">${esc(mem ? D.memoriamSub : D.welcomeSub || '')}</div>
+        ${mem ? '' : `<div class="bulletin"><div class="k">CORPORATE BULLETIN</div><div class="s" id="slide">${esc((D.slides || [''])[0])}</div></div>`}
+        ${tick ? `<div class="ticker"><div class="track">${tick}${tick}</div></div>` : ''}</div>` };
+    }
+  }
+}
+
+function render() {
+  const kind = projectorState(S).kind, sc = scene(kind), realKind = sc.sig.slice(0, 3);
+  if (sc.sig === last.sig) return;
+  const stage = $('#stage');
+  stage.innerHTML = sc.html;
+  if (realKind !== last.kind) stage.firstElementChild.classList.add('enter');
+  last = { sig: sc.sig, kind: realKind };
+  updateClock(); jitter();
+}
+function renderConn() {
+  const el = $('#conn'); if (!backend) return;
+  const [cls, txt] = backend.mode === 'local' ? ['warn', 'LOCAL MODE'] : backend.connected ? ['', 'LIVE'] : ['bad', 'RECONNECTING'];
+  el.className = 'chip ' + cls; el.innerHTML = `<span class="d"></span><span class="lbl">${txt}</span>`;
+}
+function updateClock() { const c = $('#clock'); if (c) c.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+let slideI = 0;
+function nextSlide() {
+  const s = $('#slide'), list = D.slides || []; if (!s || list.length < 2) return;
+  s.style.opacity = 0; setTimeout(() => { slideI = (slideI + 1) % list.length; s.textContent = list[slideI]; s.style.opacity = 1; }, 500);
+}
+function jitter() {
+  $$('.ticker [data-v]').forEach(el => {
+    const base = +el.dataset.v, pct = (Math.random() * 3 - 1.2);
+    const val = base * (1 + pct / 100);
+    el.querySelector('b').textContent = base > 1000 ? Math.round(val).toLocaleString() : val.toFixed(2);
+    const i = el.querySelector('i'); i.className = pct >= 0 ? 'up' : 'dn'; i.textContent = (pct >= 0 ? '▲' : '▼') + Math.abs(pct).toFixed(2) + '%';
+  });
+}
+
+(async function boot() {
+  render();
+  backend = await connectBackend(renderConn); renderConn();
+  backend.on(raw => { S = normRoot(raw); render(); });
+  setInterval(updateClock, 1000);
+  setInterval(nextSlide, 8000);
+  setInterval(jitter, 6000);
+  let idleT; const wake = () => { document.body.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add('idle'), 2500); };
+  document.addEventListener('mousemove', wake); wake();
+  $('#fsBtn').onclick = () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); };
+})();
+</script>
+</body>
+</html>

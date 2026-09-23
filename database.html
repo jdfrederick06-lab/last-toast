@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Kane Oil Database</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* login */
+.login-wrap{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:20px 0}
+.login{width:100%;max-width:440px;text-align:center}
+.login .logo{margin:0 auto 14px;width:84px;height:84px;filter:drop-shadow(0 0 18px rgba(217,178,91,.55));animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-4px)}}
+.login h1{margin:0;font-size:22px;letter-spacing:.22em;font-weight:800;color:var(--gold2);text-shadow:0 0 22px rgba(217,178,91,.35)}
+.login .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--cyan);margin:6px 0 20px;text-transform:uppercase}
+.term{text-align:left;font-family:var(--mono);font-size:12px;line-height:1.7;color:#7fb2ff;background:rgba(2,6,14,.85);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:16px;min-height:96px}
+.term .ok{color:var(--green)}.term .err{color:var(--red2)}
+.term .cursor{display:inline-block;width:8px;height:14px;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.code-input{text-align:center;letter-spacing:.3em;font-family:var(--mono);font-size:20px;text-transform:uppercase;font-weight:700}
+.login .foot{margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim)}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.login-err{color:var(--red2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;min-height:18px;margin-top:10px}
+.loading{min-height:60vh;display:grid;place-items:center;font-family:var(--mono);letter-spacing:.2em;color:var(--cyan);font-size:12px}
+
+/* dossier */
+.dhead{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.hex{width:78px;height:88px;position:relative;display:grid;place-items:center;flex:none}
+.hex svg{position:absolute;inset:0}
+.hex span{position:relative;font-weight:800;font-size:24px;color:var(--gold2);text-shadow:0 0 12px rgba(217,178,91,.6)}
+.hex.red span{color:var(--red2);text-shadow:0 0 12px rgba(255,59,84,.7)}
+.dname{margin:0;font-size:clamp(22px,5.4vw,32px);line-height:1.1;font-weight:800}
+.cls{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;padding:5px 9px;border-radius:7px;border:1px solid rgba(217,178,91,.45);color:var(--gold2);background:var(--gold-dim);line-height:1.4}
+.cls.red{border-color:rgba(255,59,84,.6);color:var(--red2);background:var(--red-dim);box-shadow:0 0 16px rgba(255,59,84,.25)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
+.kv div{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:rgba(3,7,16,.5)}
+.kv b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:500;margin-bottom:3px;text-transform:uppercase}
+.kv span{font-size:14px;font-weight:600}
+.sec{padding:16px 0;border-top:1px dashed rgba(88,140,255,.18)}
+.sec:first-child{border-top:0}
+.sec h3{margin:0 0 8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;display:flex;gap:8px;align-items:center}
+.sec p{margin:0;font-size:16.5px;line-height:1.7;color:#dbe4f4;max-width:72ch}
+.sec.key{background:linear-gradient(90deg,rgba(217,178,91,.08),transparent);border-left:2px solid var(--gold);padding-left:14px;border-top:0;border-radius:0 8px 8px 0}
+.sec.key h3{color:var(--gold2)}
+.sec.role p{font-style:italic;color:var(--muted)}
+.sealed{border:1px solid rgba(255,59,84,.35);border-radius:10px;padding:12px;background:repeating-linear-gradient(135deg,rgba(255,59,84,.07) 0 10px,transparent 10px 20px)}
+.sealed .bars{display:flex;flex-direction:column;gap:6px}
+.sealed .bars i{display:block;height:12px;background:#1a0a10;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(255,59,84,.25)}
+.sealed small{display:block;margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--red2)}
+.stamp{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--dim);text-align:center;margin-top:8px}
+
+/* evidence */
+.ev{border:1px solid var(--line2);border-radius:12px;background:rgba(3,7,16,.6);margin-bottom:10px;overflow:hidden}
+.ev summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;align-items:center;gap:10px}
+.ev summary::-webkit-details-marker{display:none}
+.ev summary .t{flex:1;font-weight:700;font-size:15px}
+.ev summary .when{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.ev summary::after{content:"+";font-family:var(--mono);color:var(--gold);font-size:18px}
+.ev[open] summary::after{content:"–"}
+.ev .body{padding:0 14px 14px;font-size:15.5px;line-height:1.7;color:#d8e2f3;white-space:pre-line}
+.ev .src{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--cyan);margin-bottom:8px}
+.ev.new{border-color:var(--gold);box-shadow:0 0 22px rgba(217,178,91,.3);animation:evglow 1.6s ease-in-out 3}
+@keyframes evglow{50%{box-shadow:0 0 36px rgba(217,178,91,.6)}}
+
+/* vote / directive */
+.voted{border:1px solid rgba(47,227,155,.4);background:rgba(47,227,155,.06);border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:14px;line-height:1.5}
+.voted b{color:var(--green)}
+.targets{display:grid;gap:10px;margin:6px 0 16px}
+.target{display:flex;gap:12px;align-items:center;border:1px solid rgba(255,59,84,.35);border-radius:12px;padding:12px 14px;background:rgba(20,4,10,.6);cursor:pointer;text-align:left;width:100%}
+.target.sel{border-color:var(--red);background:rgba(255,59,84,.14);box-shadow:0 0 22px rgba(255,59,84,.3)}
+.target .rad{width:18px;height:18px;border-radius:50%;border:2px solid var(--red2);flex:none;display:grid;place-items:center}
+.target.sel .rad::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--red)}
+.target b{display:block;font-size:16px}
+.target small{display:block;font-size:13px;color:var(--red2);font-family:var(--mono);margin-top:2px}
+.deadstrip{border:1px solid var(--red);background:var(--red-dim);color:var(--red2);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-align:center}
+
+/* admin */
+.tabs{display:flex;gap:6px;margin:0 0 16px;overflow-x:auto;padding-bottom:2px}
+.tab{flex:1;min-width:max-content;border:1px solid var(--line2);background:rgba(3,7,16,.6);border-radius:11px;padding:11px 14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:var(--muted);cursor:pointer;text-transform:uppercase}
+.tab.on{border-color:var(--gold);color:var(--gold2);background:var(--gold-dim);box-shadow:0 0 18px rgba(217,178,91,.18)}
+.grid2{display:grid;grid-template-columns:1fr;gap:0 16px}
+@media(min-width:900px){.grid2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
+.stat b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat b em{font-style:normal;font-size:14px;color:var(--dim);font-weight:600}
+.stat span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.ctl{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.ctl:first-of-type{border-top:0;padding-top:0}
+.ctl .txt{flex:1;min-width:0}
+.ctl .txt b{display:block;font-size:15px}
+.ctl .txt small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.4}
+.toggle{position:relative;width:60px;height:32px;border-radius:999px;border:1px solid var(--line2);background:#060b16;cursor:pointer;flex:none;transition:.2s}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#4a5775;transition:.2s}
+.toggle[aria-pressed="true"]{background:rgba(47,227,155,.2);border-color:var(--green);box-shadow:0 0 14px rgba(47,227,155,.35)}
+.toggle[aria-pressed="true"]::after{left:31px;background:var(--green)}
+.toggle.red[aria-pressed="true"]{background:rgba(255,59,84,.22);border-color:var(--red);box-shadow:0 0 16px rgba(255,59,84,.45)}
+.toggle.red[aria-pressed="true"]::after{background:var(--red)}
+.state{font-family:var(--mono);font-size:10px;letter-spacing:.12em;width:30px;text-align:right;color:var(--dim)}
+.state.on{color:var(--green)}.state.on.r{color:var(--red2)}
+.relist{display:flex;flex-direction:column;gap:8px}
+.reitem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:rgba(3,7,16,.5);font-size:14px}
+.reitem .t{flex:1;min-width:0}
+.reitem .t small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(90px,150px) 1fr 34px;gap:10px;align-items:center;font-size:14px}
+.bar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .track{height:14px;border-radius:7px;background:rgba(88,140,255,.08);overflow:hidden;border:1px solid var(--line)}
+.bar .fill{height:100%;border-radius:7px;background:linear-gradient(90deg,#3d8bff,#5ad6ff);transition:width .5s ease}
+.bar.lead .fill{background:linear-gradient(90deg,#c79b3f,#f5dc93);box-shadow:0 0 14px rgba(217,178,91,.6)}
+.bar.lead .n{color:var(--gold2);font-weight:700}
+.bar .c{font-family:var(--mono);font-weight:700;text-align:right}
+.roster-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);margin:14px 0 8px;text-transform:uppercase}
+.rrow{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:4px 10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:7px;background:rgba(3,7,16,.5);cursor:pointer}
+.rrow:hover{border-color:var(--gold);background:rgba(217,178,91,.06)}
+.rrow .nm{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rrow .nm small{font-weight:500;color:var(--dim);font-family:var(--mono);font-size:10.5px;margin-left:6px}
+.rrow .tags{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
+.rrow .vote{grid-column:2 / 4;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rrow .vote b{color:var(--gold2);font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;background:#3a4560}
+.dot.on{background:var(--green);box-shadow:0 0 10px var(--green)}
+.rrow.dead .nm{color:var(--red2);text-decoration:line-through;text-decoration-color:rgba(255,59,84,.5)}
+.host-notes{font-size:14.5px;line-height:1.65;color:#d8e2f3}.host-notes li{margin-bottom:6px}
+.scenes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.linkrow{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.linkrow:first-child{border-top:0;padding-top:0}
+.linkrow .u{font-family:var(--mono);font-size:12px;color:var(--cyan);word-break:break-all}
+.linkrow b{display:block;font-size:14px}
+.guest{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:rgba(3,7,16,.5)}
+.guest .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.guest .gn{font-weight:700;font-size:15px;flex:1;min-width:120px}
+.guest .meta{font-size:12.5px;color:var(--muted);margin:6px 0 8px;line-height:1.5}
+.guest .assign{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:6px}
+.guest .assign .who{font-size:12px;color:var(--dim);font-family:var(--mono);grid-column:1 / -1;margin-top:4px}
+.qrbox{background:#fff;border-radius:12px;padding:14px;display:inline-block}
+.qrbox img{display:block;image-rendering:pixelated;width:260px;height:260px}
+
+/* overlays */
+#alertbar{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none}
+.alert{pointer-events:auto;margin:8px;border-radius:12px;padding:12px 44px 12px 14px;position:relative;font-weight:700;font-size:14.5px;line-height:1.4;border:1px solid var(--red);background:linear-gradient(180deg,#5c0716,#2a030a);color:#fff;box-shadow:0 0 40px rgba(255,59,84,.55);animation:flash 1s steps(1) infinite}
+.alert .h{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--red2);margin-bottom:3px}
+.alert.notice{border-color:var(--gold);background:linear-gradient(180deg,#3a2c0c,#1b1405);box-shadow:0 0 30px rgba(217,178,91,.45);animation:none}
+.alert.notice .h{color:var(--gold2)}
+.alert .x{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:transparent;cursor:pointer;color:#fff}
+@keyframes flash{0%{background:linear-gradient(180deg,#8a0b20,#3c040e)}50%{background:linear-gradient(180deg,#2a030a,#14020a)}}
+.overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+#lockdown{background:radial-gradient(circle at 50% 40%,rgba(120,8,24,.96),rgba(10,2,6,.99) 70%);flex-direction:column}
+#lockdown::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,59,84,.07) 0 22px,transparent 22px 44px)}
+.lk{position:relative;max-width:560px}
+.lk .ring{width:120px;height:120px;margin:0 auto 22px;border-radius:50%;border:3px solid var(--red);display:grid;place-items:center;box-shadow:0 0 50px rgba(255,59,84,.7),inset 0 0 30px rgba(255,59,84,.5);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07);box-shadow:0 0 80px rgba(255,59,84,.95),inset 0 0 40px rgba(255,59,84,.7)}}
+.lk h1{margin:0 0 10px;font-size:clamp(28px,8vw,46px);letter-spacing:.14em;font-weight:800;color:#fff;text-shadow:0 0 24px rgba(255,59,84,.9)}
+.lk p{margin:0 auto;font-size:clamp(17px,4.4vw,21px);line-height:1.5;color:#ffd6dc;max-width:30ch}
+.lk .m{margin-top:20px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--red2)}
+.fullmsg{background:rgba(2,4,10,.96);flex-direction:column}
+.fullmsg .box{max-width:520px;position:relative}
+.fullmsg h1{margin:0 0 12px;font-size:clamp(26px,7vw,40px);letter-spacing:.1em;font-weight:800}
+.fullmsg p{font-size:17px;line-height:1.6;color:#d8e2f3;margin:0 0 12px}
+.fullmsg .k{font-family:var(--mono);font-size:11px;letter-spacing:.22em;margin-bottom:14px}
+.fullmsg.dead{background:radial-gradient(circle at 50% 40%,rgba(90,0,14,.97),rgba(4,0,2,.99) 70%)}
+.fullmsg.dead h1{color:#fff;text-shadow:0 0 30px var(--red)}
+.fullmsg.dead .k{color:var(--red2)}
+.fullmsg.reveal h1{color:var(--red2);text-shadow:0 0 30px rgba(255,59,84,.7)}
+.fullmsg.reveal .k{color:var(--gold2)}
+.typed{font-family:var(--mono);font-size:13px;line-height:1.8;color:#9fc3ff;text-align:left;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 18px}
+@media(max-width:520px){.dhead{grid-template-columns:1fr}.hex{width:64px;height:72px}}
+</style>
+</head>
+<body class="grid">
+<div id="app"></div>
+<div id="alertbar"></div>
+<div id="lockdown" class="overlay hidden" role="alertdialog" aria-live="assertive">
+  <div class="lk">
+    <div class="ring"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="15.5" r="1.2" fill="#fff"/></svg></div>
+    <h1>LOCKDOWN</h1>
+    <p>All personnel: put down your device and direct your attention to the front of the room.</p>
+    <div class="m">KANE OIL SECURITY PROTOCOL 7 · TERMINALS SUSPENDED</div>
+    <div class="hidden" id="bypassWrap" style="margin-top:26px"><button class="btn ghost sm" id="bypassBtn">HOST OVERRIDE · BYPASS ON THIS DEVICE</button></div>
+  </div>
+</div>
+<div id="fullmsg"></div>
+
+<script src="config.js"></script>
+<script src="party.js"></script>
+<script src="story.locked.js"></script>
+<script src="core.js"></script>
+<script>
+/* =========================================================================
+   KANE OIL DATABASE — player dossiers + host command center
+   ========================================================================= */
+const ROSTER_LIST = window.STORY_ROSTER || [];
+const ROSTER = Object.fromEntries(ROSTER_LIST.map(r => [r.id, r]));
+const PARTYX = window.PARTY || {};
+let backend = null, S = normRoot({}), ready = false;
+let ME = null;    // decrypted bundle for this device: {type:'player', c} or {type:'host', …}
+let HOST = null;  // host conveniences
+const rname = id => (ROSTER[id] && ROSTER[id].name) || (HOST && HOST.chars[id] && HOST.chars[id].name) || id;
+const PL = id => 'live/players/' + id;
+
+const TAB_KEY = store.k('session');
+let session = (() => { let raw = null; try { raw = sessionStorage.getItem(TAB_KEY); } catch (e) { } if (!raw) raw = store.get('session'); try { return JSON.parse(raw || 'null'); } catch (e) { return null; } })();
+const saveSession = s => {
+  session = s; const raw = s ? JSON.stringify(s) : null;
+  try { raw ? sessionStorage.setItem(TAB_KEY, raw) : sessionStorage.removeItem(TAB_KEY); } catch (e) { }
+  if (raw) store.set('session', raw); else store.del('session');
+};
+const ui = { built: null, bypass: false, selTarget: null, seenEvidence: null, tab: store.get('hostTab') || 'live' };
+const isHostDevice = () => store.get('hostDevice') === '1';
+const dead = () => deathsOf(S);
+function playerRec(id) { const p = S.players[id]; return (p && p.epoch === S.epoch) ? p : null; }
+function isOnline(id) { const p = playerRec(id); return !!(p && typeof p.lastSeen === 'number' && backend && backend.now() - p.lastSeen < CONFIG.ONLINE_WINDOW_MS); }
+
+/* ---------------- boot ---------------- */
+async function boot() {
+  if (!window.STORY_LOCKED) { $('#app').innerHTML = offline('story.locked.js is missing. Build it with private/build.html and upload it next to this page.'); return; }
+  if (!window.crypto || !crypto.subtle) { $('#app').innerHTML = offline('This page must be opened over a secure (https) connection.'); return; }
+  render();
+  backend = await connectBackend(renderConn);
+  backend.on(raw => { const prev = S, was = ready; S = normRoot(raw); ready = true; onState(prev, was); });
+  if (session) await restore();
+  setInterval(heartbeat, CONFIG.HEARTBEAT_MS);
+  setInterval(() => { if (HOST) renderAdmin(); }, 2000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) heartbeat(); });
+}
+const offline = msg => `<div class="panel red" style="margin-top:40px"><div class="ph"><h2>System offline</h2></div><p class="note">${esc(msg)}</p></div>`;
+
+async function restore() {
+  let b = null; try { b = await unlockStory(session.code); } catch (e) { }
+  if (!b) saveSession(null); else await adopt(b);
+  ui.built = null; render();
+}
+async function adopt(b) {
+  ME = b;
+  if (b.type === 'host') {
+    HOST = {
+      list: b.characters, chars: Object.fromEntries(b.characters.map(c => [c.id, c])),
+      evidence: b.evidence, ev: Object.fromEntries(b.evidence.map(e => [e.id, e])),
+      notes: b.hostNotes, killerId: b.killerId, built: b.built,
+      assign: {}, assignCt: null, assignKey: await deriveAssignKey(session.code)
+    };
+    await syncAssign();
+  } else HOST = null;
+}
+async function syncAssign() {
+  if (!HOST) return;
+  const blob = S.assign, ct = blob ? blob.ct : '';
+  if (ct === HOST.assignCt) return;
+  HOST.assignCt = ct;
+  if (!blob) { HOST.assign = {}; return; }
+  try { HOST.assign = await decryptJSON(HOST.assignKey, blob); } catch (e) { HOST.assign = {}; console.warn('Role assignments were saved under a different host code.'); }
+}
+async function saveAssign() {
+  const blob = await encryptJSON(HOST.assignKey, HOST.assign);
+  HOST.assignCt = blob.ct;
+  await backend.set('assign', blob);
+  renderAdmin();
+}
+
+function onState(prev, was) {
+  if (session && session.role === 'player' && ME && session.epoch !== S.epoch) {
+    saveSession(null); ME = null; ui.built = null;
+    toast('SESSION ENDED', 'The system was reset. Enter your code word again.', 'err');
+  }
+  if (!S.flags.lockdown) ui.bypass = false;
+  if (was && ME && ME.type === 'player') {
+    const newEv = Object.keys(S.evidence).filter(id => !prev.evidence[id]);
+    if (newEv.length) toast('NEW EVIDENCE RELEASED', (S.evidence[newEv[0]].title || '') + (newEv.length > 1 ? ` (+${newEv.length - 1} more)` : ''), '', () => scrollToId('evidencePanel'));
+    if (S.flags.voting && !prev.flags.voting) toast('VOTING IS NOW OPEN', 'Submit your official accusation.', 'ok', () => scrollToId('votePanel'));
+  }
+  if (was && S.alert && (!prev.alert || prev.alert.id !== S.alert.id) && S.alert.type === 'kill') {
+    try { navigator.vibrate && navigator.vibrate([300, 120, 300, 120, 500]); } catch (e) { }
+  }
+  if (ME && ME.type === 'player' && !playerRec(ME.c.id)) heartbeat();
+  if (HOST && (S.assign ? S.assign.ct : '') !== HOST.assignCt) syncAssign().then(renderAdmin);
+  render();
+}
+
+function heartbeat() {
+  if (!backend || !ready || !ME || ME.type !== 'player' || session.epoch !== S.epoch) return;
+  const id = ME.c.id, p = PL(id), rec = S.players[id];
+  const upd = { [p + '/lastSeen']: backend.TS(), [p + '/epoch']: session.epoch, [p + '/unlocked']: true };
+  if (!rec || rec.epoch !== session.epoch || !rec.unlockedAt) upd[p + '/unlockedAt'] = backend.TS();
+  backend.update(upd);
+}
+
+/* ---------------- render root ---------------- */
+function render() {
+  const app = $('#app');
+  if (!session) {
+    if (ui.built !== 'login') { ui.built = 'login'; app.innerHTML = loginHTML(); bindLogin(); }
+  } else if (!ME) {
+    if (ui.built !== 'loading') { ui.built = 'loading'; app.innerHTML = `<div class="loading">DECRYPTING…</div>`; }
+  } else if (ME.type === 'host') {
+    if (ui.built !== 'admin') { ui.built = 'admin'; app.innerHTML = adminShellHTML(); bindAdmin(); }
+    renderAdmin();
+  } else {
+    if (ui.built !== 'p:' + ME.c.id) { ui.built = 'p:' + ME.c.id; app.innerHTML = playerShellHTML(); bindPlayer(); }
+    renderPlayer();
+  }
+  renderOverlays(); renderConn();
+}
+function renderConn() {
+  const el = $('#connChip'); if (!el) return;
+  let cls = 'warn', txt = 'CONNECTING';
+  if (backend) { if (backend.mode === 'local') txt = 'LOCAL MODE'; else if (backend.connected) { cls = ''; txt = 'LINK SECURE'; } else { cls = 'bad'; txt = 'RECONNECTING'; } }
+  el.className = 'chip ' + cls; el.innerHTML = `<span class="d"></span><span class="lbl">${txt}</span>`;
+}
+const topbar = (sub, extra = '') => `<header class="topbar"><div class="brand">${LOGO(34)}<div><b>KANE OIL</b><small>${sub}</small></div></div><span class="chip" id="connChip"></span>${extra}<button class="iconbtn" id="logoutBtn">LOG OUT</button></header>`;
+function bindLogout() {
+  $('#logoutBtn').addEventListener('click', () => {
+    if (ME && ME.type === 'player') backend.update({ [PL(ME.c.id) + '/lastSeen']: 0 });
+    saveSession(null); ME = null; HOST = null; ui.built = null; render(); window.scrollTo(0, 0);
+  });
+}
+function scrollToId(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+
+/* ---------------- login (reveals nothing about roles or files) ---------------- */
+function loginHTML() {
+  return `<div class="login-wrap"><div class="login panel gold">
+    <div class="logo">${LOGO(84)}</div>
+    <h1>KANE OIL &amp; ENERGY</h1>
+    <div class="tag">Secure Personnel Portal</div>
+    <div class="term" id="term"></div>
+    <form id="loginForm" autocomplete="off">
+      <label class="lbl" for="codeIn" style="text-align:left">Code word</label>
+      <input class="input code-input" id="codeIn" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="••••••••" maxlength="40">
+      <div style="height:12px"></div>
+      <button class="btn gold block" id="authBtn" type="submit">AUTHENTICATE</button>
+      <div class="login-err" id="loginErr"></div>
+    </form>
+    <div class="foot">AUTHORIZED PERSONNEL ONLY · ALL ACCESS IS LOGGED</div>
+  </div></div>`;
+}
+function bindLogin() {
+  const term = $('#term');
+  const lines = [['', '> KANE-OS secure boot'], ['ok', '  [ OK ] encrypted channel established'], ['', '> awaiting credential']];
+  let i = 0;
+  (function next() { if (!term.isConnected) return; if (i < lines.length) { term.innerHTML = lines.slice(0, ++i).map(([c, t]) => `<div class="${c}">${esc(t)}</div>`).join('') + '<span class="cursor"></span>'; setTimeout(next, 380); } })();
+  $('#loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const code = normCode($('#codeIn').value), err = $('#loginErr'), card = $('.login'), btn = $('#authBtn');
+    if (!code) return;
+    const lockUntil = +store.get('lockUntil') || 0;
+    if (Date.now() < lockUntil) { err.textContent = `TOO MANY ATTEMPTS · TRY AGAIN IN ${Math.ceil((lockUntil - Date.now()) / 1000)}s`; return; }
+    btn.disabled = true; btn.textContent = 'VERIFYING…'; err.textContent = '';
+    term.querySelector('.cursor')?.remove();
+    term.insertAdjacentHTML('beforeend', `<div>&gt; verifying credential…</div>`);
+    const [b] = await Promise.all([unlockStory(code).catch(() => null), sleep(700)]);
+    if (!b) {
+      const fails = (+store.get('fails') || 0) + 1;
+      if (fails >= 5) { store.set('lockUntil', String(Date.now() + 30000)); store.set('fails', '0'); } else store.set('fails', String(fails));
+      term.insertAdjacentHTML('beforeend', `<div class="err">  [FAIL] credential not recognized</div>`);
+      err.textContent = fails >= 5 ? 'TOO MANY ATTEMPTS · TRY AGAIN IN 30s' : 'ACCESS DENIED';
+      card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+      btn.disabled = false; btn.textContent = 'AUTHENTICATE'; return;
+    }
+    store.set('fails', '0');
+    term.insertAdjacentHTML('beforeend', `<div class="ok">  [ OK ] access granted</div>`);
+    for (let n = 0; n < 50 && !ready; n++) await sleep(200);
+    saveSession({ role: b.type === 'host' ? 'admin' : 'player', code, id: b.c ? b.c.id : null, epoch: S.epoch });
+    if (b.type === 'host') store.set('hostDevice', '1');
+    await adopt(b);
+    if (b.type === 'player') { backend.onDisconnect(PL(b.c.id) + '/lastSeen', 0); heartbeat(); }
+    ui.built = null; render(); window.scrollTo(0, 0);
+  });
+}
+
+/* ---------------- dossier ---------------- */
+function revealedFor(c, host) { return host || (c.killer ? S.flags.killer : (c.id in dead())); }
+function hexBadge(c, red) {
+  const col = red ? '#ff3b54' : '#d9b25b';
+  return `<div class="hex ${red ? 'red' : ''}"><svg viewBox="0 0 78 88"><path d="M39 2 75 22.5v43L39 86 3 65.5v-43z" fill="rgba(3,7,16,.7)" stroke="${col}" stroke-width="2"/><path d="M39 10 68 26.5v35L39 78 10 61.5v-35z" fill="none" stroke="rgba(90,214,255,.35)"/></svg><span>${esc(initials(c.name))}</span></div>`;
+}
+const sealedBlock = (small = 'SEALED · CLEARANCE INSUFFICIENT', bars = [96, 88, 72]) => `<div class="sealed"><div class="bars">${bars.map(w => `<i style="width:${w}%"></i>`).join('')}</div><small>▲ ${small}</small></div>`;
+function dossierHTML(c, host = false) {
+  const rv = revealedFor(c, host), isDead = c.id in dead();
+  const cls = rv && c.clsSecret ? c.clsSecret : c.cls;
+  const red = (rv && c.killer) || isDead;
+  const secs = c.sections.map(s => {
+    if (s.hostOnly && !host) return '';
+    if (s.sealed && !rv) {
+      if (s.sealed === true) return `<div class="sec"><h3>${esc(s.h)}</h3>${sealedBlock()}</div>`;
+      return `<div class="sec ${s.role ? 'role' : ''}"><h3>${esc(s.h)}</h3><p>${esc(s.sealed)}</p><div style="margin-top:10px">${sealedBlock('ADDITIONAL RECORDS SEALED', [80])}</div></div>`;
+    }
+    const tag = s.hostOnly ? '<span class="pill gold">HOST ONLY</span>' : '';
+    return `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h3>${esc(s.h)} ${tag}</h3><p>${esc(s.t)}</p></div>`;
+  }).join('');
+  return `
+    <div class="dhead">${hexBadge(c, red)}
+      <div><div class="mono" style="font-size:11px;letter-spacing:.2em;color:var(--dim)">PERSONNEL FILE${host ? ' ' + esc(c.file || '') + (c.tier === 'ext' ? ' · EXTENDED CAST' : '') : ''}</div>
+      <h1 class="dname">${esc(c.name)}</h1>
+      <div class="cls ${red ? 'red' : ''}">CLASSIFICATION: ${esc(cls || 'SUBJECT')}${isDead && !/DECEASED/.test(cls || '') ? ' · DECEASED' : ''}</div></div>
+    </div>
+    <div class="kv">
+      <div><b>Code word</b><span class="mono">${esc(c.code)}</span></div>
+      <div><b>Age</b><span>${esc(c.age)}</span></div>
+      <div style="grid-column:span 2"><b>Occupation</b><span>${esc(c.occ)}</span></div>
+    </div>
+    <div style="margin-top:6px">${secs}</div>
+    <div class="stamp">████ END OF FILE ████</div>`;
+}
+
+/* ---------------- player view ---------------- */
+function playerShellHTML() {
+  return `${topbar('SECURE PERSONNEL DOSSIER')}
+    <div id="deadStrip"></div>
+    <section class="panel red hidden" id="directivePanel"></section>
+    <section class="panel gold hidden" id="votePanel">
+      <div class="ph"><h2>Official Accusation</h2><span class="sub">VOTING OPEN</span></div>
+      <div id="voteStatus"></div>
+      <form id="voteForm">
+        <div class="field"><label class="lbl" for="suspectSel">Name your suspect</label><select class="input" id="suspectSel"></select></div>
+        <div class="field"><label class="lbl" for="stmtIn">Official statement for the record</label><textarea class="input" id="stmtIn" maxlength="800" placeholder="What did you see? Why them? Motive, means, opportunity…"></textarea></div>
+        <button class="btn gold block" type="submit" id="voteBtn">SUBMIT ACCUSATION</button>
+      </form>
+    </section>
+    <section class="panel hidden" id="evidencePanel"><div class="ph"><h2>Evidence Locker</h2><span class="sub" id="evCount"></span></div><div id="evList"></div></section>
+    <section class="panel"><div class="ph"><h2>Personnel Dossier</h2><span class="sub">EYES ONLY</span></div><div id="dossierBody"></div></section>`;
+}
+function bindPlayer() {
+  bindLogout();
+  ui.selTarget = null; ui.seenEvidence = null;
+  $('#voteForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const suspect = $('#suspectSel').value, statement = $('#stmtIn').value.trim();
+    if (!suspect) { toast('INCOMPLETE', 'Select a suspect first.', 'err'); return; }
+    if (!S.flags.voting) { toast('VOTING CLOSED', 'The host has closed voting.', 'err'); return; }
+    backend.update({ [PL(ME.c.id) + '/vote']: { suspect, statement, ts: backend.TS() } });
+    toast('ACCUSATION LOGGED', 'Your statement is on the record. You can update it until voting closes.', 'ok');
+  });
+}
+function renderPlayer() {
+  const c = ME.c, dd = dead(), iAmDead = c.id in dd;
+  patch($('#deadStrip'), String(iAmDead), iAmDead ? `<div class="deadstrip">STATUS: DECEASED · STAY IN CHARACTER · AWAIT HOST INSTRUCTIONS</div>` : '');
+  patch($('#dossierBody'), [S.flags.killer, JSON.stringify(dd)].join('|'), dossierHTML(c));
+
+  // termination directive — killer only, only after the host enables Killer Phase
+  const dp = $('#directivePanel'), showDir = !!c.killer && S.flags.killer;
+  dp.classList.toggle('hidden', !showDir);
+  if (showDir) {
+    if (S.kill) {
+      patch(dp, 'done:' + S.kill.victim, `<div class="ph"><h2>Termination Directive</h2><span class="sub">EXECUTED ${fmtTime(S.kill.ts)}</span></div>
+        <p style="font-size:17px;line-height:1.6;margin:0 0 8px"><b style="color:var(--red2)">${esc(rname(S.kill.victim))}</b> has been eliminated.</p>
+        <p class="note" style="margin:0">Return to the party. Show the room the grief they expect to see. Get calmer, not shiftier. Nobody can know.</p>`);
+    } else {
+      const list = (c.killer.shortlist || []).filter(t => !(t.id in dd));
+      patch(dp, 'pick:' + (ui.selTarget || '') + list.map(t => t.id).join(), `<div class="ph"><h2>Termination Directive</h2><span class="sub">AUTHORIZATION: ██████</span></div>
+        <p style="margin:0 0 12px;font-size:15.5px;line-height:1.6;color:#ffd6dc">Someone in this room is getting too close to your real name. Choose <b>one</b> target. Once you execute, every screen in the building gets the alert instantly. Do it where no one is watching you.</p>
+        <div class="targets">${list.map(t => `<button type="button" class="target ${ui.selTarget === t.id ? 'sel' : ''}" data-target="${esc(t.id)}"><span class="rad"></span><span><b>${esc(rname(t.id))}</b><small>${esc(t.why)}</small></span></button>`).join('')}</div>
+        <button class="btn danger block" id="execBtn" ${ui.selTarget ? '' : 'disabled'}>EXECUTE DIRECTIVE</button>`);
+      dp.querySelectorAll('[data-target]').forEach(b => b.onclick = () => { ui.selTarget = b.dataset.target; renderPlayer(); });
+      const eb = $('#execBtn'); if (eb) eb.onclick = confirmKill;
+    }
+  }
+
+  // voting
+  const vp = $('#votePanel'), canVote = S.flags.voting && !iAmDead;
+  vp.classList.toggle('hidden', !canVote);
+  if (canVote) {
+    const opts = ROSTER_LIST.filter(x => x.id !== c.id && x.suspect !== false && !(S.kill && S.kill.victim === x.id));
+    const sel = $('#suspectSel'), cur = sel.value, sig = opts.map(o => o.id).join();
+    const mine = playerRec(c.id), v = mine && mine.vote;
+    if (sel._sig !== sig) {
+      sel._sig = sig;
+      const grp = (label, list) => list.length ? `<optgroup label="${label}">${list.map(o => `<option value="${esc(o.id)}">${esc(o.name)}</option>`).join('')}</optgroup>` : '';
+      sel.innerHTML = `<option value="">— Select a suspect —</option>` + grp('Principal subjects', opts.filter(o => o.tier === 'core')) + grp('Other guests', opts.filter(o => o.tier === 'ext'));
+      sel.value = cur || (v ? v.suspect : '');
+      if (!$('#stmtIn').value && v) $('#stmtIn').value = v.statement || '';
+    }
+    patch($('#voteStatus'), v ? v.suspect + v.ts : 'none', v
+      ? `<div class="voted"><b>✓ ACCUSATION ON RECORD:</b> ${esc(rname(v.suspect))} <span class="mono" style="color:var(--dim);font-size:11px">· ${fmtTime(v.ts)}</span><br><span style="color:var(--muted)">You can change it until the host closes voting.</span></div>`
+      : `<p class="note" style="margin:0 0 14px">The investigation is open to formal accusations. Choose carefully: your statement goes directly to the command center.</p>`);
+    $('#voteBtn').textContent = v ? 'UPDATE ACCUSATION' : 'SUBMIT ACCUSATION';
+  }
+
+  // evidence
+  const evs = releasedEvidence(S), ep = $('#evidencePanel');
+  ep.classList.toggle('hidden', !evs.length);
+  const prevSeen = ui.seenEvidence; ui.seenEvidence = new Set(evs.map(e => e.id));
+  $('#evCount').textContent = evs.length ? `${evs.length} FILE${evs.length > 1 ? 'S' : ''} RELEASED` : '';
+  patch($('#evList'), evs.map(e => e.id).join(), evs.map((e, i) => {
+    const isNew = prevSeen && !prevSeen.has(e.id);
+    return `<details class="ev ${isNew ? 'new' : ''}" ${i === 0 ? 'open' : ''}><summary><span class="pill ${isNew ? 'gold' : ''}">${isNew ? 'NEW' : 'FILE'}</span><span class="t">${esc(e.title)}</span><span class="when">${fmtTime(e.ts)}</span></summary>
+      <div class="body"><div class="src">SOURCE · ${esc(e.src)}</div>${esc(e.body)}</div></details>`;
+  }).join(''));
+}
+function confirmKill() {
+  const id = ui.selTarget; if (!id) return;
+  openModal(`<div class="ph"><h2 style="color:var(--red2)">Confirm Execution</h2></div>
+    <p style="font-size:17px;line-height:1.6;margin:0 0 8px">Target: <b style="color:var(--red2)">${esc(rname(id))}</b></p>
+    <p class="note" style="margin:0 0 18px">This can't be undone. A red alert goes out to every screen immediately.</p>
+    <div class="row-gap"><button class="btn danger" id="doKill">EXECUTE</button><button class="btn ghost" data-close>ABORT</button></div>`);
+  $('#doKill').onclick = () => {
+    if (!S.kill) backend.update({
+      'live/kill': { victim: id, ts: backend.TS() },
+      'live/alert': { id: uid('a'), type: 'kill', text: `${rname(id)} has been found dead. All personnel remain where you are. Do not leave the premises.`, ts: backend.TS() }
+    });
+    closeModal();
+  };
+}
+
+/* ---------------- host: shell ---------------- */
+function adminShellHTML() {
+  const tiers = ['Opening', 'Mid-game', 'Late', 'Finale', 'Red herring'];
+  const other = HOST.evidence.filter(e => !tiers.includes(e.tier));
+  const evOpts = tiers.map(t => [t, HOST.evidence.filter(e => e.tier === t)]).concat(other.length ? [['Other', other]] : [])
+    .filter(([, l]) => l.length).map(([t, l]) => `<optgroup label="${esc(t)}">${l.map(e => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}</optgroup>`).join('');
+  return `${topbar('COMMAND CENTER · HOST', `<button class="iconbtn" id="notesBtn">NOTES</button>`)}
+  <nav class="tabs" id="tabs"><button class="tab" data-tab="live">Live game</button><button class="tab" data-tab="proj">Projector</button><button class="tab" data-tab="guests">Guests &amp; roles</button></nav>
+  <div id="modeNote"></div>
+
+  <div data-pane="live">
+    <div class="stats" id="stats"></div>
+    <div class="grid2"><div>
+      <section class="panel"><div class="ph"><h2>Global Controls</h2><span class="sub">LIVE</span></div>
+        <div class="ctl"><div class="txt"><b>Lockdown</b><small>Blocks every player screen and the projector. Your device isn't affected.</small></div><span class="state" id="st-lockdown"></span><button class="toggle red" data-flag="lockdown" aria-label="Lockdown"></button></div>
+        <div class="ctl"><div class="txt"><b>Killer Phase</b><small>Reveals the killer's true file and the Termination Directive on their device only.</small></div><span class="state" id="st-killer"></span><button class="toggle red" data-flag="killer" aria-label="Killer phase"></button></div>
+        <div class="ctl"><div class="txt"><b>Voting</b><small>Opens the accusation form on every player's screen.</small></div><span class="state" id="st-voting"></span><button class="toggle" data-flag="voting" aria-label="Voting"></button></div>
+        <div class="divider"></div>
+        <button class="btn danger block" id="resetBtn">HARD RESET: WIPE GAME DATA</button>
+        <p class="note" style="margin:8px 0 0">Clears votes, deaths, evidence, alerts and logins. RSVPs and role assignments are kept.</p>
+      </section>
+      <section class="panel red"><div class="ph"><h2>Deaths &amp; Incidents</h2><span class="sub">YOU DECIDE WHEN</span></div>
+        <div class="relist" id="deathList"></div>
+        <div style="margin-top:8px" id="killStatus"></div>
+      </section>
+      <section class="panel"><div class="ph"><h2>Evidence Distribution</h2><span class="sub" id="evSub"></span></div>
+        <label class="lbl" for="evSel">Select evidence file</label>
+        <div class="row-gap"><select class="input" id="evSel" style="flex:1;min-width:180px">${evOpts}</select><button class="btn gold" id="pushBtn">PUSH LIVE</button></div>
+        <details style="margin-top:10px"><summary class="mono" style="font-size:11px;letter-spacing:.12em;color:var(--cyan);cursor:pointer">▸ PREVIEW SELECTED FILE</summary><div id="evPreview" class="note" style="white-space:pre-line;margin-top:8px"></div></details>
+        <div class="relist" id="pushedList" style="margin-top:14px"></div>
+      </section>
+      <section class="panel"><div class="ph"><h2>Broadcast</h2></div>
+        <label class="lbl" for="bcIn">Send a notice to every screen and the projector</label>
+        <div class="row-gap"><input class="input" id="bcIn" maxlength="200" placeholder="e.g. Dinner is served in the Great Hall." style="flex:1;min-width:180px"><button class="btn" id="bcBtn">SEND</button></div>
+        <div id="alertStatus" style="margin-top:10px"></div>
+      </section>
+    </div><div>
+      <section class="panel gold"><div class="ph"><h2>Live Accusation Tally</h2><span class="sub" id="tallySub"></span></div><div id="tally"></div></section>
+      <section class="panel"><div class="ph"><h2>Master Roster</h2><span class="sub">TAP A NAME FOR THE FULL DOSSIER</span></div><div id="roster"></div></section>
+    </div></div>
+  </div>
+
+  <div data-pane="proj">
+    <section class="panel gold"><div class="ph"><h2>Projector Display</h2><span class="sub" id="projNow"></span></div>
+      <p class="note" style="margin:0 0 12px">Open the display link on the laptop connected to the projector, then press F11 for full screen. It updates live. Lockdown, deaths and broadcasts take over the screen automatically; tap any scene to switch back.</p>
+      <div class="row-gap" style="margin-bottom:16px"><a class="btn sm" id="openDisplay" target="_blank" rel="noopener">OPEN DISPLAY ↗</a><button class="btn sm ghost" data-copy="display">COPY LINK</button></div>
+      <label class="lbl">Show on screen</label>
+      <div class="scenes" id="scenes">
+        <button class="btn" data-scene="company">Company page</button>
+        <button class="btn" data-scene="title">Title card</button>
+        <button class="btn" data-scene="evidence">Latest evidence</button>
+        <button class="btn" data-scene="wall">Evidence wall</button>
+        <button class="btn" data-scene="voting">Voting open</button>
+        <button class="btn" data-scene="tally">Reveal results</button>
+      </div>
+      <div class="divider"></div>
+      <label class="lbl" for="featSel">Feature one released evidence file</label>
+      <div class="row-gap"><select class="input" id="featSel" style="flex:1;min-width:180px"></select><button class="btn" id="featBtn">SHOW</button></div>
+      <div class="divider"></div>
+      <label class="lbl" for="msgIn">Custom message</label>
+      <textarea class="input" id="msgIn" maxlength="300" placeholder="e.g. The police have arrived. No one leaves this room." style="min-height:80px"></textarea>
+      <div class="row-gap" style="margin-top:10px"><button class="btn" id="msgBtn">SHOW MESSAGE</button></div>
+      <div class="divider"></div>
+      <label class="row-gap note" style="cursor:pointer"><input type="checkbox" id="autoProj"> Automatically show newly pushed evidence on the projector</label>
+    </section>
+  </div>
+
+  <div data-pane="guests">
+    <section class="panel gold"><div class="ph"><h2>Invite Kit</h2></div>
+      <div id="links"></div>
+      <div class="divider"></div>
+      <label class="lbl" for="inviteMsg">Invitation message: copy and paste into a text, email or group chat</label>
+      <textarea class="input" id="inviteMsg" style="min-height:130px"></textarea>
+      <div class="row-gap" style="margin-top:10px"><button class="btn gold" id="copyInvite">COPY MESSAGE</button></div>
+    </section>
+    <section class="panel"><div class="ph"><h2>RSVPs &amp; Role Assignment</h2><span class="sub" id="rsvpSub"></span></div>
+      <p class="note" style="margin:0 0 12px">Assign each guest a character, then tap <b>Copy role text</b> to send them their character and code word privately. Assignments are encrypted with your host code, so only you can see who plays whom.</p>
+      <div id="openRoles"></div>
+      <div id="rsvpList"></div>
+    </section>
+  </div>
+  <div class="stamp">STORY BUILD · ${esc(HOST.built || '—')}</div>`;
+}
+
+/* ---------------- host: events ---------------- */
+function bindAdmin() {
+  bindLogout();
+  const setTab = t => { ui.tab = t; store.set('hostTab', t); $$('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); $$('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t)); };
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
+  setTab(['live', 'proj', 'guests'].includes(ui.tab) ? ui.tab : 'live');
+  $('#notesBtn').onclick = () => openModal(`<div class="ph"><h2>Host-Only Notes</h2><span class="sub">DO NOT DISTRIBUTE</span></div><div class="host-notes">${HOST.notes || '<p class="note">No notes yet. Add hostNotes in story.js.</p>'}</div>`);
+
+  // flags
+  $$('[data-flag]').forEach(b => b.addEventListener('click', () => {
+    const f = b.dataset.flag, val = !S.flags[f];
+    backend.update({ ['live/flags/' + f]: val });
+    toast(f.toUpperCase() + (val ? ' ON' : ' OFF'), '', val && f !== 'voting' ? 'err' : 'ok');
+  }));
+
+  // evidence
+  const evSel = $('#evSel'), prev = () => { const e = HOST.ev[evSel.value]; $('#evPreview').textContent = e ? e.src + '\n\n' + e.body : ''; };
+  evSel.addEventListener('change', prev); prev();
+  $('#pushBtn').addEventListener('click', () => {
+    const e = HOST.ev[evSel.value]; if (!e) return;
+    if (S.evidence[e.id]) { toast('ALREADY LIVE', e.title + ' is already in the locker.', 'err'); return; }
+    const upd = { ['live/evidence/' + e.id]: { ts: backend.TS(), title: e.title, src: e.src || '', body: e.body, tier: e.tier || '' } };
+    if (autoProj()) upd['live/display'] = { scene: 'evidence', evidenceId: e.id, ts: backend.TS() };
+    backend.update(upd);
+    toast('EVIDENCE PUSHED', e.title, 'ok');
+  });
+  $('#pushedList').addEventListener('click', e => { const b = e.target.closest('[data-retract]'); if (b) backend.update({ ['live/evidence/' + b.dataset.retract]: null }); });
+
+  // deaths
+  $('#deathList').addEventListener('click', e => {
+    const a = e.target.closest('[data-announce]'); if (a) announceDeath(a.dataset.announce);
+    const u = e.target.closest('[data-undo-death]'); if (u) backend.update({ ['live/deaths/' + u.dataset.undoDeath]: null });
+  });
+  $('#killStatus').addEventListener('click', e => {
+    if (!e.target.closest('#undoKill')) return;
+    openModal(`<div class="ph"><h2>Undo the killer's strike?</h2></div><p class="note">This clears the victim so the killer can choose again. Only use it if the kill was a mistake.</p><div class="row-gap" style="margin-top:14px"><button class="btn danger" id="undoYes">UNDO</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+    $('#undoYes').onclick = () => { backend.update({ 'live/kill': null }); closeModal(); };
+  });
+
+  // broadcast
+  $('#bcBtn').addEventListener('click', () => {
+    const t = $('#bcIn').value.trim(); if (!t) return;
+    backend.update({ 'live/alert': { id: uid('a'), type: 'notice', text: t, ts: backend.TS() } });
+    $('#bcIn').value = ''; toast('BROADCAST SENT', t, 'ok');
+  });
+  $('#alertStatus').addEventListener('click', e => { if (e.target.closest('#clearAlert')) backend.update({ 'live/alert': null }); });
+  $('#roster').addEventListener('click', e => { const r = e.target.closest('[data-char]'); if (r) openDossierModal(r.dataset.char); });
+
+  // reset
+  $('#resetBtn').addEventListener('click', () => {
+    openModal(`<div class="ph"><h2 style="color:var(--red2)">Hard Reset</h2></div>
+      <p style="line-height:1.6">This wipes <b>all</b> votes, deaths, alerts, released evidence, online status and dossier logins, and turns every control off. Every player is logged out. RSVPs and role assignments are kept.</p>
+      <label class="lbl" for="resetConfirm">Type RESET to confirm</label>
+      <input class="input mono" id="resetConfirm" autocomplete="off" autocapitalize="characters">
+      <div class="row-gap" style="margin-top:14px"><button class="btn danger" id="resetYes" disabled>WIPE GAME DATA</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+    const inp = $('#resetConfirm'), yes = $('#resetYes');
+    inp.focus(); inp.oninput = () => { yes.disabled = inp.value.trim().toUpperCase() !== 'RESET'; };
+    yes.onclick = async () => { yes.disabled = true; yes.textContent = 'WIPING…'; await backend.set('live', freshLive()); toast('SYSTEM RESET', 'Game data cleared. Ready for a new game.', 'ok'); closeModal(); };
+  });
+
+  // projector
+  $('#openDisplay').href = siteBase() + 'display.html';
+  $('#scenes').addEventListener('click', e => { const b = e.target.closest('[data-scene]'); if (b) setScene(b.dataset.scene); });
+  $('#featBtn').addEventListener('click', () => { const id = $('#featSel').value; if (id) setScene('evidence', { evidenceId: id }); });
+  $('#msgBtn').addEventListener('click', () => { const t = $('#msgIn').value.trim(); if (t) setScene('message', { text: t }); });
+  const ap = $('#autoProj'); ap.checked = autoProj(); ap.onchange = () => store.set('autoProj', ap.checked ? '1' : '0');
+
+  // guests
+  const base = siteBase(), P = PARTYX;
+  const links = [['invite', 'Invitation & RSVP', base], ['db', 'Kane Oil Database (party night)', base + 'database.html'], ['display', 'Projector display', base + 'display.html']];
+  $('#links').innerHTML = links.map(([k, label, url]) => `<div class="linkrow"><div><b>${label}</b><span class="u">${esc(url)}</span></div><div class="row-gap"><button class="btn sm ghost" data-copy="${k}">COPY</button><button class="btn sm ghost" data-qr="${k}">QR</button><a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">OPEN</a></div></div>`).join('');
+  const urlOf = k => (links.find(l => l[0] === k) || [])[2];
+  $('#app').onclick = async e => {
+    const c = e.target.closest('[data-copy]'); if (c) { await copyText(urlOf(c.dataset.copy)); toast('COPIED', urlOf(c.dataset.copy), 'ok'); }
+    const q = e.target.closest('[data-qr]'); if (q) showQR(urlOf(q.dataset.qr));
+  };
+  $('#inviteMsg').value = `You're invited to ${(P.title || 'The Last Toast').toUpperCase()}: ${P.subtitle || 'a murder mystery evening'}, hosted by ${P.host || 'me'}.\n\n${P.date || ''}${P.time ? ', ' + P.time : ''}\n${P.venue || ''}\n\nAll the details, and your RSVP, are here:\n${base}\n\nPlease RSVP by ${P.rsvpBy || 'soon'}. Roles and secret code words go out after that.`;
+  $('#copyInvite').onclick = async () => { await copyText($('#inviteMsg').value); toast('COPIED', 'Invitation message copied.', 'ok'); };
+  $('#rsvpList').addEventListener('change', async e => {
+    const s = e.target.closest('[data-assign]'); if (!s) return;
+    if (s.value) HOST.assign[s.dataset.assign] = s.value; else delete HOST.assign[s.dataset.assign];
+    await saveAssign();
+  });
+  $('#rsvpList').addEventListener('click', async e => {
+    const cp = e.target.closest('[data-rolemsg]');
+    if (cp) { const [key, name] = [cp.dataset.rolemsg, cp.dataset.name]; const c = HOST.chars[HOST.assign[key]]; if (!c) { toast('NO ROLE YET', 'Assign a character first.', 'err'); return; } await copyText(roleMessage(name, c)); toast('ROLE TEXT COPIED', `Paste it into a private message to ${name}.`, 'ok'); }
+    const del = e.target.closest('[data-delrsvp]');
+    if (del) {
+      const id = del.dataset.delrsvp;
+      openModal(`<div class="ph"><h2>Delete this RSVP?</h2></div><p class="note">Removes ${esc((S.rsvps[id] || {}).name || 'this guest')} and any roles assigned to them.</p><div class="row-gap" style="margin-top:14px"><button class="btn danger" id="delYes">DELETE</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+      $('#delYes').onclick = async () => { delete HOST.assign[id]; delete HOST.assign[id + '#p']; await backend.set('rsvps/' + id, null); await saveAssign(); closeModal(); };
+    }
+  });
+}
+const autoProj = () => store.get('autoProj') !== '0';
+function setScene(scene, extra = {}) { backend.update({ 'live/display': Object.assign({ scene, ts: backend.TS() }, extra) }); }
+function roleMessage(name, c) {
+  return `Hi ${name}! Your role for ${(PARTYX.title || 'The Last Toast').toUpperCase()}:\n\n${c.name}\n${c.occ || ''}\n\nYour secret code word: ${c.code}\n\nOpen ${siteBase()}database.html and enter it to read your dossier. Keep your code word to yourself, and don't show your dossier to anyone!`;
+}
+async function showQR(url) {
+  try { if (!window.qrcode) await loadScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'); }
+  catch (e) { toast('QR UNAVAILABLE', 'Could not load the QR generator.', 'err'); return; }
+  const qr = qrcode(0, 'M'); qr.addData(url); qr.make();
+  openModal(`<div class="ph"><h2>Scan to open</h2></div><div style="text-align:center"><div class="qrbox">${qr.createImgTag(8, 2)}</div><p class="mono" style="font-size:12px;color:var(--cyan);word-break:break-all">${esc(url)}</p><p class="note">Right-click (or long-press) the code to save it for printing.</p></div>`);
+}
+function announceDeath(id) {
+  const c = HOST.chars[id]; if (!c) return;
+  const def = c.deathAlert || `${c.name} has been found dead. All personnel remain where you are.`;
+  openModal(`<div class="ph"><h2 style="color:var(--red2)">Announce death · ${esc(c.name)}</h2></div>
+    <p class="note" style="margin:0 0 10px">Their dossier switches to deceased, their phone tells them they've died, and this alert flashes on every screen and the projector.</p>
+    <label class="lbl" for="deathText">Alert text</label>
+    <textarea class="input" id="deathText" maxlength="300" style="min-height:90px">${esc(def)}</textarea>
+    <div class="row-gap" style="margin-top:14px"><button class="btn danger" id="deathYes">ANNOUNCE DEATH</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+  $('#deathYes').onclick = () => {
+    const text = $('#deathText').value.trim() || def;
+    backend.update({ ['live/deaths/' + id]: backend.TS(), 'live/alert': { id: uid('a'), type: 'kill', text, ts: backend.TS() } });
+    closeModal();
+  };
+}
+
+/* ---------------- host: live render ---------------- */
+function guestFor() {
+  const m = {};
+  for (const [key, cid] of Object.entries(HOST.assign || {})) {
+    const [rid, plus] = key.split('#'); const r = S.rsvps[rid]; if (!r) continue;
+    m[cid] = plus ? (r.plusOneName || (r.name + "'s guest")) : r.name;
+  }
+  return m;
+}
+function renderAdmin() {
+  if (!HOST || !$('#stats')) return;
+  patch($('#modeNote'), backend ? backend.mode : 'x', backend && backend.mode === 'local'
+    ? `<div class="panel" style="border-color:rgba(217,178,91,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> changes only sync between tabs on <i>this device</i>, which is fine for rehearsal. Add your Firebase config to <span class="mono">config.js</span> so every phone joins one shared game.</p></div>` : '');
+  ['lockdown', 'killer', 'voting'].forEach(f => {
+    const on = !!S.flags[f];
+    $(`[data-flag="${f}"]`).setAttribute('aria-pressed', on);
+    const st = $('#st-' + f); st.textContent = on ? 'ON' : 'OFF'; st.className = 'state' + (on ? ' on' + (f !== 'voting' ? ' r' : '') : '');
+  });
+  const L = HOST.list, dd = dead(), who = guestFor();
+  const unlocked = L.filter(c => playerRec(c.id) && playerRec(c.id).unlocked);
+  const online = L.filter(c => isOnline(c.id));
+  const votes = L.map(c => playerRec(c.id)).filter(p => p && p.vote && p.vote.suspect);
+  const evs = releasedEvidence(S);
+  patch($('#stats'), [online.length, unlocked.length, votes.length, evs.length].join(), `
+    <div class="stat"><b>${online.length}<em> online</em></b><span>Active now</span></div>
+    <div class="stat"><b>${unlocked.length}<em> / ${L.length}</em></b><span>Dossiers opened</span></div>
+    <div class="stat"><b>${votes.length}</b><span>Accusations cast</span></div>
+    <div class="stat"><b>${evs.length}<em> / ${HOST.evidence.length}</em></b><span>Evidence released</span></div>`);
+
+  // deaths
+  const scripted = L.filter(c => c.scriptedDeath);
+  patch($('#deathList'), JSON.stringify([scripted.map(c => c.id), S.deaths]), scripted.length ? scripted.map(c => {
+    const t = S.deaths[c.id];
+    return `<div class="reitem" ${t ? 'style="border-color:rgba(255,59,84,.5)"' : ''}><span class="pill ${t ? 'red' : 'green'}">${t ? 'DECEASED' : 'ALIVE'}</span><div class="t">${esc(c.name)}<small>${t ? 'announced ' + fmtTime(t) : 'alive on every screen until you announce it'}</small></div>
+      ${t ? `<button class="btn sm ghost" data-undo-death="${esc(c.id)}">UNDO</button>` : `<button class="btn sm danger" data-announce="${esc(c.id)}">ANNOUNCE DEATH</button>`}</div>`;
+  }).join('') : `<div class="empty">No scripted deaths. Mark characters with scriptedDeath:true in story.js.</div>`);
+  const k = S.kill, killer = HOST.chars[HOST.killerId];
+  patch($('#killStatus'), JSON.stringify([k, S.flags.killer]),
+    k ? `<div class="reitem" style="border-color:rgba(255,59,84,.5)"><span class="pill red">STRIKE</span><div class="t"><b style="color:var(--red2)">${esc(rname(k.victim))}</b> was killed by ${esc(killer ? killer.name : 'the killer')}<small>${fmtTime(k.ts)}</small></div><button class="btn sm ghost" id="undoKill">UNDO</button></div>`
+      : `<div class="reitem"><span class="pill ${S.flags.killer ? 'red' : ''}">${S.flags.killer ? 'ARMED' : 'IDLE'}</span><div class="t">Killer's strike<small>${S.flags.killer ? 'Killer Phase is on. The killer can strike at any moment.' : 'Turn on Killer Phase to let the killer choose a victim.'}</small></div></div>`);
+  const a = S.alert;
+  patch($('#alertStatus'), a ? a.id : 'none', a ? `<div class="reitem"><span class="pill ${a.type === 'kill' ? 'red' : 'gold'}">${a.type === 'kill' ? 'ALERT' : 'NOTICE'}</span><div class="t">${esc(a.text)}<small>Showing on all screens</small></div><button class="btn sm ghost" id="clearAlert">CLEAR</button></div>` : '');
+
+  // evidence
+  $('#evSub').textContent = evs.length + ' LIVE';
+  patch($('#pushedList'), evs.map(e => e.id).join(), evs.length ? evs.map(e => `<div class="reitem"><span class="pill green">LIVE</span><div class="t">${esc(e.title)}<small>${esc(e.tier || '')} · pushed ${fmtTime(e.ts)}</small></div><button class="btn sm ghost" data-retract="${esc(e.id)}">RETRACT</button></div>`).join('') : `<div class="empty">NO EVIDENCE RELEASED YET</div>`);
+
+  // tally
+  const counts = {}; votes.forEach(p => { counts[p.vote.suspect] = (counts[p.vote.suspect] || 0) + 1; });
+  const rows = Object.entries(counts).sort((x, y) => y[1] - x[1]), max = rows.length ? rows[0][1] : 0;
+  $('#tallySub').textContent = (S.flags.voting ? 'VOTING OPEN · ' : 'VOTING CLOSED · ') + votes.length + ' CAST';
+  patch($('#tally'), S.flags.voting + JSON.stringify(rows), rows.length ? `<div class="bars">${rows.map(([id, n]) => `<div class="bar ${n === max ? 'lead' : ''}"><span class="n">${esc(rname(id))}</span><div class="track"><div class="fill" style="width:${Math.round(n / max * 100)}%"></div></div><span class="c">${n}</span></div>`).join('')}</div>`
+    : `<div class="empty">${S.flags.voting ? 'AWAITING FIRST ACCUSATION…' : 'VOTING HAS NOT OPENED'}</div>`);
+
+  // roster
+  const row = c => {
+    const p = playerRec(c.id), on = isOnline(c.id), v = p && p.vote, isD = c.id in dd;
+    const tags = (isD ? `<span class="pill red">DECEASED</span>` : '') + (c.id === HOST.killerId ? `<span class="pill red">KILLER</span>` : '') + (p && p.unlocked ? `<span class="pill green">OPENED</span>` : `<span class="pill">LOCKED</span>`);
+    return `<button class="rrow ${isD ? 'dead' : ''}" data-char="${esc(c.id)}"><span class="dot ${on ? 'on' : ''}" title="${on ? 'Online' : 'Offline'}"></span><span class="nm">${esc(c.name)}<small>${esc(c.code)}</small></span><span class="tags">${tags}</span>
+      <span class="vote">${who[c.id] ? `<span style="color:var(--cyan)">${esc(who[c.id])}</span> · ` : ''}${v ? `accuses → <b>${esc(rname(v.suspect))}</b>` : '<span style="color:var(--dim)">no vote</span>'}</span></button>`;
+  };
+  const sig = JSON.stringify([L.map(c => { const p = playerRec(c.id); return [isOnline(c.id), p && p.unlocked, p && p.vote && p.vote.suspect, c.id in dd]; }), who]);
+  patch($('#roster'), sig, `<div class="roster-h">Principal subjects</div>${L.filter(c => c.tier !== 'ext').map(row).join('')}<div class="roster-h">Extended cast</div>${L.filter(c => c.tier === 'ext').map(row).join('')}`);
+
+  renderProjectorPanel(evs);
+  renderGuests();
+}
+function renderProjectorPanel(evs) {
+  const ps = projectorState(S);
+  const labels = { lockdown: 'LOCKDOWN', incident: 'DEATH ALERT', notice: 'BROADCAST', company: 'COMPANY PAGE', title: 'TITLE CARD', evidence: 'EVIDENCE', wall: 'EVIDENCE WALL', voting: 'VOTING OPEN', tally: 'RESULTS', message: 'MESSAGE' };
+  $('#projNow').textContent = 'NOW SHOWING · ' + (labels[ps.kind] || ps.kind.toUpperCase());
+  $$('#scenes [data-scene]').forEach(b => b.classList.toggle('on', b.dataset.scene === ps.kind));
+  const fs = $('#featSel'), cur = fs.value;
+  if (patch(fs, evs.map(e => e.id).join(), evs.length ? evs.map(e => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('') : `<option value="">No evidence released yet</option>`)) fs.value = cur;
+}
+function renderGuests() {
+  const rs = Object.entries(S.rsvps).filter(([, r]) => r && r.name).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0));
+  const yes = rs.filter(([, r]) => r.attending === 'yes'), maybe = rs.filter(([, r]) => r.attending === 'maybe'), no = rs.filter(([, r]) => r.attending === 'no');
+  const heads = yes.length + yes.filter(([, r]) => r.plusOne).length;
+  $('#rsvpSub').textContent = `${heads} COMING · ${maybe.length} MAYBE · ${no.length} NO`;
+  const who = guestFor(), taken = {};
+  for (const [key, cid] of Object.entries(HOST.assign)) taken[cid] = key;
+  const openCore = HOST.list.filter(c => c.tier !== 'ext' && !who[c.id]);
+  patch($('#openRoles'), openCore.map(c => c.id).join(), openCore.length ? `<p class="note" style="margin:0 0 12px"><b style="color:var(--gold2)">Principal roles still open (${openCore.length}):</b> ${openCore.map(c => esc(c.name)).join(', ')}</p>` : `<p class="note" style="margin:0 0 12px;color:var(--green)">✓ Every principal role is assigned.</p>`);
+  const select = (key) => {
+    const cur = HOST.assign[key] || '';
+    const opt = c => { const by = taken[c.id] && taken[c.id] !== key ? ` (taken)` : ''; return `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${esc(c.name)}${by}</option>`; };
+    return `<select class="input sm" data-assign="${esc(key)}"><option value="">— Unassigned —</option><optgroup label="Principal">${HOST.list.filter(c => c.tier !== 'ext').map(opt).join('')}</optgroup><optgroup label="Extended cast">${HOST.list.filter(c => c.tier === 'ext').map(opt).join('')}</optgroup></select>`;
+  };
+  const prefs = { big: 'Big dramatic role', medium: 'Medium role', small: 'Small, low-pressure role', surprise: 'Surprise me' };
+  const card = ([id, r]) => {
+    const st = r.attending === 'yes' ? ['green', 'COMING'] : r.attending === 'maybe' ? ['gold', 'MAYBE'] : ['', "CAN'T MAKE IT"];
+    const meta = [r.plusOne ? `Plus-one: ${esc(r.plusOneName || 'yes')}` : '', r.pref ? esc(prefs[r.pref] || r.pref) : '', r.diet ? 'Diet: ' + esc(r.diet) : '', r.note ? '“' + esc(r.note) + '”' : ''].filter(Boolean).join(' · ');
+    const assignRow = (key, name) => `<div class="assign">${select(key)}<button class="btn sm" data-rolemsg="${esc(key)}" data-name="${esc(name)}">COPY ROLE TEXT</button><span class="who">${esc(name)}</span></div>`;
+    return `<div class="guest"><div class="top"><span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
+      ${meta ? `<div class="meta">${meta}</div>` : ''}
+      ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") : '') : ''}</div>`;
+  };
+  patch($('#rsvpList'), JSON.stringify([rs, HOST.assign]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
+}
+function openDossierModal(id) {
+  const c = HOST.chars[id]; if (!c) return;
+  const p = playerRec(id), v = p && p.vote, on = isOnline(id), dd = dead(), who = guestFor();
+  const actions = (id in S.deaths) ? `<button class="btn sm ghost" id="mUndoDeath">UNDO DEATH</button>` : (S.kill && S.kill.victim === id) ? '' : `<button class="btn sm danger" id="mDeath">ANNOUNCE DEATH</button>`;
+  openModal(`<div class="row-gap" style="margin-bottom:16px"><span class="pill ${on ? 'green' : ''}">${on ? '● ONLINE' : '○ OFFLINE'}</span><span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'OPENED ' + fmtTime(p.unlockedAt) : 'NOT YET OPENED'}</span>${who[id] ? `<span class="pill gold">PLAYED BY ${esc(who[id])}</span>` : ''}${actions}</div>
+    ${v ? `<div class="voted"><b>ACCUSATION:</b> ${esc(rname(v.suspect))} <span class="mono" style="color:var(--dim);font-size:11px">· ${fmtTime(v.ts)}</span>${v.statement ? `<div style="margin-top:6px;color:var(--text);white-space:pre-line">“${esc(v.statement)}”</div>` : ''}</div>` : ''}
+    ${dossierHTML(c, true)}`);
+  const d = $('#mDeath'); if (d) d.onclick = () => announceDeath(id);
+  const u = $('#mUndoDeath'); if (u) u.onclick = () => { backend.update({ ['live/deaths/' + id]: null }); closeModal(); };
+}
+
+/* ---------------- overlays ---------------- */
+function renderOverlays() {
+  const lockOn = S.flags.lockdown && !(ME && ME.type === 'host') && !ui.bypass;
+  $('#lockdown').classList.toggle('hidden', !lockOn);
+  $('#bypassWrap').classList.toggle('hidden', !isHostDevice());
+  document.body.style.overflow = lockOn ? 'hidden' : '';
+
+  const a = S.alert, bar = $('#alertbar'), showAlert = a && a.id !== store.get('alertDismissed');
+  patch(bar, showAlert ? a.id : 'none', showAlert ? `<div class="alert ${a.type === 'notice' ? 'notice' : ''}" role="alert"><span class="h">${a.type === 'kill' ? '⚠ CRITICAL INCIDENT · ALL PERSONNEL' : '◆ PRIORITY NOTICE · COMMAND CENTER'}</span>${esc(a.text)}<button class="x" aria-label="Dismiss" id="alertX">✕</button></div>` : '');
+  const x = $('#alertX'); if (x) x.onclick = () => { store.set('alertDismissed', a.id); renderOverlays(); };
+  $('#app').style.paddingTop = showAlert ? (bar.offsetHeight + 12) + 'px' : '';
+
+  const fm = $('#fullmsg'), c = ME && ME.type === 'player' ? ME.c : null, dd = dead();
+  let html = '', sig = 'none';
+  const deathKey = c && (c.id in dd) ? S.epoch + ':' + c.id + ':' + dd[c.id] : null;
+  if (deathKey && store.get('termAck') !== deathKey) {
+    sig = 'dead';
+    html = `<div class="overlay fullmsg dead"><div class="box"><div class="k">KANE-OS · PERSONNEL STATUS UPDATE</div><h1>YOU HAVE BEEN<br>TERMINATED</h1>
+      <p>You've been murdered. Stay where you are. When it feels right, collapse dramatically, and stay in character as the body until the host tells you otherwise.</p>
+      <p style="color:var(--red2)">Don't reveal what your screen says to anyone.</p><button class="btn danger" id="termAck" style="margin-top:8px">ACKNOWLEDGE</button></div></div>`;
+  } else if (c && c.killer && S.flags.killer && store.get('revealSeen') !== S.epoch) {
+    sig = 'reveal';
+    html = `<div class="overlay fullmsg reveal"><div class="box"><div class="k">CLEARANCE ELEVATED · FILE UNSEALED</div><h1>YOU ARE THE KILLER</h1>
+      <div class="typed">${(c.killer.reveal || []).map(l => '&gt; ' + esc(l)).join('<br>')}</div>
+      <p>Your full file is now unsealed. A Termination Directive is waiting for you. Keep your screen hidden. Stay warm. Stay calm.</p><button class="btn danger" id="revealAck">OPEN MY FILE</button></div></div>`;
+  }
+  patch(fm, sig, html);
+  const ta = $('#termAck'); if (ta) ta.onclick = () => { store.set('termAck', deathKey); renderOverlays(); };
+  const ra = $('#revealAck'); if (ra) ra.onclick = () => { store.set('revealSeen', S.epoch); renderOverlays(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+}
+$('#bypassBtn').addEventListener('click', () => { ui.bypass = true; renderOverlays(); toast('HOST OVERRIDE', 'Lockdown bypassed on this device only.', 'ok'); });
+
+boot();
+</script>
+</body>
+</html>
