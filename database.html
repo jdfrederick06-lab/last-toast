@@ -279,13 +279,31 @@ const PL = id => 'live/players/' + id;
 const FLAGS = { lockdown: 'Lockdown', killer: 'Killer Phase', voting: 'Voting', sealed: 'Dossiers sealed' };
 const SCENES = { company: 'Company page', title: 'Title card', evidence: 'Latest evidence', wall: 'Evidence wall', voting: 'Voting screen', tally: 'Results', message: 'Message', accused: 'The accused', reveal: 'The truth' };
 
+/* Sessions.
+   Host: kept only in this browser tab (sessionStorage). Closing the tab, logging out, or 30 minutes
+         of inactivity locks the terminal, and the host code is needed again. Never saved on the device.
+   Player: remembered on their own phone so a refresh doesn't log them out. */
 const TAB_KEY = store.k('session');
-let session = (() => { let raw = null; try { raw = sessionStorage.getItem(TAB_KEY); } catch (e) { } if (!raw) raw = store.get('session'); try { return JSON.parse(raw || 'null'); } catch (e) { return null; } })();
+const HOST_IDLE_MS = 30 * 60 * 1000;
+let session = (() => {
+  let s = null;
+  try { s = JSON.parse(sessionStorage.getItem(TAB_KEY) || 'null'); } catch (e) { }
+  if (!s) { try { s = JSON.parse(store.get('session') || 'null'); } catch (e) { } if (s && s.role !== 'player') { store.del('session'); s = null; } }
+  if (s && s.role === 'admin' && Date.now() - (s.active || 0) > HOST_IDLE_MS) s = null;
+  return s;
+})();
 const saveSession = s => {
   session = s; const raw = s ? JSON.stringify(s) : null;
   try { raw ? sessionStorage.setItem(TAB_KEY, raw) : sessionStorage.removeItem(TAB_KEY); } catch (e) { }
-  if (raw) store.set('session', raw); else store.del('session');
+  if (s && s.role === 'player') store.set('session', raw); else store.del('session');
 };
+// host auto-lock after inactivity
+['pointerdown', 'keydown', 'scroll'].forEach(ev => addEventListener(ev, () => {
+  if (session && session.role === 'admin' && Date.now() - (session.active || 0) > 15000) { session.active = Date.now(); saveSession(session); }
+}, { passive: true }));
+setInterval(() => {
+  if (session && session.role === 'admin' && Date.now() - (session.active || 0) > HOST_IDLE_MS) { signOut(true); toast('TERMINAL LOCKED', 'Locked after 30 minutes of inactivity. Enter the host code to continue.', 'err'); }
+}, 20000);
 const ui = { built: null, bypass: false, selTarget: null, seenEvidence: null, tab: store.get('hostTab') || 'show', msgCache: {}, msgKey: null, loggedOpen: null, prompt: null, castFilter: '' };
 const isHostDevice = () => store.get('hostDevice') === '1';
 const dead = () => deathsOf(S);
@@ -466,7 +484,7 @@ async function doLogin(raw) {
   term.insertAdjacentHTML('beforeend', `<div class="ok">  [ OK ] access granted</div>`);
   await sleep(250);
   const id = b.c ? b.c.id : null;
-  saveSession({ role: b.type === 'host' ? 'admin' : 'player', code, id, epoch: S.epoch, kick: id ? (S.kick[id] || 0) : 0 });
+  saveSession({ role: b.type === 'host' ? 'admin' : 'player', code, id, epoch: S.epoch, kick: id ? (S.kick[id] || 0) : 0, active: Date.now() });
   if (b.type === 'host') store.set('hostDevice', '1');
   await adopt(b);
   if (b.type === 'player') { backend.onDisconnect(PL(id) + '/lastSeen', 0); heartbeat(); }

@@ -91,6 +91,8 @@ body.idle{cursor:none}
 .reveal .solvers{margin-top:3vh;font-family:var(--mono);letter-spacing:.12em;font-size:clamp(12px,1.2vw,22px);color:var(--green);animation:rise 1s 3.8s both}
 .reveal .solvers span{color:var(--muted)}
 .accused .huge{animation:namein 1.4s .3s cubic-bezier(.2,.7,.2,1) both}
+.gatebox{width:min(92vw,420px);text-align:center}
+.gerr{color:var(--red2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;min-height:18px;margin-top:10px}
 #fsBtn{position:fixed;right:18px;bottom:18px;z-index:10;transition:opacity .4s}
 body.idle #fsBtn,body.idle #conn{opacity:0}
 #conn{position:fixed;left:18px;bottom:18px;z-index:10;transition:opacity .4s}
@@ -197,7 +199,34 @@ function jitter() {
   });
 }
 
-(async function boot() {
+/* The projector is host-only: it asks for the host code once per browser tab
+   (a forced refresh keeps it unlocked; closing the tab locks it again). */
+const GATE_KEY = 'kane:' + CONFIG.GAME_ID + ':display';
+const isUnlocked = () => { try { return sessionStorage.getItem(GATE_KEY) === '1'; } catch (e) { return false; } };
+function showGate() {
+  $('#stage').innerHTML = `<div class="scene gate"><div class="gatebox panel gold">
+    <div style="width:72px;margin:0 auto 12px">${LOGO(72)}</div>
+    <div class="kicker">Kane Oil · Projector access</div>
+    <h1 style="margin:10px 0 18px;font-size:clamp(20px,2.4vw,30px);letter-spacing:.14em">HOST CODE REQUIRED</h1>
+    <form id="gateForm" autocomplete="off"><input class="input" id="gateIn" type="password" placeholder="Host code" autofocus style="text-align:center;font-family:var(--mono);letter-spacing:.2em">
+    <button class="btn gold block" style="margin-top:12px" id="gateBtn">UNLOCK DISPLAY</button><div class="gerr" id="gateErr"></div></form></div></div>`;
+  $('#gateForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const lockUntil = +store.get('lockUntil') || 0, err = $('#gateErr'), btn = $('#gateBtn');
+    if (Date.now() < lockUntil) { err.textContent = `TOO MANY ATTEMPTS · WAIT ${Math.ceil((lockUntil - Date.now()) / 1000)}s`; return; }
+    btn.disabled = true; btn.textContent = 'VERIFYING…';
+    const [b] = await Promise.all([unlockStory($('#gateIn').value).catch(() => null), sleep(600)]);
+    if (b && b.type === 'host') { try { sessionStorage.setItem(GATE_KEY, '1'); } catch (e2) { } store.set('fails', '0'); start(); return; }
+    const fails = (+store.get('fails') || 0) + 1;
+    if (fails >= 5) { store.set('lockUntil', String(Date.now() + 30000)); store.set('fails', '0'); } else store.set('fails', String(fails));
+    err.textContent = fails >= 5 ? 'TOO MANY ATTEMPTS · WAIT 30s' : 'ACCESS DENIED'; btn.disabled = false; btn.textContent = 'UNLOCK DISPLAY';
+  });
+}
+if (!window.STORY_LOCKED) $('#stage').innerHTML = `<div class="scene"><div class="lede">story.locked.js is missing.</div></div>`;
+else if (isUnlocked()) start(); else showGate();
+
+async function start() {
+  last = { sig: null, kind: null };
   render();
   backend = await connectBackend(renderConn); renderConn();
   backend.on(raw => { S = normRoot(raw); render(); });
@@ -207,7 +236,7 @@ function jitter() {
   let idleT; const wake = () => { document.body.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add('idle'), 2500); };
   document.addEventListener('mousemove', wake); wake();
   $('#fsBtn').onclick = () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); };
-})();
+}
 </script>
 </body>
 </html>
