@@ -48,6 +48,7 @@ body.idle{cursor:none}
 .stampx{display:inline-block;font-family:var(--mono);letter-spacing:.3em;font-size:clamp(12px,1.2vw,22px);color:var(--red2);border:2px solid var(--red);padding:.4em .8em;border-radius:8px;transform:rotate(-2deg);margin-bottom:2vh;box-shadow:0 0 24px rgba(255,59,84,.35)}
 .evcard h1{margin:0 0 1vh;font-size:clamp(28px,4vw,76px);line-height:1.08;color:var(--gold2)}
 .evcard .src{font-family:var(--mono);color:var(--cyan);font-size:clamp(12px,1.2vw,22px);letter-spacing:.06em;margin-bottom:3vh}
+.evcard .finder{font:600 clamp(13px,1.35vw,24px) var(--sans);color:var(--gold);letter-spacing:.04em;margin:-.5vh 0 1vh}
 .evcard .body{white-space:pre-line;line-height:1.5;color:#e2e9f7}
 .wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(28vw,480px),1fr));gap:2vh 2vw;width:100%;max-width:1700px;margin-top:3vh;text-align:left}
 .wall .w{border:1px solid var(--line2);border-radius:14px;padding:2vh 1.6vw;background:rgba(8,14,28,.85)}
@@ -126,7 +127,7 @@ function scene(kind) {
       const e = (ps.d.evidenceId && S.evidence[ps.d.evidenceId]) ? Object.assign({ id: ps.d.evidenceId }, S.evidence[ps.d.evidenceId]) : evs[0];
       if (!e) return scene('company');
       const len = (e.body || '').length, fs = len > 700 ? 'clamp(15px,1.45vw,28px)' : len > 400 ? 'clamp(17px,1.75vw,34px)' : 'clamp(19px,2.1vw,40px)';
-      return { sig: 'ev' + e.id, html: `<div class="scene"><div class="evcard"><div class="stampx">EVIDENCE RELEASED</div><h1>${esc(e.title)}</h1><div class="src">SOURCE · ${esc(e.src)}</div><div class="body" style="font-size:${fs}">${esc(e.body)}</div></div></div>` };
+      return { sig: 'ev' + e.id, html: `<div class="scene"><div class="evcard"><div class="stampx">${e.kind === 'official' ? 'OFFICIAL REPORT' : 'EVIDENCE FOUND'}</div><h1>${esc(e.title)}</h1>${e.by && e.by !== 'host' ? `<div class="finder">${e.kind === 'official' ? 'Released by ' + esc(rname(e.by)) : 'Found by ' + esc(rname(e.by)) + (e.where ? ' · ' + esc(e.where) : '')}</div>` : ''}<div class="src">SOURCE · ${esc(e.src)}</div><div class="body" style="font-size:${fs}">${esc(e.body)}</div></div></div>` };
     }
     case 'wall': return { sig: 'wall' + evs.map(e => e.id).join(), html: `<div class="scene"><div class="kicker">Kane Oil Database · Evidence on file</div><div class="huge gold" style="font-size:clamp(32px,4.6vw,90px)">THE EVIDENCE</div>${evs.length ? `<div class="wall">${evs.slice().reverse().map((e, i, a) => `<div class="w ${i === a.length - 1 ? 'new' : ''}"><b>${esc(e.title)}</b><span>${esc(e.src)}</span></div>`).join('')}</div>` : `<div class="lede">No evidence has been released yet.</div>`}</div>` };
     case 'voting': {

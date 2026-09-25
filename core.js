@@ -149,7 +149,11 @@ function normRoot(r) {
     msgs: s.msgs || {},             // id -> {msgId: {iv,ct,ts}}  encrypted private messages
     msgread: s.msgread || {},       // id -> {msgId: ts}
     verdict: s.verdict || null,     // {stage:'accuse'|'reveal', accused, killer, killerName, alias, summary, solvers, ts}
-    show: s.show || {},             // run-of-show progress: stepId -> {done, acts:{i:ts}}
+    phase: s.phase || { i: -1 },    // current game phase: {i, id, ts}
+    phaseLog: s.phaseLog || {},     // phaseId -> ts, for every phase that has started
+    rooms: s.rooms || {},           // roomId -> ts when opened
+    found: s.found || {},           // evidenceId -> {by, ts}  (scanned, maybe not revealed yet)
+    delivered: s.delivered || {},   // evidenceId -> ts   (official report sent to the Inspector)
     log: s.log || {},               // activity log
     rsvps: r.rsvps || {},
     assign: r.assign || null,       // encrypted role assignments (host only)
@@ -181,6 +185,21 @@ function projectorState(S) {
   const a = S.alert, d = S.display || {};
   if (a && (a.ts || 0) >= (d.ts || 0)) return { kind: a.type === 'kill' ? 'incident' : 'notice', alert: a };
   return { kind: d.scene || 'company', d };
+}
+/** Is a room open right now? (rooms marked alwaysOpen are never sealed) */
+function roomOpen(S, roomId) {
+  const r = (window.STORY_ROOMS || []).find(x => x.id === roomId);
+  return !!(r && r.alwaysOpen) || !!S.rooms[roomId];
+}
+const roomName = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).name || id || '';
+/** Has a memory's moment arrived? */
+function memoryDue(S, when) {
+  when = when || {};
+  if (when.phase) return !!S.phaseLog[when.phase];
+  if (when.evidence) return !!(S.evidence[when.evidence] && S.evidence[when.evidence].title);
+  if (when.death) return when.death in deathsOf(S);
+  if (when.killer) return !!S.flags.killer;
+  return false;
 }
 function releasedEvidence(S) { return Object.entries(S.evidence).filter(([, e]) => e && e.title).map(([id, e]) => Object.assign({ id }, e)).sort((a, b) => (b.ts || 0) - (a.ts || 0)); }
 
