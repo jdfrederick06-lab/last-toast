@@ -10,9 +10,9 @@ window.PARTY = {
   /* ---------- the invitation (index.html) ---------- */
   title: `The Last Toast`,
   subtitle: `A Murder Mystery Evening`,
-  host: `Jacob`,
-  date: `Saturday, [Month Day, Year]`,
-  time: `[7:00 PM] until late`,
+  host: `RA Jacob & Alex`,
+  date: `Friday, [November 6, 2026]`,
+  time: `[8:00 PM] until late`,
   venue: `[Venue name]`,
   address: `[Street address, City]`,
   dress: `Black tie optional. Dress for a corporate gala.`,
