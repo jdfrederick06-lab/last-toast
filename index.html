@@ -29,10 +29,8 @@ body::after{top:0;left:0;right:0;bottom:0;width:auto;height:auto;border-radius:0
 #embers{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 #embers i{position:absolute;bottom:-12px;border-radius:50%;background:radial-gradient(circle,#ffe7b3,rgba(232,190,110,0) 70%);opacity:0;animation:ember linear infinite}
 @keyframes ember{0%{opacity:0;transform:translate(0,0)}12%{opacity:.9}70%{opacity:.5}100%{opacity:0;transform:translate(var(--dx),-105vh)}}
-
 #app{max-width:760px;padding-top:0;padding-bottom:40px}
 .caps{font-family:var(--caps);font-weight:300;letter-spacing:.32em;text-transform:uppercase}
-
 /* nav */
 .nav{display:flex;align-items:center;gap:12px;padding:14px 4px;position:sticky;top:0;z-index:20;background:linear-gradient(180deg,rgba(6,17,14,.92),rgba(6,17,14,.6) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .nav .mk{width:30px;height:30px;flex:none}
@@ -40,7 +38,6 @@ body::after{top:0;left:0;right:0;bottom:0;width:auto;height:auto;border-radius:0
 .nav .link{font-family:var(--caps);font-size:10.5px;letter-spacing:.24em;color:var(--muted);text-decoration:none;padding:8px 6px}
 .nav .link:hover{color:var(--gold2)}
 .pillbtn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:8px 18px;font-family:var(--sans);font-style:italic;font-size:16px;color:#1b140a;text-decoration:none;background:var(--gold-grad);box-shadow:0 6px 18px rgba(232,207,154,.22),inset 0 1px 0 rgba(255,255,255,.5)}
-
 /* hero */
 .hero{text-align:center;padding:4vh 0 5vh;position:relative}
 .mono{display:block;margin:0 auto;width:112px;height:112px;overflow:visible}
@@ -60,7 +57,6 @@ body::after{top:0;left:0;right:0;bottom:0;width:auto;height:auto;border-radius:0
 .orn::before,.orn::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(232,207,154,.6))}
 .orn::after{background:linear-gradient(90deg,rgba(232,207,154,.6),transparent)}
 .orn i{color:var(--gold);font-style:normal;font-size:12px}
-
 /* sections */
 .panel{background:linear-gradient(180deg,rgba(14,40,33,.62),rgba(8,24,20,.5));border:1px solid var(--line);border-radius:26px;padding:28px 24px;box-shadow:0 24px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,248,230,.06);animation:none}
 .panel::before{background:linear-gradient(90deg,transparent,rgba(241,223,180,.55),transparent)}
@@ -75,7 +71,6 @@ h2.sh::after{content:"✦";display:block;font-style:normal;font-size:11px;color:
 .det span{display:block;font-size:20px;line-height:1.3;font-weight:500}
 .det small{display:block;color:var(--muted);font-size:16px;font-style:italic;margin-top:3px}
 .prose p{font-size:19.5px;line-height:1.7;color:#ece3cc;margin:0 0 14px}
-.prose p:first-child::first-letter{font-family:var(--serif);font-style:italic;float:left;font-size:58px;line-height:.9;padding:6px 10px 0 0;color:var(--gold2)}
 .prose p:last-child{margin-bottom:0}
 .list{margin:0;padding:0;list-style:none}
 .list li{position:relative;padding:12px 0 12px 30px;border-top:1px solid var(--line);font-size:19px;line-height:1.5}
@@ -93,7 +88,6 @@ h2.sh::after{content:"✦";display:block;font-style:normal;font-size:11px;color:
 .rules li::before{content:counter(r,upper-roman);font-family:var(--serif);font-style:italic;font-size:20px;color:var(--gold);text-align:right;padding-right:6px}
 .rules b{display:block;font-size:20px;font-weight:600;margin-bottom:2px}
 .rules p{margin:0;color:#d9cfb6;font-size:17.5px;line-height:1.55}
-
 /* RSVP form */
 #rsvp .intro{text-align:center;font-style:italic;color:var(--muted);font-size:18px;margin:-6px 0 22px}
 .field{margin-bottom:18px}
@@ -134,11 +128,44 @@ select.input option{background:#0e2821}
 .portal .btn{font-family:var(--sans);font-style:italic;font-size:19px;border-radius:999px;letter-spacing:0;padding:12px 26px}
 footer{text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px;letter-spacing:.34em;color:var(--dim);padding:26px 0 10px;text-transform:uppercase}
 .toast{font-family:var(--sans);font-size:17px}
-
+.pair{display:block}
+.rsvp .mono.sm{display:none}
+.replyby{display:none}
+.plusbox{border-left:1px solid var(--line2);padding-left:16px;margin:-4px 0 18px}
+.scrollcue{display:none}
+/* ===== wide screens: a full-screen opening, two-column story, form beside its heading ===== */
+@media(min-width:900px){
+  body{font-size:19px}
+  #app{max-width:1080px;padding-left:32px;padding-right:32px}
+  .nav{padding:18px 4px}
+  .nav b{font-size:12px}.nav .link{font-size:12px}
+  .hero{min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 0 70px}
+  .hero .mono{width:128px;height:128px}
+  .hero h1{font-size:118px}
+  .inworld{max-width:38ch}
+  .scrollcue{display:flex;flex-direction:column;align-items:center;gap:8px;position:absolute;bottom:18px;left:0;right:0;width:max-content;margin:0 auto;font-family:var(--caps);font-weight:300;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);text-decoration:none}
+  .scrollcue i{width:1px;height:34px;background:linear-gradient(180deg,var(--gold),transparent);animation:cue 2.2s ease-in-out infinite}
+  @keyframes cue{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+  .panel{padding:40px 48px;margin-bottom:22px}
+  .det{padding:10px 18px}.det span{font-size:23px}
+  .pair{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:start}
+  .pair .panel{height:100%;margin-bottom:22px}
+  .prose p{font-size:20px}
+  .steps{grid-template-columns:repeat(3,1fr);gap:16px}
+  .rules{columns:2;column-gap:44px}
+  .rules li{break-inside:avoid}
+  .rules li:nth-child(2){border-top:1px solid var(--line)}
+  .rsvp{display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:start;padding:48px 52px}
+  .rsvp-side{position:sticky;top:96px;text-align:center;padding-top:10px}
+  .rsvp .mono.sm{display:block;width:84px;height:84px;margin:0 auto 18px}
+  .rsvp .sh{font-size:44px}
+  .rsvp .intro{margin:0}
+  .replyby{display:block;margin:22px 0 0;font-family:var(--caps);font-weight:300;font-size:10.5px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;line-height:2}
+  .rsvp-main{border-left:1px solid var(--line);padding-left:48px}
+}
 /* reveal sections as you scroll */
 .rv{opacity:0;transform:translateY(22px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
-
 /* ===== the opening: darkness, a gold line draws the monogram, then the page opens out of it ===== */
 #intro{position:fixed;inset:0;z-index:100;background:#030605;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity 1.3s ease}
 #intro .mono{width:150px;height:150px}
@@ -157,7 +184,6 @@ body.reveal #intro{background:transparent;pointer-events:none}
 body.reveal #intro .iris{transform:scale(900)}
 body.reveal #intro .mono{transform:scale(1.8);opacity:0;transition:transform 1.4s ease,opacity .9s ease}
 body.reveal #intro .cap,body.reveal #intro .skip,body.reveal #intro .glow{opacity:0!important;transition:opacity .5s}
-
 /* hero animations (start once the page is open) */
 .hero .mono .m1,.hero .mono .m2,.hero .mono .m3{stroke-dasharray:300;stroke-dashoffset:0}
 .hero>*{opacity:0}
@@ -176,7 +202,6 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
 </head>
 <body>
 <div id="embers" aria-hidden="true"></div>
-
 <div id="intro" aria-hidden="true">
   <div class="iris"></div>
   <div class="glow"></div>
@@ -184,7 +209,6 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
   <div class="cap">Kane Oil &amp; Energy</div>
   <button class="skip" id="skipIntro">Tap to enter</button>
 </div>
-
 <div id="app">
   <nav class="nav">
     <svg class="mk" viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" fill="none" stroke="#e8cf9a" stroke-width="2"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" fill="none" stroke="#e8cf9a" stroke-width="4" stroke-linecap="round"/></svg>
@@ -193,7 +217,6 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
     <a class="pillbtn" id="rsvpNav" href="#rsvp">Reply</a>
   </nav>
   <div class="notice hidden" id="notice"><span class="pulse-dot"></span><span id="noticeText"></span></div>
-
   <header class="hero">
     <svg class="mono" viewBox="0 0 96 96"><circle class="m1" cx="48" cy="48" r="44" stroke-width="1.1"/><circle class="m2" cx="48" cy="48" r="38" stroke-width=".55"/><path class="m3" d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
     <div class="tagline" id="tagline"></div>
@@ -207,18 +230,23 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
     <p class="inworld" id="inWorld"></p>
     <div class="orn"><i>✦</i></div>
     <div class="by" id="hostBy"></div>
+    <a class="scrollcue" href="#details" aria-label="Scroll down"><span>The details</span><i></i></a>
   </header>
-
-  <section class="panel gold rv"><div class="details" id="details"></div></section>
-
-  <section class="panel rv"><h2 class="sh">The evening</h2><div class="prose" id="premise"></div></section>
-  <section class="panel rv"><h2 class="sh">What to expect</h2><ul class="list" id="expect"></ul></section>
+  <section class="panel gold rv" id="detailsPanel"><div class="details" id="details"></div></section>
+  <div class="pair">
+    <section class="panel rv"><h2 class="sh">The evening</h2><div class="prose" id="premise"></div></section>
+    <section class="panel rv"><h2 class="sh">What to expect</h2><ul class="list" id="expect"></ul></section>
+  </div>
   <section class="panel rv"><h2 class="sh">The Kane Oil Database</h2><p class="dbnote">The night runs on a private web app that works on any phone. Nothing to install.</p><div class="steps" id="how"></div></section>
   <section class="panel rv hidden" id="rulesPanel"><h2 class="sh">Rules of the night</h2><ol class="rules" id="rules"></ol></section>
-
-  <section class="panel gold rv" id="rsvp">
-    <h2 class="sh">Kindly reply</h2>
-    <p class="intro" id="rsvpIntro">We would be delighted to have you.</p>
+  <section class="panel gold rv rsvp" id="rsvp">
+    <div class="rsvp-side">
+      <svg class="mono sm" viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" stroke-width="1.1"/><circle cx="48" cy="48" r="38" stroke-width=".55"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
+      <h2 class="sh">Kindly reply</h2>
+      <p class="intro" id="rsvpIntro">We would be delighted to have you.</p>
+      <p class="replyby" id="replyBy"></p>
+    </div>
+    <div class="rsvp-main">
     <div id="rsvpDone"></div>
     <p class="hint hidden" id="rsvpClosed" style="font-size:19px;text-align:center;margin:0">Replies are now closed. If your plans have changed, please contact the hosts directly.</p>
     <form id="rsvpForm" autocomplete="on" novalidate>
@@ -234,23 +262,31 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
         <div class="field" id="phoneWrap"><label class="lbl" for="rPhone">Phone number</label><input class="input" id="rPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(555) 555-5555"><div class="hint err hidden" id="phoneErr">Please enter a phone number we can text.</div></div>
       </div>
       <div id="attendingFields">
-        <div class="field"><label class="check"><input type="checkbox" id="rPlus"> I'm bringing a plus-one</label></div>
-        <div class="field hidden" id="plusWrap"><label class="lbl" for="rPlusName">Plus-one's name</label><input class="input" id="rPlusName" maxlength="60" placeholder="First and last name"></div>
-        <div class="field"><label class="lbl" for="rPref">What kind of role would you like?</label>
-          <select class="input" id="rPref"><option value="surprise">Surprise me</option><option value="big">A big, dramatic role, in the thick of it</option><option value="medium">A medium role</option><option value="small">A small, low-pressure role</option></select></div>
         <div class="field"><span class="lbl">Your photo <em>optional</em></span>
           <div class="photo">
             <label class="ph-circle" title="Choose a photo"><div id="photoPrev">✦</div><input type="file" id="rPhoto" accept="image/*" aria-label="Choose a photo"></label>
             <div class="act"><button type="button" class="linkbtn" id="photoPick">Add a photo of yourself</button><button type="button" class="linkbtn dim hidden" id="photoClear">Remove photo</button>
-              <div class="hint" style="margin:0">The hosts will put it on your character's profile so other guests can find you. Only guests with a code word will ever see it.</div></div>
+              <div class="hint" style="margin:0">It goes on your character's profile so other guests can find you. Only guests with a code word will ever see it. You can change it here any time, even after roles go out.</div></div>
           </div><div class="hint err hidden" id="photoErr"></div></div>
+        <div class="field"><label class="check"><input type="checkbox" id="rPlus"> I'm bringing a plus-one</label></div>
+        <div class="hidden plusbox" id="plusWrap">
+          <div class="field"><label class="lbl" for="rPlusName">Plus-one's name</label><input class="input" id="rPlusName" maxlength="60" placeholder="First and last name"></div>
+          <div class="field"><span class="lbl">Their photo <em>optional</em></span>
+            <div class="photo">
+              <label class="ph-circle" title="Choose a photo"><div id="plusPrev">✦</div><input type="file" id="rPlusPhoto" accept="image/*" aria-label="Choose a photo of your plus-one"></label>
+              <div class="act"><button type="button" class="linkbtn" id="plusPick">Add a photo of them</button><button type="button" class="linkbtn dim hidden" id="plusClear">Remove photo</button>
+                <div class="hint" style="margin:0">Goes on your plus-one's character profile. They get their own role and code word.</div></div>
+            </div><div class="hint err hidden" id="plusErr"></div></div>
+        </div>
+        <div class="field"><label class="lbl" for="rPref">What kind of role would you like?</label>
+          <select class="input" id="rPref"><option value="surprise">Surprise me</option><option value="big">A big, dramatic role, in the thick of it</option><option value="medium">A medium role</option><option value="small">A small, low-pressure role</option></select></div>
       </div>
       <div class="field"><label class="lbl" for="rNote">A note for the hosts <em>optional</em></label><textarea class="input" id="rNote" maxlength="400" placeholder="Anything we should know? A nickname you go by, a friend you'd like to be cast near…" style="min-height:96px"></textarea></div>
       <button class="btn gold block" type="submit" id="rBtn">Reply with pleasure</button>
-      <p class="sealnote">✦ Your email, phone number, photo and note are sealed so that only the hosts can read them.</p>
+      <p class="sealnote">✦ Your email, phone number, photos and note are sealed so that only the hosts can read them.</p>
     </form>
+    </div>
   </section>
-
   <section class="panel rv portal" id="portalPanel">
     <h2 class="sh">Already have your code word?</h2>
     <p class="dbnote">Step inside the Kane Oil Database to read your dossier.</p>
@@ -258,14 +294,12 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
   </section>
   <footer>Kane Oil &amp; Energy · Est. 1974 · A private event</footer>
 </div>
-
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
 ['config.js', 'party.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 let backend, S = normRoot({}), lastSite = null;
 const myId = () => store.get('myRsvp');
 const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') || {}; } catch (e) { return {}; } };
-
 /* ---------- the opening (once per visit; tap to skip) ---------- */
 (function opening() {
   const intro = $('#intro'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -284,7 +318,6 @@ const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') 
   const t = setTimeout(open, 2300);
   intro.addEventListener('click', () => { clearTimeout(t); open(); });
 })();
-
 /* drifting embers, like candlelight */
 (function embers() {
   const box = $('#embers'), n = innerWidth < 600 ? 12 : 20;
@@ -294,11 +327,9 @@ const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') 
     box.appendChild(e);
   }
 })();
-
 /* sections rise in as you scroll to them */
 const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }), { threshold: .12 }) : null;
 $$('.rv').forEach(el => io ? io.observe(el) : el.classList.add('in'));
-
 /* ---------- page content: party.js plus any live edits the host publishes from the dashboard ---------- */
 function renderStatic() {
   const sig = JSON.stringify(S.site || {}); if (sig === lastSite) return; lastSite = sig;
@@ -322,6 +353,7 @@ function renderStatic() {
   const showRules = P.showRules && (P.rules || []).length;
   $('#rulesPanel').classList.toggle('hidden', !showRules);
   if (showRules) $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
+  $('#replyBy').innerHTML = [P.rsvpBy ? 'Please reply by<br>' + esc(P.rsvpBy) : '', P.date ? esc(P.date) : ''].filter(Boolean).join('<br><br>');
   const open = P.rsvpOpen !== false;
   $('#rsvpForm').classList.toggle('hidden', !open);
   $('#rsvpIntro').classList.toggle('hidden', !open);
@@ -329,9 +361,7 @@ function renderStatic() {
   $('#rsvpNav').classList.toggle('hidden', !open);
 }
 renderStatic();
-
 /* ---------- RSVP form ---------- */
-let photo = null;
 const attending = () => document.querySelector('input[name=att]:checked').value !== 'no';
 const syncFields = () => {
   $('#attendingFields').classList.toggle('hidden', !attending());
@@ -340,27 +370,33 @@ const syncFields = () => {
 };
 document.querySelectorAll('input[name=att]').forEach(r => r.addEventListener('change', syncFields));
 $('#rPlus').addEventListener('change', syncFields);
-
-function showPhoto() {
-  const pv = $('#photoPrev');
-  pv.style.backgroundImage = photo ? `url("${photo}")` : ''; pv.textContent = photo ? '' : '✦';
-  $('#photoPick').textContent = photo ? 'Choose a different photo' : 'Add a photo of yourself';
-  $('#photoClear').classList.toggle('hidden', !photo);
+/* two photo pickers: the guest, and their plus-one */
+const photos = { me: null, plus: null };
+const PICK = {
+  me: { input: '#rPhoto', prev: '#photoPrev', pick: '#photoPick', clear: '#photoClear', err: '#photoErr', add: 'Add a photo of yourself' },
+  plus: { input: '#rPlusPhoto', prev: '#plusPrev', pick: '#plusPick', clear: '#plusClear', err: '#plusErr', add: 'Add a photo of them' }
+};
+function showPhoto(k) {
+  const p = PICK[k], v = photos[k], pv = $(p.prev);
+  pv.style.backgroundImage = v ? `url("${v}")` : ''; pv.textContent = v ? '' : '✦';
+  $(p.pick).textContent = v ? 'Choose a different photo' : p.add;
+  $(p.clear).classList.toggle('hidden', !v);
 }
-$('#photoPick').addEventListener('click', () => $('#rPhoto').click());
-$('#photoClear').addEventListener('click', () => { photo = null; $('#rPhoto').value = ''; showPhoto(); });
-$('#rPhoto').addEventListener('change', async () => {
-  const f = $('#rPhoto').files[0], err = $('#photoErr'); err.classList.add('hidden');
-  if (!f) return;
-  try { photo = await shrinkPhoto(f); showPhoto(); }
-  catch (e) { err.textContent = e.message; err.classList.remove('hidden'); }
+Object.keys(PICK).forEach(k => {
+  const p = PICK[k];
+  $(p.pick).addEventListener('click', () => $(p.input).click());
+  $(p.clear).addEventListener('click', () => { photos[k] = null; $(p.input).value = ''; showPhoto(k); });
+  $(p.input).addEventListener('change', async () => {
+    const f = $(p.input).files[0], err = $(p.err); err.classList.add('hidden');
+    if (!f) return;
+    try { photos[k] = await shrinkPhoto(f); showPhoto(k); }
+    catch (e) { err.textContent = e.message; err.classList.remove('hidden'); }
+  });
 });
-
 const emailOk = v => /^[^\s@]+@dickinson\.edu$/i.test(v);
 const phoneOk = v => v.replace(/\D/g, '').length >= 10;
 $('#rEmail').addEventListener('blur', () => { const v = $('#rEmail').value.trim(); $('#emailErr').classList.toggle('hidden', !v || emailOk(v)); });
 $('#rPhone').addEventListener('blur', () => { const v = $('#rPhone').value.trim(); $('#phoneErr').classList.toggle('hidden', !v || phoneOk(v)); });
-
 let prefilled = false;
 function showDone() {
   const r = myId() && S.rsvps[myId()], m = mine();
@@ -374,7 +410,7 @@ function showDone() {
     $('#rPlus').checked = !!r.plusOne; $('#rPlusName').value = r.plusOneName || '';
     $('#rPref').value = r.pref || 'surprise';
     $('#rEmail').value = m.email || ''; $('#rPhone').value = m.phone || ''; $('#rNote').value = m.note || '';
-    photo = m.photo || null; showPhoto();
+    photos.me = m.photo || null; photos.plus = m.plusPhoto || null; showPhoto('me'); showPhoto('plus');
     syncFields();
   }
 }
@@ -388,7 +424,8 @@ $('#rsvpForm').addEventListener('submit', async e => {
   $('#emailErr').classList.add('hidden'); $('#phoneErr').classList.add('hidden');
   const btn = $('#rBtn'); btn.disabled = true; btn.textContent = 'Sealing your reply…';
   try {
-    const priv = { email: email.toLowerCase(), phone: going ? phone : '', note: $('#rNote').value.trim(), photo: going ? photo : null };
+    const plus = going && $('#rPlus').checked;
+    const priv = { email: email.toLowerCase(), phone: going ? phone : '', note: $('#rNote').value.trim(), photo: going ? photos.me : null, plusPhoto: plus ? photos.plus : null };
     const id = myId() || uid('r');
     const rec = {
       name, attending: att, ts: backend.TS(),
@@ -405,7 +442,6 @@ $('#rsvpForm').addEventListener('submit', async e => {
   btn.disabled = false; btn.textContent = myId() && S.rsvps[myId()] ? 'Update my reply' : 'Reply with pleasure';
 });
 syncFields();
-
 (async () => {
   backend = await connectBackend();
   backend.on(raw => { S = normRoot(raw); renderStatic(); showDone(); });

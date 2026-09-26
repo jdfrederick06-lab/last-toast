@@ -52,6 +52,8 @@
 .hex span{color:var(--gold2)}
 .hex span img,.person .mono-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .person .mono-av{overflow:hidden}
+.linkish{background:none;border:0;padding:0;margin-top:9px;font-size:12.5px;color:var(--gold2);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(247,220,154,.4);text-underline-offset:3px}
+.guest .gphoto.sm{width:34px;height:34px}
 .guest .gphoto{width:54px;height:54px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(212,162,76,.6);flex:none}
 .guest .contact{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:13px;margin:6px 0 2px}
 .guest .contact a{color:var(--gold2);text-decoration:none}
@@ -744,7 +746,8 @@ function dossierHTML(c, host = false) {
     <div class="dhead">${hexBadge(c, red)}
       <div><div class="mono" style="font-size:11px;letter-spacing:.2em;color:var(--dim)">PERSONNEL FILE${host ? ' ' + esc(c.file || '') + (c.tier === 'ext' ? ' · EXTENDED CAST' : '') : ''}</div>
       <h1 class="dname">${esc(c.name)}</h1>
-      <div class="cls ${red ? 'red' : c.inspector && rv ? 'blue' : ''}">CLASSIFICATION: ${esc(cls || 'SUBJECT')}${isDead && !/DECEASED/.test(cls || '') ? ' · DECEASED' : ''}</div></div>
+      <div class="cls ${red ? 'red' : c.inspector && rv ? 'blue' : ''}">CLASSIFICATION: ${esc(cls || 'SUBJECT')}${isDead && !/DECEASED/.test(cls || '') ? ' · DECEASED' : ''}</div>
+      ${host ? '' : `<div><button class="linkish" data-myphoto>${photoOf(c.id) ? 'Change my photo' : 'Add my photo'}</button></div>`}</div>
     </div>
     <div class="kv">
       <div><b>Code word</b><span class="mono">${esc(c.code)}</span></div>
@@ -834,6 +837,7 @@ function bindPlayer() {
     const r = e.target.closest('[data-reveal]'); if (r) { const f = ui.finds[r.dataset.reveal]; if (f) confirmReveal(f.e); return; }
     const rel = e.target.closest('[data-release]'); if (rel) { releaseOfficial(rel.dataset.release); return; }
     const vg = e.target.closest('[data-view-go]'); if (vg) { goView(vg.dataset.viewGo); return; }
+    if (e.target.closest('[data-myphoto]')) { changeMyPhoto(); return; }
     if (e.target.closest('#hintVoteBtn')) toggleHintVote();
   };
 }
@@ -1191,22 +1195,49 @@ function verdictReveal() {
 async function syncPhotoLinks() {
   if (!ui.dirKey || !HOST.rsvpKey) return;
   await syncRsvpSecrets();
-  const want = {};
+  const want = {}, vetoed = new Set(), np = HOST.assign.nophoto || {};
+  // 1. the photo sent with the RSVP (the guest's own, or the one they sent for their plus-one)
   for (const [key, cid] of Object.entries(HOST.assign.map || {})) {
-    if (key.includes('#')) continue;                                // plus-ones don't send a photo
-    const r = S.rsvps[key], sec = HOST.rsvpSec[key];
-    if (!r || !r.sec || !sec || !sec.d || !sec.d.photo || (HOST.assign.nophoto || {})[key]) continue;
-    want[cid] = { src: key + ':' + r.sec.iv, photo: sec.d.photo };
+    if (np[key]) { vetoed.add(cid); continue; }
+    const [rid, plus] = key.split('#'), r = S.rsvps[rid], sec = HOST.rsvpSec[rid];
+    const photo = sec && sec.d ? (plus ? sec.d.plusPhoto : sec.d.photo) : null;
+    if (r && r.sec && photo) want[cid] = { src: 'rsvp:' + key + ':' + r.sec.iv, photo, ts: +r.ts || 0 };
   }
-  for (const [deadId, s] of Object.entries(S.succession)) if (s && s.to && want[deadId] && !want[s.to]) want[s.to] = want[deadId];
+  // 2. a photo the player set themselves from their dossier wins if it's newer (and made with this build's key)
+  for (const [cid, p] of Object.entries(S.photos)) {
+    if (!p || !/^self:/.test(p.src || '') || vetoed.has(cid) || p.b !== HOST.built) continue;
+    const ts = +String(p.src).slice(5) || 0;
+    if (!want[cid] || ts >= want[cid].ts) want[cid] = { keep: true };
+  }
+  // 3. a backup role wears the same face as the character that died
+  for (const [deadId, s] of Object.entries(S.succession)) {
+    if (!s || !s.to || want[s.to] || vetoed.has(s.to) || !want[deadId]) continue;
+    want[s.to] = want[deadId].keep ? (S.photos[deadId] ? { copy: S.photos[deadId] } : null) : Object.assign({}, want[deadId], { src: want[deadId].src + '>' + s.to });
+    if (!want[s.to]) delete want[s.to];
+  }
   const upd = {};
   for (const [cid, w] of Object.entries(want)) {
     const cur = S.photos[cid];
+    if (w.keep) continue;
+    if (w.copy) { const src = 'copy:' + w.copy.iv; if (!cur || cur.src !== src) upd['live/photos/' + cid] = { iv: w.copy.iv, ct: w.copy.ct, src, b: w.copy.b || HOST.built }; continue; }
     if (cur && cur.src === w.src && cur.b === HOST.built) continue;
     upd['live/photos/' + cid] = Object.assign(await encryptJSON(ui.dirKey, { p: w.photo }), { src: w.src, b: HOST.built });
   }
   for (const cid of Object.keys(S.photos)) if (!want[cid]) upd['live/photos/' + cid] = null;
   if (Object.keys(upd).length) await backend.update(upd);
+}
+/* players: change the photo on your own profile */
+async function changeMyPhoto() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = async () => {
+    const f = inp.files[0]; if (!f || !ME || !ME.c || !ui.dirKey) return;
+    try {
+      const p = await shrinkPhoto(f);
+      await backend.set('live/photos/' + ME.c.id, Object.assign(await encryptJSON(ui.dirKey, { p }), { src: 'self:' + Date.now(), b: ME.built }));
+      toast('PHOTO UPDATED', 'Your profile photo has been changed.', 'ok');
+    } catch (e) { toast('PHOTO NOT SAVED', e.message, 'err'); }
+  };
+  inp.click();
 }
 async function hostJobs() {
   if (!HOST || !ready || ui.jobBusy) return;
@@ -1340,6 +1371,7 @@ function renderGame() {
   if (patch($('#phaseNow'), sig, now ? `<div class="phase-now ${ui.flashPhase ? 'flash' : ''}"><div class="k"><span>NOW · ${esc(now.time || '')}</span><span class="timer" id="phaseTimer"></span><span id="phaseLate"></span></div><h3>${esc(now.title)}</h3>
       ${now.cue ? `<div class="cue"><b>YOUR CUE</b>${esc(now.cue)}</div>` : ''}
       ${now.host ? `<div class="say"><b>YOU SAY</b>${esc(fillLines(now.host))}</div>` : ''}
+      ${now.script ? `<details class="more"><summary>▸ ${esc(now.scriptTitle || 'SCRIPT')}</summary><div class="say"><b>${esc(now.scriptTitle || 'SCRIPT')}</b>${esc(now.script)}</div></details>` : ''}
       ${now.inspector ? `<details class="more"><summary>▸ THE INSPECTOR IS READING THIS</summary><div class="say"><b>INSPECTOR</b>${esc(fillLines(now.inspector))}</div></details>` : ''}</div>`
     : `<div class="phase-now"><div class="k">NOT STARTED</div><h3>Ready when you are</h3><p class="note" style="margin:0">Press and hold <b>START</b> on the bar at the bottom of the screen. Each phase does everything it needs by itself: rooms, reports, deaths, the projector.</p></div>`)) { ui.flashPhase = false; tickTimer(); }
   patch($('#phaseList'), 'pl' + cur, steps.map((st, i) => `<div class="ph-row ${i < cur ? 'done' : i === cur ? 'cur' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="tm">${esc(st.time || '')}</span><span class="t">${esc(st.title)}${st.skippable ? ' <span class="pill">SKIPPABLE</span>' : ''}</span><button class="btn sm ghost" data-runphase="${i}">${i <= cur ? 'RE-RUN' : 'JUMP'}</button></div>`).join(''));
@@ -1499,6 +1531,7 @@ function printModal() {
     ['badges', 'Name Badges', 'A badge for every character (with the guest\'s name if assigned), sized for 3×4 in badge holders', false],
     ['signs', 'Signs', 'Welcome sign, room door signs, SEALED crime-scene signs, direction arrows, coat check, charging, how-to-scan', false],
     ['inspector', "Inspector's Lines", 'Every line the Inspector reads, to rehearse (the ending is left out)', true],
+    ['toast', "Alex's Toast Card", 'Her toast in large print, with stage directions, for Alex\'s player to hold', true],
     ['dossiers', 'Character Dossiers', `All ${HOST.list.length} personnel files, one per page`, true],
     ['invite', 'Invitation & Rules', 'Everything guests read. No spoilers', false],
     ['all', 'Everything', 'All of the above in one file', true]
@@ -1742,18 +1775,24 @@ function renderGuests(who) {
   const prefs = { big: 'Big dramatic role', medium: 'Medium role', small: 'Small, low-pressure role', surprise: 'Surprise me' };
   const card = ([id, r]) => {
     const st = r.attending === 'yes' ? ['green', 'COMING'] : r.attending === 'maybe' ? ['gold', 'MAYBE'] : ['', "CAN'T MAKE IT"];
-    const sec = HOST.rsvpSec[id], d = (sec && sec.d) || {}, np = !!(HOST.assign.nophoto || {})[id];
+    const sec = HOST.rsvpSec[id], d = (sec && sec.d) || {};
+    const photoLine = (key, ph, who) => {
+      if (!ph) return '';
+      const off = !!(HOST.assign.nophoto || {})[key], cid = HOST.assign.map[key], cur = cid && S.photos[cid], own = cur && /^self:/.test(cur.src || '');
+      const st = off ? `${who} photo is not used on a profile` : !cid ? `${who} photo will show on their profile once you assign a role` : own ? `Showing the photo they set themselves on <b style="color:var(--gold2)">${esc(rname(cid))}</b>` : `${who} photo shows on <b style="color:var(--gold2)">${esc(rname(cid))}</b>'s profile`;
+      return `<div class="contact" style="align-items:center"><img class="gphoto sm" src="${ph}" alt=""><span style="color:var(--muted)">${st}</span><button class="btn sm ghost" data-nophoto="${esc(key)}">${off ? 'USE PHOTO' : "DON'T USE PHOTO"}</button></div>`;
+    };
     const meta = [r.plusOne ? `Plus-one: ${esc(r.plusOneName || 'yes')}` : '', r.pref ? esc(prefs[r.pref] || r.pref) : '', r.diet ? 'Diet: ' + esc(r.diet) : '', (d.note || r.note) ? '“' + esc(d.note || r.note) + '”' : ''].filter(Boolean).join(' · ');
     const linked = HOST.assign.map[id];
     const contact = r.sec ? (sec && sec.err ? `<div class="contact" style="color:var(--red2)">Locked details couldn't be opened (sent with a different key).</div>`
       : `<div class="contact">${d.email ? `<a href="mailto:${esc(d.email)}">✉ ${esc(d.email)}</a>` : ''}${d.phone ? `<a href="tel:${esc(d.phone.replace(/[^\d+]/g, ''))}">☏ ${esc(d.phone)}</a>` : ''}</div>`
-      + (d.photo ? `<div class="contact" style="align-items:center"><span style="color:var(--muted)">${np ? 'Photo not used on their profile' : linked ? `Photo shows on <b style="color:var(--gold2)">${esc(rname(linked))}</b>'s profile` : 'Photo will show on their profile once you assign a role'}</span><button class="btn sm ghost" data-nophoto="${esc(id)}">${np ? 'USE PHOTO' : "DON'T USE PHOTO"}</button></div>` : '')) : '';
+      + photoLine(id, d.photo, 'Their')) : '';
     const assignRow = (key, name) => { const s = HOST.assign.sent[key]; return `<div class="assign">${select(key)}<button class="btn sm" data-rolemsg="${esc(key)}" data-name="${esc(name)}">COPY ROLE TEXT</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><span class="who">${esc(name)} ${HOST.assign.map[key] ? (s ? `<span class="pill green">ROLE SENT ${fmtTime(s)}</span>` : '<span class="pill gold">NOT SENT YET</span>') : ''}</span>${backupsRow(key)}</div>`; };
     return `<div class="guest"><div class="top">${d.photo ? `<img class="gphoto" src="${d.photo}" alt="">` : ''}<span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
       ${contact}${meta ? `<div class="meta">${meta}</div>` : ''}
-      ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") : '') : ''}</div>`;
+      ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") + (r.sec ? photoLine(id + '#p', d.plusPhoto, 'Plus-one\'s') : '') : '') : ''}</div>`;
   };
-  patch($('#rsvpList'), JSON.stringify([rs.map(([id, r]) => [id, r.ts, r.name, r.attending, r.plusOne, r.plusOneName, r.pref, r.note, r.sec && r.sec.iv]), Object.entries(HOST.rsvpSec).map(([k, v]) => k + v.iv + !!v.d), HOST.assign, Object.keys(S.succession), Object.keys(dead())]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
+  patch($('#rsvpList'), JSON.stringify([rs.map(([id, r]) => [id, r.ts, r.name, r.attending, r.plusOne, r.plusOneName, r.pref, r.note, r.sec && r.sec.iv]), Object.entries(HOST.rsvpSec).map(([k, v]) => k + v.iv + !!v.d), Object.entries(S.photos).map(([k, v]) => k + (v && v.src)), HOST.assign, Object.keys(S.succession), Object.keys(dead())]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
 }
 function renderTools() {
   const ps = projectorState(S);

@@ -1,14 +1,12 @@
-Latest update: Sep 25, evening (candlelight invitation page + RSVP emails, phones & photos)
+Latest update: Sep 25, late evening
+(new code words, story fixes, Alex's toast, plus-one photos, desktop invitation layout, printout fixes)
 
-Upload ALL 8 of these to your GitHub repo (Add file -> Upload files), replacing the old ones:
-  config.js        <- NEW: holds the lock guests' phones use for their contact details. Required.
-  story.locked.js  <- rebuilt so your host code can open RSVPs. Required.
-  index.html       <- the new candlelight invitation / RSVP page
-  database.html    <- Guests tab shows emails, phones, photos; photos appear on character profiles
-  core.js
-  party.js
-  theme.css
-  display.html
+Upload ALL 9 of these to your GitHub repo (Add file -> Upload files), replacing the old ones.
+These are every file in the website, so after this your site is completely up to date:
+  config.js  core.js  database.html  display.html  index.html
+  party.js  printkit.js  story.locked.js  theme.css
 
 Don't upload this READ ME file.
 After uploading, wait a minute, then in the host terminal: Tools -> FORCE REFRESH ALL.
+
+IMPORTANT: every character's code word has changed. Don't use any code words from older printouts.

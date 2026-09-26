@@ -101,7 +101,7 @@ tr{break-inside:avoid}
 .noqr{width:1.3in;height:1.3in;border:1px solid var(--line);display:grid;place-items:center;font:8pt 'Segoe UI',Arial,sans-serif;color:var(--red);padding:6pt;text-align:center}
 /* badges: 3 x 4 in, 6 per page */
 @page badges{size:Letter;margin:.3in .25in}
-.badges{page:badges;display:grid;grid-template-columns:4in 4in;grid-auto-rows:3in;gap:.2in .2in;justify-content:center}
+.badges{page:badges;display:grid;grid-template-columns:3.9in 3.9in;grid-auto-rows:2.95in;gap:.14in .12in;justify-content:center}
 .badge{border:1px dashed #b9bdc6;border-radius:6pt;overflow:hidden;display:flex;flex-direction:column;break-inside:avoid;background:#fff}
 .badge .top{background:#0c1220;color:#f3d990;padding:7pt 10pt;display:flex;align-items:center;gap:8pt}
 .badge .top .lg{width:22pt;height:22pt;flex:none}
@@ -143,14 +143,14 @@ tr{break-inside:avoid}
 .prop .lh .lg{width:.6in;height:.6in}
 .prop .lh b{font:700 15pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;display:block}
 .prop .lh small{font:600 8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.24em;color:var(--red)}
-.prop .sticky{position:absolute;right:.6in;top:3.2in;width:2in;height:2in;background:#fff27a;box-shadow:2pt 3pt 6pt rgba(0,0,0,.2);transform:rotate(3deg);display:grid;place-items:center;text-align:center;padding:10pt;font-size:24pt}
+.prop .sticky{position:absolute;right:.6in;top:3.2in;width:2.4in;height:2.1in;background:#fff27a;box-shadow:2pt 3pt 6pt rgba(0,0,0,.2);transform:rotate(3deg);display:grid;place-items:center;text-align:center;padding:10pt;font-size:24pt}
 .prop.termsheet .hand{position:absolute;left:4.4in;top:4.4in;font-size:22pt;transform:rotate(-6deg)}
 .prop.log{background:#f5f5f0;font:11pt/1.5 Consolas,'Courier New',monospace}
 .prop.log table{font:10.5pt Consolas,'Courier New',monospace}
 .prop.log th{font-size:8pt}
 .prop.ledger{background:#f7f6ee;font:11pt Consolas,'Courier New',monospace}
 .prop.ledger table{font:10.5pt Consolas,'Courier New',monospace;background:repeating-linear-gradient(#f7f6ee 0 22pt,#dfe8d8 22pt 23pt)}
-.prop.ledger .ticks{position:absolute;left:.12in;top:2.25in;font-size:22pt;line-height:1.05;writing-mode:vertical-rl;letter-spacing:6pt;color:#555}
+.prop.ledger td.tk,.prop.ledger th.tk{width:16pt;padding:0 2pt;font:20pt/1 'Segoe Script','Bradley Hand',cursive;color:#6b6b6b;text-align:center}
 .prop.handwritten{background:#fdfcf7;clip-path:polygon(0 0,100% 0,100% 88%,94% 91%,87% 87%,79% 92%,71% 88%,63% 93%,55% 88%,47% 92%,39% 87%,31% 92%,23% 88%,15% 93%,7% 88%,0 91%);border:0;background-image:repeating-linear-gradient(#fdfcf7 0 31pt,#b8cbe6 31pt 32pt)}
 .prop.handwritten .hand{font-size:25pt;line-height:32pt;padding-top:28pt;padding-right:1.2in}
 .prop.handwritten .qr{top:.3in;bottom:auto}
@@ -164,7 +164,8 @@ tr{break-inside:avoid}
 .prop.official .seal{display:flex;gap:14pt;align-items:center;border-bottom:1.5pt solid #333;padding-bottom:10pt;margin-bottom:16pt}
 .prop.official .seal .round{width:.8in;height:.8in;border-radius:50%;border:2pt solid #333;display:grid;place-items:center;font:700 8pt 'Segoe UI',Arial,sans-serif;text-align:center;letter-spacing:.1em}
 .prop.official .seal b{font:700 14pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;display:block}
-.prop.official .stampx{position:absolute;right:.6in;top:1.4in;border:2.5pt solid var(--red);color:var(--red);font:700 13pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;padding:4pt 10pt;transform:rotate(-8deg)}
+.prop.photo .back .qr{position:absolute;right:8pt;bottom:8pt;top:auto;left:auto;transform:scale(.72);transform-origin:bottom right}
+.prop.official .stampx{position:absolute;right:.55in;top:.62in;border:2.5pt solid var(--red);color:var(--red);font:700 13pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;padding:4pt 10pt;transform:rotate(-8deg)}
 .err{background:#fde8e8;border:1px solid var(--red);color:var(--red);padding:12pt;border-radius:6pt;font:11pt 'Segoe UI',Arial,sans-serif}
 `;
 
@@ -275,6 +276,7 @@ tr{break-inside:avoid}
         ${st.cue ? `<div class="cue"><b>YOUR CUE</b><br>${esc(st.cue).replace(/\n/g, '<br>')}</div>` : ''}
         ${(st.actions || []).length || mems.length ? `<div class="who" style="color:var(--gold)">WHEN IT STARTS</div><ul class="acts">${(st.actions || []).map(a => `<li>${act(a)}</li>`).join('')}${mems.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : ''}
         ${st.host ? `<div class="who" style="color:var(--gold)">YOU SAY</div><div class="script">${paras(st.host)}</div>` : ''}
+        ${st.script ? `<div class="who" style="color:var(--red)">${esc(st.scriptTitle || 'SCRIPT')}</div><div class="script">${paras(st.script)}</div>` : ''}
         ${st.inspector ? `<div class="who" style="color:var(--blue)">THE INSPECTOR SAYS</div><div class="script insp">${paras(st.inspector)}</div>` : ''}</div>`;
       }).join('') +
 
@@ -332,10 +334,10 @@ tr{break-inside:avoid}
         case 'memo': return `<section class="prop memo">${LH('KANE OIL & ENERGY', 'INTERNAL MEMORANDUM · PRIVILEGED & CONFIDENTIAL')}${paras(text)}${note ? `<div class="sticky hand">${esc(note)}</div>` : ''}${propQR(e)}</section>`;
         case 'termsheet': return `<section class="prop termsheet"><div class="lh"><div><b>VELEZ ENERGY HOLDINGS</b><small>CONFIDENTIAL DRAFT · TERM SHEET · NOT AN OFFER</small></div></div><h3 class="sans" style="margin-top:0">Proposed Acquisition of Kane Oil Gulf Assets</h3>${paras(text)}${note ? `<div class="hand">${esc(note)}</div>` : ''}${propQR(e)}</section>`;
         case 'log': { const rows = text.split('\n').filter(Boolean).map(l => l.split('|').map(s => s.trim())); return `<section class="prop log">${LH('KANE ESTATE SECURITY', 'MOVEMENT LOG · EAST WING · TONIGHT')}<table><tr><th>Time</th><th>Location</th><th>Event</th><th>Init.</th></tr>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table><p class="small">Incident report filed: ☐ Yes &nbsp; ☒ No</p><p style="margin-top:30pt">Supervisor: <span class="hand" style="font-size:20pt">M. Reid</span></p>${propQR(e)}</section>`; }
-        case 'ledger': { const rows = text.split('\n').filter(Boolean).map(l => l.split('|').map(s => s.trim())); return `<section class="prop ledger">${LH('KANE OIL & ENERGY · ACCOUNTS PAYABLE', "LEDGER · RICHARD KANE'S FINAL YEAR · RECOVERED")}<table><tr><th>Date</th><th>Payee</th><th>Coded as</th><th>Amount</th><th>Approved</th></tr>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>${note ? `<div class="ticks">${esc(note)}</div>` : ''}<p class="small" style="margin-top:20pt">Invoices on file: NONE · Work orders on file: NONE</p>${propQR(e)}</section>`; }
+        case 'ledger': { const rows = text.split('\n').filter(Boolean).map(l => l.split('|').map(s => s.trim())), nt = (note.match(/✓/g) || []).length; return `<section class="prop ledger">${LH('ACCOUNTS PAYABLE', "KANE OIL & ENERGY · LEDGER · RICHARD KANE'S FINAL YEAR · RECOVERED")}<table><tr><th class="tk"></th><th>Date</th><th>Payee</th><th>Coded as</th><th>Amount</th><th>Approved</th></tr>${rows.map((r, i) => `<tr><td class="tk">${i < nt ? '✓' : ''}</td>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table><p class="small" style="margin-top:20pt">Invoices on file: NONE · Work orders on file: NONE</p>${propQR(e)}</section>`; }
         case 'handwritten': return `<section class="prop handwritten"><div class="hand">${lines(text)}</div>${propQR(e)}</section>`;
         case 'typed': return `<section class="prop typed"><div>${paras(text)}</div>${propQR(e)}</section>`;
-        case 'photo': return `<section class="prop photo"><div class="print">${PHOTO_SVG}</div><div class="fold">✂ cut out the photograph · fold along the dashed line so the caption is on the back</div><div class="back hand">${esc(text)}</div>${propQR(e)}</section>`;
+        case 'photo': return `<section class="prop photo"><div class="print">${PHOTO_SVG}</div><div class="fold">✂ cut out the photograph · fold along the dashed line so the caption is on the back</div><div class="back hand" style="position:relative">${esc(text)}${propQR(e)}</div></section>`;
         case 'official': default: return `<section class="prop official"><div class="seal"><div class="round">STATE<br>OF<br>RECORD</div><div><b>${esc(String(e.src || '').split('·')[0].trim().toUpperCase())}</b><span class="small muted">${esc(e.src || '')}</span></div></div><div class="stampx">OFFICIAL</div><h2 class="sans" style="margin-top:0">${esc(e.title)}</h2>${paras(text)}${propQR(e)}</section>`;
       }
     };
@@ -367,13 +369,13 @@ tr{break-inside:avoid}
       out.push(sign('dark', 'Kane Oil &amp; Energy · Annual Gala', esc(P.title || 'The Last Toast'), esc(P.subtitle || 'A Murder Mystery Evening'), `${esc(hosted)}<br>${esc(P.date || '')}${P.time ? ' · ' + esc(P.time) : ''}`));
       out.push(sign('', 'This way to the gala', esc(gala.name), '', '', `<div class="arrow">→</div>`));
       out.push(sign('', 'This way to the gala', esc(gala.name), '', '', `<div class="arrow">←</div>`));
-      rooms.forEach(r => out.push(sign(r.alwaysOpen ? 'dark' : '', esc(r.sign || 'Kane Oil & Energy'), esc(r.name), '', esc(r.alwaysOpen ? 'Welcome. Find the Investigation Board, the coat check and the charging station inside.' : 'Private.'))));
+      rooms.forEach(r => out.push(sign(r.alwaysOpen ? 'dark' : '', esc(r.sign || 'Kane Oil & Energy'), esc(r.name), '', esc(r.alwaysOpen ? 'Welcome. Find the Investigation Board, the coat check and the charging station inside.' : (r.desc || 'Private.')))));
       rooms.filter(r => !r.alwaysOpen).forEach(r => out.push(sign('sealed', 'Kane Oil Security', 'SEALED', esc(r.name), 'Do not enter until the Kane Oil Database on your phone shows this room as <b>OPEN</b>.')));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Evidence Tags', 'Found a Kane Oil evidence tag?', 'Scan it with your phone camera, then log in if asked. You decide whether to reveal it to everyone or keep it for now. <b>Please leave the tag where you found it.</b>'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'The Investigation Board', 'Pin revealed evidence here', 'Found something? Once it\'s revealed, add a copy to the board so everyone can connect the dots.'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Coat Check', '', 'Please leave coats and bags here. Kane Oil & Energy is not responsible for anything you find in them.'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Charging Station', 'Keep your terminal alive', 'Your phone is your dossier, your evidence scanner and your vote. Charge it here.'));
-      out.push(sign('', 'Guest Wi-Fi', 'Wi-Fi', 'Network: ______________________', 'Password: ______________________<br>Then open the Kane Oil Database from your role text.'));
+      out.push(sign('', 'Guest Wi-Fi', 'Wi-Fi', '', '<span style="font-size:20pt;line-height:2">Network: ______________________<br>Password: ______________________</span><br>Then open the Kane Oil Database from your role text.'));
       out.push(sign('dark', 'Private event in progress', esc(P.title || 'The Last Toast'), 'A Kane Oil murder mystery', `${esc(hosted)}. Please keep hallway noise down. Thank you!`));
       return out.join('');
     };
@@ -423,15 +425,26 @@ tr{break-inside:avoid}
       part('On the big screen', 'Projector Text') +
       `<table><tr><th>Company</th><td>${esc(D.company || '')}</td></tr><tr><th>Welcome</th><td>${esc(D.welcome || '')}<br><span class="muted">${esc(D.welcomeSub || '')}</span></td></tr><tr><th>After Alex dies</th><td>${esc(D.memoriamText || '')}<br><span class="muted">${esc(D.memoriamSub || '')}</span></td></tr><tr><th>Bulletin slides</th><td>${(D.slides || []).map(esc).join('<br>')}</td></tr></table>`;
 
-    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite };
+    /* ---------------- ALEX'S TOAST CARD (big print, for Alex to hold) ---------------- */
+    const toast = () => {
+      const st = show.find(x => x.script);
+      if (!st) return '<p>No toast script in story.js.</p>';
+      return `<section style="font:13.5pt/1.45 Georgia,serif;max-width:6.6in;margin:0 auto">
+        <p class="sans" style="font-size:8.5pt;letter-spacing:.2em;color:var(--muted);margin:0">FOR ALEXANDRA KANE'S PLAYER ONLY · ABOUT 9:00 PM</p>
+        <h2 style="font:italic 24pt Georgia,serif;margin:4pt 0 10pt">The Toast</h2>
+        ${String(st.script).split(/\n\s*\n/).map(p => /^\(.*\)$/s.test(p.trim()) ? `<p style="font:italic 10.5pt/1.4 'Segoe UI',Arial,sans-serif;color:#a3202f;margin:0 0 9pt">${esc(p.trim())}</p>` : `<p style="margin:0 0 9pt">${esc(p.trim())}</p>`).join('')}
+      </section>`;
+    };
+
+    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {
     const d = build(S, P, opts);
-    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'dossiers', 'invite'];
+    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'toast', 'dossiers', 'invite'];
     const html = which === 'all' ? order.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + d[k]()).join('') : (d[which] || d.host)();
     const label = LABELS[which] || LABELS.host;
     const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST · ${label}";font:7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;
