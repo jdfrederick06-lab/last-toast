@@ -1,0 +1,14 @@
+Latest update: Sep 25, evening (candlelight invitation page + RSVP emails, phones & photos)
+
+Upload ALL 8 of these to your GitHub repo (Add file -> Upload files), replacing the old ones:
+  config.js        <- NEW: holds the lock guests' phones use for their contact details. Required.
+  story.locked.js  <- rebuilt so your host code can open RSVPs. Required.
+  index.html       <- the new candlelight invitation / RSVP page
+  database.html    <- Guests tab shows emails, phones, photos; photos appear on character profiles
+  core.js
+  party.js
+  theme.css
+  display.html
+
+Don't upload this READ ME file.
+After uploading, wait a minute, then in the host terminal: Tools -> FORCE REFRESH ALL.

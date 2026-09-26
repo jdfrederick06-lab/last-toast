@@ -3,114 +3,260 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06110e">
 <title>The Last Toast · Invitation</title>
 <meta name="description" content="You're invited to The Last Toast, a murder mystery evening.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;1,400;1,500&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
 <script>document.write('<link rel="stylesheet" href="theme.css?v=' + Date.now() + '">');</script>
 <style>
-#app{max-width:880px;padding-top:0}
-.nav{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 14px;margin-top:10px;border:1px solid var(--line);border-radius:22px;background:rgba(18,17,23,.55);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);position:sticky;top:10px;z-index:20}
-.nav b{font-size:12px;letter-spacing:.3em;flex:1;font-weight:500;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.nav svg{filter:drop-shadow(0 0 8px rgba(212,162,76,.5))}
-.hero{text-align:center;padding:6vh 0 5vh}
-.hero .logo{width:92px;height:92px;margin:0 auto 18px;filter:drop-shadow(0 0 22px rgba(212,162,76,.55))}
-.kick{font-family:var(--mono);font-size:11px;letter-spacing:.32em;color:var(--cyan);text-transform:uppercase}
-.inworld{font-family:var(--serif);font-style:italic;font-size:clamp(19px,3.4vw,26px);line-height:1.45;color:#e6dfd0;max-width:34ch;margin:18px auto 0}
-.hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(52px,13vw,112px);line-height:1;margin:22px 0 6px;letter-spacing:.01em;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 30px rgba(212,162,76,.25))}
-.hero .sub{font-family:var(--serif);font-style:italic;font-size:clamp(20px,4vw,30px);color:var(--text)}
-.hero .by{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase}
-.orn{width:min(70%,360px);height:1px;margin:26px auto;background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative}
-.orn::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:var(--gold-grad);transform:translate(-50%,-50%);box-shadow:0 0 12px var(--gold)}
-.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-.det{border:1px solid var(--line);border-radius:18px;padding:16px 18px;background:var(--glass);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.det b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
-.det span{font-size:16px;line-height:1.45;font-weight:600}
-.det small{display:block;color:var(--muted);font-size:14px;margin-top:2px;font-weight:400}
-h2.sh{font-family:var(--serif);font-weight:600;font-size:clamp(30px,6vw,42px);margin:0 0 14px;color:var(--gold2);letter-spacing:.01em}
-.prose p{font-size:17px;line-height:1.75;color:#ece6da;margin:0 0 14px}
+/* ===== Candlelight: this page only. It re-skins the shared theme with emerald, candle-gold and ivory. ===== */
+:root{
+  --gold:#d8b878;--gold2:#f1dfb4;--gold-dim:rgba(232,207,154,.12);
+  --gold-grad:linear-gradient(135deg,#fff3d6 0%,#e8cf9a 50%,#b8924a 100%);
+  --text:#f3ead6;--muted:#bdb49e;--dim:#7f8c82;
+  --line:rgba(232,207,154,.16);--line2:rgba(232,207,154,.3);
+  --cyan:#e8cf9a;--green:#9fd8b4;--red:#e0707a;--red2:#f0a5ac;
+  --glass:rgba(255,248,230,.035);--glass2:rgba(255,248,230,.06);
+  --sans:'Cormorant Garamond',Georgia,serif;--serif:'Playfair Display',Georgia,serif;--caps:'Josefin Sans',system-ui,sans-serif;
+}
+html,body{background:#06110e}
+body{background:radial-gradient(120% 70% at 50% -8%,#1f4d40 0%,#0e2821 42%,#06110e 100%) fixed;font-size:18px}
+/* candle glow at the top, soft vignette around the edges */
+body::before{width:90vmin;height:90vmin;left:50%;top:-30vmin;margin-left:-45vmin;background:radial-gradient(circle,rgba(255,214,150,.20),rgba(232,207,154,.06) 40%,transparent 66%);animation:flick 4.5s ease-in-out infinite}
+body::after{top:0;left:0;right:0;bottom:0;width:auto;height:auto;border-radius:0;background:radial-gradient(130% 90% at 50% 40%,transparent 55%,rgba(0,0,0,.55));animation:none}
+@keyframes flick{0%,100%{opacity:.85;transform:scale(1)}30%{opacity:1;transform:scale(1.04)}55%{opacity:.75;transform:scale(.98)}75%{opacity:.95;transform:scale(1.02)}}
+#embers{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#embers i{position:absolute;bottom:-12px;border-radius:50%;background:radial-gradient(circle,#ffe7b3,rgba(232,190,110,0) 70%);opacity:0;animation:ember linear infinite}
+@keyframes ember{0%{opacity:0;transform:translate(0,0)}12%{opacity:.9}70%{opacity:.5}100%{opacity:0;transform:translate(var(--dx),-105vh)}}
+
+#app{max-width:760px;padding-top:0;padding-bottom:40px}
+.caps{font-family:var(--caps);font-weight:300;letter-spacing:.32em;text-transform:uppercase}
+
+/* nav */
+.nav{display:flex;align-items:center;gap:12px;padding:14px 4px;position:sticky;top:0;z-index:20;background:linear-gradient(180deg,rgba(6,17,14,.92),rgba(6,17,14,.6) 70%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.nav .mk{width:30px;height:30px;flex:none}
+.nav b{flex:1;font-family:var(--caps);font-weight:300;font-size:10.5px;letter-spacing:.34em;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav .link{font-family:var(--caps);font-size:10.5px;letter-spacing:.24em;color:var(--muted);text-decoration:none;padding:8px 6px}
+.nav .link:hover{color:var(--gold2)}
+.pillbtn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:8px 18px;font-family:var(--sans);font-style:italic;font-size:16px;color:#1b140a;text-decoration:none;background:var(--gold-grad);box-shadow:0 6px 18px rgba(232,207,154,.22),inset 0 1px 0 rgba(255,255,255,.5)}
+
+/* hero */
+.hero{text-align:center;padding:4vh 0 5vh;position:relative}
+.mono{display:block;margin:0 auto;width:112px;height:112px;overflow:visible}
+.mono circle,.mono path{fill:none;stroke:#e8cf9a;stroke-linecap:round;stroke-linejoin:round}
+.tagline{font-family:var(--sans);font-style:italic;font-size:clamp(18px,4.4vw,23px);color:var(--muted);margin-top:18px}
+.hero h1{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(52px,14vw,104px);line-height:1;margin:10px 0 0;letter-spacing:-.01em;background:linear-gradient(180deg,#fff6dd 10%,#e8cf9a 55%,#b8924a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 36px rgba(232,207,154,.2))}
+.glasses{position:relative;width:132px;height:64px;margin:14px auto 4px}
+.glasses svg{position:absolute;top:0}
+.glasses .gl{left:22px;transform-origin:50% 100%;transform:rotate(-9deg)}
+.glasses .gr{right:22px;transform-origin:50% 100%;transform:rotate(9deg)}
+.sparks{position:absolute;left:50%;top:6px}
+.sparks i{position:absolute;width:9px;height:9px;margin:-4.5px;background:#fff3d6;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);opacity:0}
+.hero .sub{font-family:var(--caps);font-weight:300;font-size:11px;letter-spacing:.42em;color:var(--gold2);margin-top:12px;text-transform:uppercase}
+.inworld{font-family:var(--sans);font-style:italic;font-size:clamp(18px,4.2vw,22px);line-height:1.5;color:#e6dcc4;max-width:30ch;margin:26px auto 0}
+.hero .by{margin-top:22px;font-family:var(--caps);font-weight:300;font-size:10px;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;line-height:2}
+.orn{display:flex;align-items:center;gap:10px;width:min(64%,300px);margin:24px auto}
+.orn::before,.orn::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(232,207,154,.6))}
+.orn::after{background:linear-gradient(90deg,rgba(232,207,154,.6),transparent)}
+.orn i{color:var(--gold);font-style:normal;font-size:12px}
+
+/* sections */
+.panel{background:linear-gradient(180deg,rgba(14,40,33,.62),rgba(8,24,20,.5));border:1px solid var(--line);border-radius:26px;padding:28px 24px;box-shadow:0 24px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,248,230,.06);animation:none}
+.panel::before{background:linear-gradient(90deg,transparent,rgba(241,223,180,.55),transparent)}
+.panel.gold{border-color:rgba(232,207,154,.32)}
+h2.sh{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(28px,7vw,38px);margin:0 0 18px;text-align:center;color:var(--gold2)}
+h2.sh::after{content:"✦";display:block;font-style:normal;font-size:11px;color:var(--gold);margin-top:8px;letter-spacing:0}
+.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;text-align:center}
+.det{padding:14px 10px;border-left:1px solid var(--line)}
+.det:first-child{border-left:0}
+@media(max-width:520px){.det{border-left:0;border-top:1px solid var(--line)}.det:first-child{border-top:0}}
+.det b{display:block;font-family:var(--caps);font-weight:300;font-size:10px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.det span{display:block;font-size:20px;line-height:1.3;font-weight:500}
+.det small{display:block;color:var(--muted);font-size:16px;font-style:italic;margin-top:3px}
+.prose p{font-size:19.5px;line-height:1.7;color:#ece3cc;margin:0 0 14px}
+.prose p:first-child::first-letter{font-family:var(--serif);font-style:italic;float:left;font-size:58px;line-height:.9;padding:6px 10px 0 0;color:var(--gold2)}
 .prose p:last-child{margin-bottom:0}
 .list{margin:0;padding:0;list-style:none}
-.list li{position:relative;padding:10px 0 10px 28px;border-top:1px solid var(--line);font-size:16px;line-height:1.55}
+.list li{position:relative;padding:12px 0 12px 30px;border-top:1px solid var(--line);font-size:19px;line-height:1.5}
 .list li:first-child{border-top:0}
-.list li::before{content:"";position:absolute;left:4px;top:18px;width:7px;height:7px;border-radius:50%;background:var(--gold-grad);box-shadow:0 0 8px rgba(212,162,76,.8)}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.step{border:1px solid var(--line);border-radius:18px;padding:16px;background:rgba(255,255,255,.04)}
-.step .n{font-family:var(--mono);color:var(--cyan);font-size:12px;letter-spacing:.2em}
-.step b{display:block;font-size:17px;margin:6px 0}
-.step p{margin:0;color:var(--muted);font-size:15px;line-height:1.55}
+.list li::before{content:"✦";position:absolute;left:4px;top:13px;font-size:11px;color:var(--gold)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.step{border:1px solid var(--line);border-radius:20px;padding:18px;background:var(--glass)}
+.step .n{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:28px;line-height:1}
+.step b{display:block;font-size:20px;font-weight:600;margin:8px 0 4px}
+.step p{margin:0;color:var(--muted);font-size:17px;line-height:1.5}
+.dbnote{text-align:center;font-style:italic;color:var(--muted);font-size:18px;margin:-6px 0 18px}
 .rules{counter-reset:r;margin:0;padding:0;list-style:none}
-.rules li{counter-increment:r;display:grid;grid-template-columns:44px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.rules li{counter-increment:r;display:grid;grid-template-columns:46px 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
 .rules li:first-child{border-top:0}
-.rules li::before{content:counter(r,decimal-leading-zero);font-size:22px;font-weight:400;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.rules b{display:block;font-size:16.5px;margin-bottom:3px}
-.rules p{margin:0;color:#cfc7b8;font-size:15.5px;line-height:1.6}
+.rules li::before{content:counter(r,upper-roman);font-family:var(--serif);font-style:italic;font-size:20px;color:var(--gold);text-align:right;padding-right:6px}
+.rules b{display:block;font-size:20px;font-weight:600;margin-bottom:2px}
+.rules p{margin:0;color:#d9cfb6;font-size:17.5px;line-height:1.55}
+
+/* RSVP form */
+#rsvp .intro{text-align:center;font-style:italic;color:var(--muted);font-size:18px;margin:-6px 0 22px}
+.field{margin-bottom:18px}
+label.lbl,.lbl{display:block;font-family:var(--caps);font-weight:300;font-size:10.5px;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin:0 0 8px}
+.lbl em{font-family:var(--sans);font-style:italic;text-transform:none;letter-spacing:0;font-size:15px;color:var(--dim);margin-left:6px}
+.input{background:rgba(255,248,230,.04);border:1px solid var(--line2);border-radius:16px;font-family:var(--sans);font-size:19px;padding:13px 16px;color:var(--text)}
+.input:focus{border-color:rgba(241,223,180,.8);box-shadow:0 0 0 4px rgba(232,207,154,.12);background:rgba(255,248,230,.06)}
+.input::placeholder{color:#7f8c82;font-style:italic}
+select.input{background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%)}
+select.input option{background:#0e2821}
+.hint{font-size:15.5px;font-style:italic;color:var(--dim);margin-top:6px;line-height:1.4}
+.hint.err{color:var(--red2);font-style:normal}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .seg label{cursor:pointer}
 .seg input{position:absolute;opacity:0;pointer-events:none}
-.seg span{display:block;text-align:center;border:1px solid var(--line2);border-radius:14px;background:var(--glass);padding:12px 6px;font-weight:700;font-size:14px;transition:.15s}
-.seg input:checked+span{border-color:var(--gold);background:var(--gold-dim);color:var(--gold2);box-shadow:0 0 16px rgba(212,162,76,.25)}
-.seg input:focus-visible+span{outline:2px solid var(--cyan)}
-.check{display:flex;gap:10px;align-items:center;font-size:15px;cursor:pointer}
-.check input{width:20px;height:20px;accent-color:#d4a24c}
-.done{border:1px solid rgba(95,227,168,.45);background:rgba(95,227,168,.07);border-radius:12px;padding:14px;margin-bottom:16px;line-height:1.55}
-.done b{color:var(--green)}
-.notice{display:flex;gap:10px;align-items:center;border:1px solid var(--gold);background:linear-gradient(90deg,rgba(212,162,76,.16),rgba(212,162,76,.04));border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px;margin-bottom:8px;animation:rise .5s ease both;box-shadow:0 0 24px rgba(212,162,76,.2)}
-.hero>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
-.hero>*:nth-child(2){animation-delay:.1s}.hero>*:nth-child(3){animation-delay:.25s}.hero>*:nth-child(4){animation-delay:.4s}.hero>*:nth-child(5){animation-delay:.55s}.hero>*:nth-child(6){animation-delay:.7s}
-footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);padding:30px 0}
+.seg span{display:block;text-align:center;border:1px solid var(--line2);border-radius:999px;padding:11px 6px;font-size:18px;font-style:italic;transition:.25s;background:rgba(255,248,230,.03)}
+.seg input:checked+span{border-color:transparent;background:var(--gold-grad);color:#1b140a;box-shadow:0 6px 18px rgba(232,207,154,.2)}
+.seg input:focus-visible+span{outline:2px solid var(--gold2);outline-offset:2px}
+.check{display:flex;gap:10px;align-items:center;font-size:19px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:#d8b878}
+.photo{display:flex;gap:16px;align-items:center}
+.photo .ph-circle{position:relative;width:92px;height:92px;flex:none;border-radius:50%;padding:2px;background:conic-gradient(from 210deg,#fff3d6,#b8924a,#e8cf9a,#fff3d6);cursor:pointer}
+.photo .ph-circle>div{width:100%;height:100%;border-radius:50%;background:#0c231d center/cover no-repeat;display:grid;place-items:center;color:var(--gold);font-size:30px;font-family:var(--serif)}
+.photo input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.photo .act{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.linkbtn{background:none;border:0;padding:0;color:var(--gold2);font-family:var(--sans);font-style:italic;font-size:18px;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(232,207,154,.4);text-underline-offset:4px}
+.linkbtn.dim{color:var(--dim);font-size:16px}
+.btn.gold{font-family:var(--sans);font-style:italic;font-weight:500;font-size:21px;letter-spacing:0;border-radius:999px;padding:14px 22px;background:var(--gold-grad);color:#1b140a;border:0;box-shadow:0 10px 30px rgba(232,207,154,.25),inset 0 1px 0 rgba(255,255,255,.55)}
+.btn.gold:disabled{opacity:.6}
+.sealnote{display:flex;gap:10px;align-items:flex-start;justify-content:center;margin:14px 0 0;font-size:15.5px;font-style:italic;color:var(--dim);text-align:center;line-height:1.45}
+.done{border:1px solid rgba(232,207,154,.35);background:linear-gradient(180deg,rgba(232,207,154,.10),rgba(232,207,154,.03));border-radius:20px;padding:20px;margin-bottom:22px;text-align:center;line-height:1.5;animation:rise .6s ease both}
+.done .t{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--gold2);display:block;margin-bottom:4px}
+.done img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1.5px solid var(--gold);display:block;margin:0 auto 10px}
+.notice{display:flex;gap:10px;align-items:center;justify-content:center;border:1px solid rgba(232,207,154,.45);background:rgba(232,207,154,.08);border-radius:999px;padding:10px 18px;font-style:italic;font-size:17px;margin:4px 0 8px}
+.portal{text-align:center}
+.portal .btn{font-family:var(--sans);font-style:italic;font-size:19px;border-radius:999px;letter-spacing:0;padding:12px 26px}
+footer{text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px;letter-spacing:.34em;color:var(--dim);padding:26px 0 10px;text-transform:uppercase}
+.toast{font-family:var(--sans);font-size:17px}
+
+/* reveal sections as you scroll */
+.rv{opacity:0;transform:translateY(22px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* ===== the opening: darkness, a gold line draws the monogram, then the page opens out of it ===== */
+#intro{position:fixed;inset:0;z-index:100;background:#030605;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity 1.3s ease}
+#intro .mono{width:150px;height:150px}
+#intro .glow{position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,150,.22),transparent 65%);opacity:0;animation:glowIn 2s .6s ease forwards}
+#intro .cap{font-family:var(--caps);font-weight:300;font-size:10.5px;letter-spacing:.5em;color:var(--gold2);text-transform:uppercase;opacity:0;animation:rise 1s 1.3s ease forwards;padding-left:.5em}
+#intro .skip{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));font-family:var(--sans);font-style:italic;font-size:16px;color:var(--dim);background:none;border:0;cursor:pointer;opacity:0;animation:rise .8s 1s ease forwards}
+#intro .m1{stroke-dasharray:277;stroke-dashoffset:277;animation:draw 1.5s .25s ease-in-out forwards}
+#intro .m2{stroke-dasharray:239;stroke-dashoffset:239;animation:draw 1.2s .6s ease-in-out forwards}
+#intro .m3{stroke-dasharray:120;stroke-dashoffset:120;animation:draw 1s 1.2s ease-in-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes glowIn{to{opacity:1}}
+/* the page opens out of the monogram: a circular window in the darkness grows until it fills the screen */
+#intro .iris{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;box-shadow:0 0 0 300vmax #030605;transition:transform 1.7s cubic-bezier(.65,0,.25,1)}
+body.opening{overflow:hidden}
+body.reveal #intro{background:transparent;pointer-events:none}
+body.reveal #intro .iris{transform:scale(900)}
+body.reveal #intro .mono{transform:scale(1.8);opacity:0;transition:transform 1.4s ease,opacity .9s ease}
+body.reveal #intro .cap,body.reveal #intro .skip,body.reveal #intro .glow{opacity:0!important;transition:opacity .5s}
+
+/* hero animations (start once the page is open) */
+.hero .mono .m1,.hero .mono .m2,.hero .mono .m3{stroke-dasharray:300;stroke-dashoffset:0}
+.hero>*{opacity:0}
+body.go .hero>*{animation:rise 1s cubic-bezier(.2,.7,.2,1) forwards}
+body.go .hero>*:nth-child(2){animation-delay:.15s}body.go .hero>*:nth-child(3){animation-delay:.3s}body.go .hero>*:nth-child(4){animation-delay:.45s}
+body.go .hero>*:nth-child(5){animation-delay:1.5s}body.go .hero>*:nth-child(6){animation-delay:1.65s}body.go .hero>*:nth-child(7){animation-delay:1.8s}body.go .hero>*:nth-child(8){animation-delay:1.95s}
+.glasses svg{opacity:0}
+body.go .glasses .gl{animation:gl 1.1s .55s cubic-bezier(.3,.7,.3,1.2) forwards}
+body.go .glasses .gr{animation:gr 1.1s .55s cubic-bezier(.3,.7,.3,1.2) forwards}
+body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
+@keyframes gl{from{opacity:0;transform:translateX(-70px) rotate(-9deg)}70%{opacity:1;transform:translateX(7px) rotate(7deg)}to{opacity:1;transform:rotate(-9deg)}}
+@keyframes gr{from{opacity:0;transform:translateX(70px) rotate(9deg)}70%{opacity:1;transform:translateX(-7px) rotate(-7deg)}to{opacity:1;transform:rotate(9deg)}}
+@keyframes spark{0%{opacity:0;transform:translate(0,0) scale(.2)}30%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.1)}}
+@media(prefers-reduced-motion:reduce){#intro{display:none}.hero>*,.glasses svg,.rv{opacity:1!important;transform:none!important}#embers{display:none}}
 </style>
 </head>
 <body>
+<div id="embers" aria-hidden="true"></div>
+
+<div id="intro" aria-hidden="true">
+  <div class="iris"></div>
+  <div class="glow"></div>
+  <svg class="mono" viewBox="0 0 96 96"><circle class="m1" cx="48" cy="48" r="44" stroke-width="1.1" transform="rotate(-90 48 48)"/><circle class="m2" cx="48" cy="48" r="38" stroke-width=".55" transform="rotate(90 48 48)"/><path class="m3" d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
+  <div class="cap">Kane Oil &amp; Energy</div>
+  <button class="skip" id="skipIntro">Tap to enter</button>
+</div>
+
 <div id="app">
-  <nav class="nav"><span id="navLogo"></span><b>KANE OIL &amp; ENERGY</b><a class="btn sm ghost" id="portalLink" href="database.html">DATABASE</a><a class="btn sm gold" id="rsvpNav" href="#rsvp">RSVP</a></nav>
+  <nav class="nav">
+    <svg class="mk" viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" fill="none" stroke="#e8cf9a" stroke-width="2"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" fill="none" stroke="#e8cf9a" stroke-width="4" stroke-linecap="round"/></svg>
+    <b>Kane Oil &amp; Energy</b>
+    <a class="link" id="portalLink" href="database.html">Database</a>
+    <a class="pillbtn" id="rsvpNav" href="#rsvp">Reply</a>
+  </nav>
   <div class="notice hidden" id="notice"><span class="pulse-dot"></span><span id="noticeText"></span></div>
+
   <header class="hero">
-    <div class="logo" id="heroLogo"></div>
-    <div class="kick">An invitation</div>
-    <p class="inworld" id="inWorld"></p>
+    <svg class="mono" viewBox="0 0 96 96"><circle class="m1" cx="48" cy="48" r="44" stroke-width="1.1"/><circle class="m2" cx="48" cy="48" r="38" stroke-width=".55"/><path class="m3" d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
+    <div class="tagline" id="tagline"></div>
     <h1 id="title"></h1>
+    <div class="glasses" aria-hidden="true">
+      <svg class="gl" width="38" height="62" viewBox="0 0 34 56"><path d="M2 6 Q17 26 32 6 Z" fill="rgba(232,207,154,.16)" stroke="#e8cf9a" stroke-width="1.2" stroke-linejoin="round"/><path d="M17 20 V48 M8 52 H26" stroke="#e8cf9a" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <svg class="gr" width="38" height="62" viewBox="0 0 34 56"><path d="M2 6 Q17 26 32 6 Z" fill="rgba(232,207,154,.16)" stroke="#e8cf9a" stroke-width="1.2" stroke-linejoin="round"/><path d="M17 20 V48 M8 52 H26" stroke="#e8cf9a" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <div class="sparks"><i style="--x:-26px;--y:-16px"></i><i style="--x:24px;--y:-20px"></i><i style="--x:0;--y:-30px"></i><i style="--x:-16px;--y:8px"></i><i style="--x:18px;--y:6px"></i></div>
+    </div>
     <div class="sub" id="subtitle"></div>
+    <p class="inworld" id="inWorld"></p>
+    <div class="orn"><i>✦</i></div>
     <div class="by" id="hostBy"></div>
   </header>
 
-  <section class="panel gold"><div class="details" id="details"></div></section>
+  <section class="panel gold rv"><div class="details" id="details"></div></section>
 
-  <section class="panel"><h2 class="sh">The evening</h2><div class="prose" id="premise"></div></section>
-  <section class="panel"><h2 class="sh">What to expect</h2><ul class="list" id="expect"></ul></section>
-  <section class="panel"><h2 class="sh">The Kane Oil Database</h2><p class="note" style="margin:0 0 14px;font-size:15px">This party runs on a secure web app that works on any phone. Nothing to install.</p><div class="steps" id="how"></div></section>
-  <section class="panel hidden" id="rulesPanel"><h2 class="sh">Rules of the night</h2><ol class="rules" id="rules"></ol></section>
+  <section class="panel rv"><h2 class="sh">The evening</h2><div class="prose" id="premise"></div></section>
+  <section class="panel rv"><h2 class="sh">What to expect</h2><ul class="list" id="expect"></ul></section>
+  <section class="panel rv"><h2 class="sh">The Kane Oil Database</h2><p class="dbnote">The night runs on a private web app that works on any phone. Nothing to install.</p><div class="steps" id="how"></div></section>
+  <section class="panel rv hidden" id="rulesPanel"><h2 class="sh">Rules of the night</h2><ol class="rules" id="rules"></ol></section>
 
-  <section class="panel gold" id="rsvp">
-    <h2 class="sh">RSVP</h2>
+  <section class="panel gold rv" id="rsvp">
+    <h2 class="sh">Kindly reply</h2>
+    <p class="intro" id="rsvpIntro">We would be delighted to have you.</p>
     <div id="rsvpDone"></div>
-    <p class="note hidden" id="rsvpClosed" style="font-size:16px;margin:0">RSVPs are now closed. If your plans have changed, please contact the host directly.</p>
-    <form id="rsvpForm" autocomplete="on">
-      <div class="field"><label class="lbl" for="rName">Your name</label><input class="input" id="rName" name="name" required maxlength="60" autocomplete="name"></div>
+    <p class="hint hidden" id="rsvpClosed" style="font-size:19px;text-align:center;margin:0">Replies are now closed. If your plans have changed, please contact the hosts directly.</p>
+    <form id="rsvpForm" autocomplete="on" novalidate>
+      <div class="field"><label class="lbl" for="rName">Your name</label><input class="input" id="rName" name="name" required maxlength="60" autocomplete="name" placeholder="First and last name"></div>
       <div class="field"><span class="lbl">Will you attend?</span>
         <div class="seg" role="radiogroup">
-          <label><input type="radio" name="att" value="yes" checked><span>Yes</span></label>
-          <label><input type="radio" name="att" value="maybe"><span>Maybe</span></label>
-          <label><input type="radio" name="att" value="no"><span>Can't make it</span></label>
+          <label><input type="radio" name="att" value="yes" checked><span>Joyfully</span></label>
+          <label><input type="radio" name="att" value="maybe"><span>Perhaps</span></label>
+          <label><input type="radio" name="att" value="no"><span>Regretfully</span></label>
         </div></div>
+      <div class="two">
+        <div class="field"><label class="lbl" for="rEmail">Dickinson email</label><input class="input" id="rEmail" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="you@dickinson.edu" required><div class="hint err hidden" id="emailErr">Please use your @dickinson.edu email.</div></div>
+        <div class="field" id="phoneWrap"><label class="lbl" for="rPhone">Phone number</label><input class="input" id="rPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(555) 555-5555"><div class="hint err hidden" id="phoneErr">Please enter a phone number we can text.</div></div>
+      </div>
       <div id="attendingFields">
         <div class="field"><label class="check"><input type="checkbox" id="rPlus"> I'm bringing a plus-one</label></div>
-        <div class="field hidden" id="plusWrap"><label class="lbl" for="rPlusName">Plus-one's name</label><input class="input" id="rPlusName" maxlength="60"></div>
+        <div class="field hidden" id="plusWrap"><label class="lbl" for="rPlusName">Plus-one's name</label><input class="input" id="rPlusName" maxlength="60" placeholder="First and last name"></div>
         <div class="field"><label class="lbl" for="rPref">What kind of role would you like?</label>
-          <select class="input" id="rPref"><option value="surprise">Surprise me</option><option value="big">Big, dramatic role: I want to be in the thick of it</option><option value="medium">Medium role</option><option value="small">Small, low-pressure role</option></select></div>
-        <div class="field"><label class="lbl" for="rDiet">Dietary needs</label><input class="input" id="rDiet" maxlength="120" placeholder="Optional"></div>
+          <select class="input" id="rPref"><option value="surprise">Surprise me</option><option value="big">A big, dramatic role, in the thick of it</option><option value="medium">A medium role</option><option value="small">A small, low-pressure role</option></select></div>
+        <div class="field"><span class="lbl">Your photo <em>optional</em></span>
+          <div class="photo">
+            <label class="ph-circle" title="Choose a photo"><div id="photoPrev">✦</div><input type="file" id="rPhoto" accept="image/*" aria-label="Choose a photo"></label>
+            <div class="act"><button type="button" class="linkbtn" id="photoPick">Add a photo of yourself</button><button type="button" class="linkbtn dim hidden" id="photoClear">Remove photo</button>
+              <div class="hint" style="margin:0">The hosts will put it on your character's profile so other guests can find you. Only guests with a code word will ever see it.</div></div>
+          </div><div class="hint err hidden" id="photoErr"></div></div>
       </div>
-      <div class="field"><label class="lbl" for="rNote">A note for the host</label><textarea class="input" id="rNote" maxlength="400" placeholder="Optional" style="min-height:80px"></textarea></div>
-      <button class="btn gold block" type="submit" id="rBtn">SEND RSVP</button>
-      <p class="note" style="margin:10px 0 0;text-align:center">Your RSVP goes to the host. Please don't include phone numbers, addresses, or anything private.</p>
+      <div class="field"><label class="lbl" for="rNote">A note for the hosts <em>optional</em></label><textarea class="input" id="rNote" maxlength="400" placeholder="Anything we should know? A nickname you go by, a friend you'd like to be cast near…" style="min-height:96px"></textarea></div>
+      <button class="btn gold block" type="submit" id="rBtn">Reply with pleasure</button>
+      <p class="sealnote">✦ Your email, phone number, photo and note are sealed so that only the hosts can read them.</p>
     </form>
   </section>
-  <section class="panel" id="portalPanel" style="text-align:center">
+
+  <section class="panel rv portal" id="portalPanel">
     <h2 class="sh">Already have your code word?</h2>
-    <p class="note" style="font-size:15px;margin:0 0 14px">Enter the Kane Oil Database to read your dossier.</p>
-    <a class="btn gold" href="database.html">ENTER THE KANE OIL DATABASE →</a>
+    <p class="dbnote">Step inside the Kane Oil Database to read your dossier.</p>
+    <a class="btn" href="database.html">Enter the database →</a>
   </section>
-  <footer>KANE OIL &amp; ENERGY · EST. 1974 · PRIVATE EVENT</footer>
+  <footer>Kane Oil &amp; Energy · Est. 1974 · A private event</footer>
 </div>
 
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
@@ -118,25 +264,59 @@ footer{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing
 <script>
 let backend, S = normRoot({}), lastSite = null;
 const myId = () => store.get('myRsvp');
+const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') || {}; } catch (e) { return {}; } };
 
-// page content: party.js plus any live edits the host publishes from the dashboard
-$('#navLogo').innerHTML = LOGO(28); $('#heroLogo').innerHTML = LOGO(92);
+/* ---------- the opening (once per visit; tap to skip) ---------- */
+(function opening() {
+  const intro = $('#intro'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let seen = false; try { seen = sessionStorage.getItem('kane:intro') === '1'; } catch (e) { }
+  const go = () => document.body.classList.add('go');
+  if (seen || reduce || location.hash === '#rsvp') { intro.remove(); go(); return; }
+  try { sessionStorage.setItem('kane:intro', '1'); } catch (e) { }
+  document.body.classList.add('opening');
+  let done = false;
+  const open = () => {
+    if (done) return; done = true;
+    document.body.classList.add('reveal');
+    setTimeout(go, 700);
+    setTimeout(() => { intro.remove(); document.body.classList.remove('opening', 'reveal'); }, 2000);
+  };
+  const t = setTimeout(open, 2300);
+  intro.addEventListener('click', () => { clearTimeout(t); open(); });
+})();
+
+/* drifting embers, like candlelight */
+(function embers() {
+  const box = $('#embers'), n = innerWidth < 600 ? 12 : 20;
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'), s = 2 + Math.random() * 4;
+    e.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;--dx:${(Math.random() * 80 - 40).toFixed(0)}px;animation-duration:${14 + Math.random() * 16}s;animation-delay:${(Math.random() * 18).toFixed(1)}s`;
+    box.appendChild(e);
+  }
+})();
+
+/* sections rise in as you scroll to them */
+const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }), { threshold: .12 }) : null;
+$$('.rv').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+
+/* ---------- page content: party.js plus any live edits the host publishes from the dashboard ---------- */
 function renderStatic() {
   const sig = JSON.stringify(S.site || {}); if (sig === lastSite) return; lastSite = sig;
   const P = mergeParty(window.PARTY, S.site);
+  $('#tagline').textContent = P.tagline || 'An evening of candlelight, secrets & suspicion';
   $('#inWorld').textContent = P.inWorld || '';
   $('#title').textContent = P.title || 'The Last Toast';
   $('#subtitle').textContent = P.subtitle || '';
-  $('#hostBy').textContent = [P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ');
+  $('#hostBy').innerHTML = [P.host ? 'Hosted by ' + esc(P.host) : '', P.sponsor ? 'Sponsored by ' + esc(P.sponsor) : ''].filter(Boolean).join('<br>');
   document.title = (P.title || 'The Last Toast') + ' · Invitation';
   $('#notice').classList.toggle('hidden', !P.notice);
   $('#noticeText').textContent = P.notice || '';
   $('#details').innerHTML = [
-    ['When', P.date, P.time], ['Where', P.venue, P.address], ['Dress', P.dress, ''], ['RSVP by', P.rsvpBy, '']
+    ['When', P.date, P.time], ['Where', P.venue, P.address], ['Attire', P.dress, ''], ['Reply by', P.rsvpBy, '']
   ].filter(d => d[1]).map(([k, a, b]) => `<div class="det"><b>${k}</b><span>${esc(a)}</span>${b ? `<small>${esc(b)}</small>` : ''}</div>`).join('');
   $('#premise').innerHTML = (P.premise || []).map(p => `<p>${esc(p)}</p>`).join('');
   $('#expect').innerHTML = (P.expect || []).map(p => `<li>${esc(p)}</li>`).join('');
-  $('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">STEP ${String(i + 1).padStart(2, '0')}</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
+  $('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">${['i', 'ii', 'iii', 'iv', 'v', 'vi'][i] || i + 1}.</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
   const showDb = P.showDatabaseLink !== false;
   $('#portalLink').classList.toggle('hidden', !showDb); $('#portalPanel').classList.toggle('hidden', !showDb);
   const showRules = P.showRules && (P.rules || []).length;
@@ -144,51 +324,85 @@ function renderStatic() {
   if (showRules) $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
   const open = P.rsvpOpen !== false;
   $('#rsvpForm').classList.toggle('hidden', !open);
+  $('#rsvpIntro').classList.toggle('hidden', !open);
   $('#rsvpClosed').classList.toggle('hidden', open);
   $('#rsvpNav').classList.toggle('hidden', !open);
 }
 renderStatic();
 
-// RSVP form
+/* ---------- RSVP form ---------- */
+let photo = null;
+const attending = () => document.querySelector('input[name=att]:checked').value !== 'no';
 const syncFields = () => {
-  const att = document.querySelector('input[name=att]:checked').value;
-  $('#attendingFields').classList.toggle('hidden', att === 'no');
+  $('#attendingFields').classList.toggle('hidden', !attending());
+  $('#phoneWrap').classList.toggle('hidden', !attending());
   $('#plusWrap').classList.toggle('hidden', !$('#rPlus').checked);
 };
 document.querySelectorAll('input[name=att]').forEach(r => r.addEventListener('change', syncFields));
 $('#rPlus').addEventListener('change', syncFields);
+
+function showPhoto() {
+  const pv = $('#photoPrev');
+  pv.style.backgroundImage = photo ? `url("${photo}")` : ''; pv.textContent = photo ? '' : '✦';
+  $('#photoPick').textContent = photo ? 'Choose a different photo' : 'Add a photo of yourself';
+  $('#photoClear').classList.toggle('hidden', !photo);
+}
+$('#photoPick').addEventListener('click', () => $('#rPhoto').click());
+$('#photoClear').addEventListener('click', () => { photo = null; $('#rPhoto').value = ''; showPhoto(); });
+$('#rPhoto').addEventListener('change', async () => {
+  const f = $('#rPhoto').files[0], err = $('#photoErr'); err.classList.add('hidden');
+  if (!f) return;
+  try { photo = await shrinkPhoto(f); showPhoto(); }
+  catch (e) { err.textContent = e.message; err.classList.remove('hidden'); }
+});
+
+const emailOk = v => /^[^\s@]+@dickinson\.edu$/i.test(v);
+const phoneOk = v => v.replace(/\D/g, '').length >= 10;
+$('#rEmail').addEventListener('blur', () => { const v = $('#rEmail').value.trim(); $('#emailErr').classList.toggle('hidden', !v || emailOk(v)); });
+$('#rPhone').addEventListener('blur', () => { const v = $('#rPhone').value.trim(); $('#phoneErr').classList.toggle('hidden', !v || phoneOk(v)); });
+
 let prefilled = false;
 function showDone() {
-  const r = myId() && S.rsvps[myId()];
-  const lbl = { yes: "you're coming", maybe: "you're a maybe", no: "you can't make it" };
-  $('#rsvpDone').innerHTML = r ? `<div class="done"><b>✓ RSVP received.</b> ${esc(r.name)}, we have you down as: ${lbl[r.attending] || r.attending}${r.plusOne ? ', plus one' : ''}. You can change your answer below any time.</div>` : '';
-  $('#rBtn').textContent = r ? 'UPDATE RSVP' : 'SEND RSVP';
+  const r = myId() && S.rsvps[myId()], m = mine();
+  const lbl = { yes: "we'll see you there", maybe: "you're a perhaps (let us know!)", no: "you regretfully can't make it" };
+  $('#rsvpDone').innerHTML = r ? `<div class="done">${m.photo ? `<img src="${m.photo}" alt="">` : ''}<span class="t">Thank you, ${esc(r.name.split(' ')[0])}.</span>Your reply has been received: ${lbl[r.attending] || esc(r.attending)}${r.plusOne ? ', with a plus-one' : ''}.<br><span style="color:var(--muted);font-style:italic">You can change your answer below at any time.</span></div>` : '';
+  $('#rBtn').textContent = r ? 'Update my reply' : 'Reply with pleasure';
   if (r && !prefilled) {
     prefilled = true;
     $('#rName').value = r.name || '';
     const radio = document.querySelector(`input[name=att][value="${r.attending}"]`); if (radio) radio.checked = true;
     $('#rPlus').checked = !!r.plusOne; $('#rPlusName').value = r.plusOneName || '';
-    $('#rPref').value = r.pref || 'surprise'; $('#rDiet').value = r.diet || ''; $('#rNote').value = r.note || '';
+    $('#rPref').value = r.pref || 'surprise';
+    $('#rEmail').value = m.email || ''; $('#rPhone').value = m.phone || ''; $('#rNote').value = m.note || '';
+    photo = m.photo || null; showPhoto();
     syncFields();
   }
 }
 $('#rsvpForm').addEventListener('submit', async e => {
   e.preventDefault();
-  if (!backend) { toast('ONE MOMENT', 'Still connecting. Try again in a second.', 'err'); return; }
-  const name = $('#rName').value.trim(); if (!name) return;
-  const att = document.querySelector('input[name=att]:checked').value;
-  const id = myId() || uid('r');
-  const rec = {
-    name, attending: att, ts: backend.TS(),
-    plusOne: att !== 'no' && $('#rPlus').checked, plusOneName: att !== 'no' && $('#rPlus').checked ? $('#rPlusName').value.trim() : '',
-    pref: att !== 'no' ? $('#rPref').value : '', diet: att !== 'no' ? $('#rDiet').value.trim() : '', note: $('#rNote').value.trim()
-  };
-  const btn = $('#rBtn'); btn.disabled = true;
-  await backend.set('rsvps/' + id, rec);
-  store.set('myRsvp', id);
-  btn.disabled = false;
-  toast('RSVP SENT', att === 'no' ? "We'll miss you." : 'See you at the gala.', 'ok');
-  showDone();
+  if (!backend) { toast('One moment', 'Still connecting. Try again in a second.', 'err'); return; }
+  const name = $('#rName').value.trim(), email = $('#rEmail').value.trim(), phone = $('#rPhone').value.trim(), att = document.querySelector('input[name=att]:checked').value, going = att !== 'no';
+  if (!name) { $('#rName').focus(); toast('Your name', 'Please tell us who you are.', 'err'); return; }
+  if (!emailOk(email)) { $('#emailErr').classList.remove('hidden'); $('#rEmail').focus(); return; }
+  if (going && !phoneOk(phone)) { $('#phoneErr').classList.remove('hidden'); $('#rPhone').focus(); return; }
+  $('#emailErr').classList.add('hidden'); $('#phoneErr').classList.add('hidden');
+  const btn = $('#rBtn'); btn.disabled = true; btn.textContent = 'Sealing your reply…';
+  try {
+    const priv = { email: email.toLowerCase(), phone: going ? phone : '', note: $('#rNote').value.trim(), photo: going ? photo : null };
+    const id = myId() || uid('r');
+    const rec = {
+      name, attending: att, ts: backend.TS(),
+      plusOne: going && $('#rPlus').checked, plusOneName: going && $('#rPlus').checked ? $('#rPlusName').value.trim() : '',
+      pref: going ? $('#rPref').value : '',
+      sec: await sealForHost(priv)
+    };
+    await backend.set('rsvps/' + id, rec);
+    store.set('myRsvp', id); store.set('myRsvpData', JSON.stringify(priv));
+    toast('Reply received', att === 'no' ? "You'll be missed." : 'We look forward to seeing you.', 'ok');
+    showDone();
+    $('#rsvp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) { console.error(err); toast("Couldn't send", err.message || 'Please try again.', 'err'); }
+  btn.disabled = false; btn.textContent = myId() && S.rsvps[myId()] ? 'Update my reply' : 'Reply with pleasure';
 });
 syncFields();
 

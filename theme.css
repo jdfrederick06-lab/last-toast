@@ -2,16 +2,16 @@
    Colors live in :root; change them here to re-skin every page. */
 :root{
   --bg:#07080b;--bg2:#0d0d12;
-  --panel:rgba(255,255,255,.045);--panel-solid:#121117;
-  --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
+  --panel:rgba(255,255,255,.06);--panel-solid:#121117;
+  --line:rgba(255,255,255,.12);--line2:rgba(255,255,255,.16);
   --blue:#8b6cff;--cyan:#c9b8ff;              /* violet accent (info, Inspector, sources) */
   --gold:#d4a24c;--gold2:#f7dc9a;--gold-dim:rgba(212,162,76,.14);
   --gold-grad:linear-gradient(135deg,#fbe7b0 0%,#d4a24c 55%,#8a5f22 100%);
   --red:#ff4d5e;--red2:#ff9aa3;--red-dim:rgba(255,77,94,.14);
   --green:#5fe3a8;
   --text:#f2ede3;--muted:#a59d8e;--dim:#6f6a60;
-  --glass:rgba(255,255,255,.045);--glass2:rgba(255,255,255,.075);
-  --blur:blur(18px) saturate(140%);
+  --glass:rgba(255,255,255,.06);--glass2:rgba(255,255,255,.09);
+  --blur:blur(22px) saturate(160%);
   --sans:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --mono:'Space Grotesk',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
@@ -22,8 +22,8 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-f
 body{background:var(--bg);overflow-x:hidden}
 /* drifting light behind the glass */
 body::before,body::after{content:"";position:fixed;z-index:0;pointer-events:none;border-radius:50%;will-change:transform}
-body::before{width:70vmax;height:70vmax;left:-25vmax;top:-30vmax;background:radial-gradient(circle,rgba(212,162,76,.30),rgba(212,162,76,0) 62%);animation:driftA 28s ease-in-out infinite alternate}
-body::after{width:65vmax;height:65vmax;right:-28vmax;bottom:-30vmax;background:radial-gradient(circle,rgba(92,58,170,.38),rgba(92,58,170,0) 62%);animation:driftB 34s ease-in-out infinite alternate}
+body::before{width:80vmax;height:80vmax;left:-32vmax;top:-34vmax;background:radial-gradient(circle,rgba(212,162,76,.55),rgba(200,150,62,.18) 38%,rgba(212,162,76,0) 66%);animation:driftA 28s ease-in-out infinite alternate}
+body::after{width:80vmax;height:80vmax;right:-34vmax;bottom:-36vmax;background:radial-gradient(circle,rgba(92,58,170,.7),rgba(75,47,138,.25) 38%,rgba(92,58,170,0) 66%);animation:driftB 34s ease-in-out infinite alternate}
 @keyframes driftA{to{transform:translate(12vmax,10vmax) scale(1.12)}}
 @keyframes driftB{to{transform:translate(-10vmax,-12vmax) scale(1.08)}}
 #app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:16px 16px 96px}
@@ -49,10 +49,10 @@ a{color:var(--gold2)}
 .iconbtn:hover{color:var(--text);border-color:rgba(247,220,154,.5);background:var(--glass2)}
 
 /* glass panels */
-.panel{position:relative;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:20px;margin-bottom:16px;box-shadow:0 18px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.07);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
-.panel::before{content:"";position:absolute;left:22px;right:22px;top:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(247,220,154,.55),transparent)}
+.panel{position:relative;border:1px solid var(--line);border-radius:24px;background:var(--panel);padding:20px;margin-bottom:16px;box-shadow:0 18px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.07);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.panel::before{content:"";position:absolute;left:24px;right:24px;top:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;flex-wrap:wrap}
-.ph h2{margin:0;font-size:11.5px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);display:flex;align-items:center;gap:9px}
+.ph h2{margin:0;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:9px}
 .ph h2::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold-grad);box-shadow:0 0 10px rgba(212,162,76,.8)}
 .ph .sub{font-size:11px;color:var(--dim);letter-spacing:.06em}
 .panel.red{border-color:rgba(255,77,94,.4);background:linear-gradient(180deg,rgba(255,77,94,.12),rgba(255,77,94,.04));box-shadow:0 0 44px rgba(255,77,94,.16),inset 0 1px 0 rgba(255,255,255,.06)}

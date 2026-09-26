@@ -25,6 +25,9 @@ window.CONFIG = {
   // Leave blank to detect it automatically.
   SITE_URL: 'https://jdfrederick06-lab.github.io/last-toast/',
 
+  // Public lock for RSVP contact details and photos (only the host code can open them). Don't change it.
+  RSVP_KEY: {"kty":"RSA","e":"AQAB","n":"wgr9yYrzTFvs2VGzkKkTvdjaMluDIYi-2soO9tZEnbpjDBgiFaw0glnU3DdN7DQePL5VhIDc-kUvrgc5JEgCL5qimzfXar5MpFr3yaHAl3vQxvVPaLnXSgAysqfh_CASvSlf41OHuA6GQl1dP7qNfhA4Cn5s3R5FPtfu3-rjC0WSUF-tQtFYM2Abg1N6g83jq7KeAj0B5UO3n3I7mRhznGtfaxl1wUs7HwqxC4nAm5Wdp0gcQLDRTDSJ9_2nejq4PNebTCBfrrttfdTuZ8ey-OxMB-Z1u3H6LLGBDEpi3uVJXJ96REhTxufv8JqiKfaDoIn5a7XmZwoK_ypJVGwDgQ","alg":"RSA-OAEP-256","ext":true},
+
   HEARTBEAT_MS: 5000,      // how often phones ping "I'm here"
   ONLINE_WINDOW_MS: 15000  // a phone counts as online if it pinged within this window
 };

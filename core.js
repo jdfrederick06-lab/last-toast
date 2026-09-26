@@ -71,6 +71,44 @@ async function _stableKey(code, purpose) {
 const deriveAssignKey = code => _stableKey(code, 'assign');   // host's private role assignments
 const deriveMsgKey = code => _stableKey(code, 'msg');         // private messages to one player
 
+/* ---------- RSVP privacy: guests lock their contact details + photo so only the host code can open them ---------- */
+const _OAEP = { name: 'RSA-OAEP', hash: 'SHA-256' };
+/** Lock an object to the host (anyone can lock, only the host bundle's private key can open). */
+async function sealForHost(obj) {
+  if (!CONFIG.RSVP_KEY) throw new Error('RSVP_KEY is missing from config.js');
+  const pub = await crypto.subtle.importKey('jwk', Object.assign({}, CONFIG.RSVP_KEY, { key_ops: ['encrypt'] }), _OAEP, false, ['encrypt']);
+  const raw = crypto.getRandomValues(new Uint8Array(32));
+  const aes = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
+  const blob = await encryptJSON(aes, obj);
+  blob.k = b64(await crypto.subtle.encrypt(_OAEP, pub, raw));
+  return blob;
+}
+async function importHostRsvpKey(jwk) {
+  return jwk ? crypto.subtle.importKey('jwk', Object.assign({}, jwk, { key_ops: ['decrypt'] }), _OAEP, false, ['decrypt']) : null;
+}
+async function openSealed(privKey, blob) {
+  const raw = await crypto.subtle.decrypt(_OAEP, privKey, unb64(blob.k));
+  const aes = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+  return decryptJSON(aes, blob);
+}
+/** Profile photos are locked with the Who's Who key, so only people holding a code word can see them. */
+const importDirKey = keyB64 => crypto.subtle.importKey('raw', unb64(keyB64), 'AES-GCM', false, ['encrypt', 'decrypt']);
+/** Shrink a photo to a small square-ish JPEG (keeps the database light). Returns a data: URL. */
+function shrinkPhoto(file, max = 360, quality = 0.78) {
+  return new Promise((res, rej) => {
+    if (!file || !/^image\//.test(file.type)) return rej(new Error('Please choose a photo (JPG, PNG or HEIC saved as JPG).'));
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height)), w = Math.round(img.width * s), h = Math.round(img.height * s);
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h); URL.revokeObjectURL(url);
+      res(cv.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("That photo couldn't be read. Try a JPG or PNG.")); };
+    img.src = url;
+  });
+}
+
 /* ---------- live sync backends: on(cb), update({path:value}), set(path, value) ---------- */
 function LocalBackend() {
   const FULL = store.k('db'); let bc = null, cbs = [], last = null;
@@ -159,6 +197,7 @@ function normRoot(r) {
     rooms: s.rooms || {},           // roomId -> ts when opened
     found: s.found || {},           // evidenceId -> {by, ts}  (scanned, maybe not revealed yet)
     delivered: s.delivered || {},   // evidenceId -> ts   (official report sent to the Inspector)
+    photos: s.photos || {},         // charId -> {iv,ct,src,b}  guest's RSVP photo, locked with the Who's Who key
     log: s.log || {},               // activity log
     rsvps: r.rsvps || {},
     assign: r.assign || null,       // encrypted role assignments (host only)

@@ -37,17 +37,28 @@
 .pnav .nb{position:absolute;top:5px;right:calc(50% - 20px);min-width:16px;height:16px;border-radius:999px;background:var(--red);color:#fff;font-size:9.5px;letter-spacing:0;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 10px rgba(255,77,94,.6);animation:pop .3s ease}
 .view{animation:viewIn .35s cubic-bezier(.2,.7,.2,1) both}
 @keyframes viewIn{from{opacity:0;transform:translateY(10px)}}
-@media(max-width:520px){.pnav{top:66px}}
+/* phones: floating glass tab bar at the bottom, like an app */
+@media(max-width:700px){
+  .pnav{position:fixed;top:auto;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));margin:0;z-index:40;border-radius:26px;padding:6px;background:rgba(24,22,28,.7)}
+  .pnav button{border-radius:20px;padding:9px 2px 8px;letter-spacing:.06em;text-transform:none;font-size:11px}
+  body:has(.pnav) #app{padding-bottom:120px}
+  body:has(.pnav) #toasts{bottom:calc(100px + env(safe-area-inset-bottom))}
+}
 
 /* ---------- dossier ---------- */
-.dhead{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.hex{width:78px;height:78px;border-radius:50%;padding:2.5px;background:conic-gradient(from 200deg,#fbe7b0,#8a5f22,#d4a24c,#fbe7b0);display:grid;flex:none;box-shadow:0 8px 30px rgba(212,162,76,.25);animation:ringIn .9s cubic-bezier(.2,.7,.2,1) both}
+.dhead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.03));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.hex{width:78px;height:78px;min-width:78px;aspect-ratio:1;align-self:center;border-radius:50%;padding:2.5px;background:conic-gradient(from 200deg,#fbe7b0,#8a5f22,#d4a24c,#fbe7b0);display:grid;flex:none;box-shadow:0 8px 30px rgba(212,162,76,.25);animation:ringIn .9s cubic-bezier(.2,.7,.2,1) both}
 .hex span{display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 30% 25%,#2a2530,#121117 70%);font-weight:500;font-size:24px;letter-spacing:.02em;background-clip:padding-box}
 .hex span{color:var(--gold2)}
+.hex span img,.person .mono-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.person .mono-av{overflow:hidden}
+.guest .gphoto{width:54px;height:54px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(212,162,76,.6);flex:none}
+.guest .contact{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:13px;margin:6px 0 2px}
+.guest .contact a{color:var(--gold2);text-decoration:none}
 .hex.red{background:conic-gradient(from 200deg,#ffb3ba,#8a1424,#ff4d5e,#ffb3ba);box-shadow:0 8px 30px rgba(255,77,94,.35)}
 .hex.red span{color:var(--red2)}
 @keyframes ringIn{from{transform:rotate(-120deg) scale(.8);opacity:0}}
-.dname{margin:0;font-size:clamp(24px,6vw,34px);line-height:1.08;font-weight:400;letter-spacing:-.01em}
+.dname{margin:0;font-size:clamp(24px,6vw,34px);line-height:1.08;font-weight:400;letter-spacing:-.01em;color:#fff}
 .cls{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:.14em;padding:5px 11px;border-radius:999px;border:1px solid rgba(212,162,76,.45);color:var(--gold2);background:var(--gold-dim);line-height:1.4}
 .cls.red{border-color:rgba(255,77,94,.6);color:var(--red2);background:var(--red-dim);box-shadow:0 0 16px rgba(255,77,94,.25)}
 .cls.blue{border-color:rgba(201,184,255,.6);color:var(--cyan);background:rgba(201,184,255,.08)}
@@ -337,7 +348,7 @@ body.has-nextbar #app{padding-bottom:120px}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:85;overflow:hidden}
 .confetti i{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-@media(max-width:520px){.dhead{grid-template-columns:1fr}.hex{width:64px;height:72px}.nextbar{padding:8px 8px 8px 12px}.hold{min-width:132px}}
+@media(max-width:520px){.dhead{gap:12px;padding:14px}.hex{width:66px;height:66px;min-width:66px}.hex span{font-size:20px}.nextbar{padding:8px 8px 8px 12px}.hold{min-width:132px}}
 </style>
 </head>
 <body>
@@ -452,30 +463,63 @@ async function restore() {
 async function adopt(b) {
   ME = b; ui.msgCache = {}; ui.msgKey = null; ui.finds = {}; ui.succ = null;
   try { ui.directory = await openDirectory(b.dirKey); } catch (e) { ui.directory = []; }
+  ui.photos = {}; ui.photoIv = {}; ui.photoVer = 0;
+  try { ui.dirKey = b.dirKey ? await importDirKey(b.dirKey) : null; } catch (e) { ui.dirKey = null; }
   if (b.type === 'host') {
     HOST = {
       list: b.characters, chars: Object.fromEntries(b.characters.map(c => [c.id, c])),
       evidence: b.evidence, ev: Object.fromEntries(b.evidence.map(e => [e.id, e])),
       notes: b.hostNotes, killerId: b.killerId, inspectorId: b.inspectorId, built: b.built,
       rooms: b.rooms || [], show: b.show || [], solution: b.solution || {}, hints: b.hints || [], directory: b.directory || ui.directory,
-      assign: { map: {}, sent: {}, chain: {} }, assignCt: null, assignKey: await deriveAssignKey(session.code), msgKeys: {}, threadCache: {}
+      assign: { map: {}, sent: {}, chain: {}, nophoto: {} }, assignCt: null, assignKey: await deriveAssignKey(session.code), msgKeys: {}, threadCache: {},
+      rsvpKey: null, rsvpSec: {}
     };
-    await syncAssign();
+    try { HOST.rsvpKey = await importHostRsvpKey(b.rsvpKey); } catch (e) { console.warn('RSVP key', e); }
+    await syncAssign(); await syncRsvpSecrets();
   } else {
     HOST = null;
     ui.msgKey = await deriveMsgKey(session.code);
     decryptInbox(); loadFinds();
   }
+  setTimeout(syncPhotos, 0);
 }
 async function syncAssign() {
   if (!HOST) return;
   const blob = S.assign, ct = blob ? blob.ct : '';
   if (ct === HOST.assignCt) return;
   HOST.assignCt = ct;
-  if (!blob) { HOST.assign = { map: {}, sent: {}, chain: {} }; return; }
-  try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? { map: d.map || {}, sent: d.sent || {}, chain: d.chain || {} } : { map: d || {}, sent: {}, chain: {} }; }
-  catch (e) { HOST.assign = { map: {}, sent: {}, chain: {} }; }
+  if (!blob) { HOST.assign = { map: {}, sent: {}, chain: {}, nophoto: {} }; return; }
+  try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? { map: d.map || {}, sent: d.sent || {}, chain: d.chain || {}, nophoto: d.nophoto || {} } : { map: d || {}, sent: {}, chain: {}, nophoto: {} }; }
+  catch (e) { HOST.assign = { map: {}, sent: {}, chain: {}, nophoto: {} }; }
 }
+/** Host only: open each guest's locked RSVP details (email, phone, note, photo). */
+async function syncRsvpSecrets() {
+  if (!HOST || !HOST.rsvpKey) return false;
+  let changed = false;
+  for (const [rid, r] of Object.entries(S.rsvps)) {
+    const sec = r && r.sec; if (!sec || !sec.k) continue;
+    if (HOST.rsvpSec[rid] && HOST.rsvpSec[rid].iv === sec.iv) continue;
+    try { HOST.rsvpSec[rid] = { iv: sec.iv, d: await openSealed(HOST.rsvpKey, sec) }; }
+    catch (e) { HOST.rsvpSec[rid] = { iv: sec.iv, d: null, err: true }; }
+    changed = true;
+  }
+  for (const rid of Object.keys(HOST.rsvpSec)) if (!S.rsvps[rid]) { delete HOST.rsvpSec[rid]; changed = true; }
+  return changed;
+}
+/** Everyone with a code word: open the guests' profile photos (locked with the Who's Who key). */
+async function syncPhotos() {
+  if (!ui.dirKey || !ui.photos) return;
+  let changed = false;
+  for (const [cid, p] of Object.entries(S.photos)) {
+    if (!p || !p.iv || ui.photoIv[cid] === p.iv) continue;
+    ui.photoIv[cid] = p.iv;
+    try { const d = await decryptJSON(ui.dirKey, p); ui.photos[cid] = /^data:image\/(jpeg|png|webp);base64,/.test(d.p || '') ? d.p : null; } catch (e) { ui.photos[cid] = null; }
+    changed = true;
+  }
+  for (const cid of Object.keys(ui.photos)) if (!S.photos[cid]) { delete ui.photos[cid]; delete ui.photoIv[cid]; changed = true; }
+  if (changed) { ui.photoVer++; render(); if (HOST) renderAdmin(); }
+}
+const photoOf = id => (ui.photos && ui.photos[id]) || null;
 async function saveAssign() {
   const blob = await encryptJSON(HOST.assignKey, HOST.assign);
   HOST.assignCt = blob.ct;
@@ -507,6 +551,8 @@ function onState(prev, was) {
   }
   if (ME && ME.type === 'player' && !playerRec(ME.c.id)) heartbeat();
   if (HOST && (S.assign ? S.assign.ct : '') !== HOST.assignCt) syncAssign().then(renderAdmin);
+  if (HOST) syncRsvpSecrets().then(c => { if (c) renderAdmin(); });
+  if (ME) syncPhotos();
   render();
   if (HOST) hostJobs();
   checkPendingScan();
@@ -677,7 +723,8 @@ function revealEvidence(e, byId, where, kind) {
 const inspectorActive = () => !!(ME && ME.inspector && Object.keys(ME.inspector.scripts || {}).some(id => S.phaseLog[id]));
 function revealedFor(c, host) { return host || (c.killer ? S.flags.killerKnows : c.inspector ? inspectorActive() : (c.id in dead())); }
 function hexBadge(c, red) {
-  return `<div class="hex ${red ? 'red' : ''}"><span>${esc(initials(c.name))}</span></div>`;
+  const ph = photoOf(c.id);
+  return `<div class="hex ${red ? 'red' : ''}"><span>${ph ? `<img src="${ph}" alt="">` : esc(initials(c.name))}</span></div>`;
 }
 const sealedBlock = (small = 'SEALED · CLEARANCE INSUFFICIENT', bars = [96, 88, 72]) => `<div class="sealed"><div class="bars">${bars.map(w => `<i style="width:${w}%"></i>`).join('')}</div><small>▲ ${small}</small></div>`;
 function dossierHTML(c, host = false) {
@@ -716,7 +763,7 @@ function directoryHTML(meId, filter) {
   const groups = [...new Set([...GROUPS, ...list.map(d => d.group)])].filter(g => list.some(d => d.group === g));
   return groups.map(g => `<div class="dir-group">${esc(g)}</div><div class="dir">${list.filter(d => d.group === g).map((d, i) => {
     const isMe = d.id === meId, gone = d.id in dd;
-    return `<div class="person ${isMe ? 'me' : ''} ${gone ? 'gone' : ''}" style="animation-delay:${Math.min(i, 8) * 35}ms"><div class="mono-av">${esc(initials(d.name))}</div><div><b>${esc(d.name)}</b><span class="ti">${esc(d.title)}</span><p>${esc(d.blurb)}</p>
+    return `<div class="person ${isMe ? 'me' : ''} ${gone ? 'gone' : ''}" style="animation-delay:${Math.min(i, 8) * 35}ms"><div class="mono-av">${photoOf(d.id) ? `<img src="${photoOf(d.id)}" alt="">` : esc(initials(d.name))}</div><div><b>${esc(d.name)}</b><span class="ti">${esc(d.title)}</span><p>${esc(d.blurb)}</p>
       <div class="tags">${gone ? '<span class="pill red">DECEASED</span>' : ''}${isMe ? '<span class="pill gold">YOU</span><button class="btn sm" data-view-go="file" style="min-height:26px;padding:3px 10px">OPEN MY DOSSIER</button>' : ''}</div></div></div>`;
   }).join('')}</div>`).join('') || `<div class="empty">NO MATCHES</div>`;
 }
@@ -836,9 +883,9 @@ function renderPlayer() {
   const c = ME.c, dd = dead(), iAmDead = c.id in dd;
   const setNB = (k, n) => { const b = $('#nb-' + k); if (b) { b.textContent = n > 9 ? '9+' : n; b.classList.toggle('hidden', !n); } };
   patch($('#deadStrip'), String(iAmDead), iAmDead ? `<div class="deadstrip">STATUS: DECEASED · STAY IN CHARACTER · AWAIT HOST INSTRUCTIONS</div>` : '');
-  patch($('#dossierBody'), [S.flags.killerKnows, JSON.stringify(dd), Object.keys(S.phaseLog).length].join('|'), dossierHTML(c));
+  patch($('#dossierBody'), [S.flags.killerKnows, JSON.stringify(dd), Object.keys(S.phaseLog).length, ui.photoVer].join('|'), dossierHTML(c));
   patch($('#mapBody'), JSON.stringify(S.rooms) + (ui.freshRooms ? [...ui.freshRooms].join() : ''), mapHTML());
-  patch($('#dirBody'), JSON.stringify([ui.dirFilter, dd, S.unmasked, ui.directory.length]), directoryHTML(c.id, ui.dirFilter));
+  patch($('#dirBody'), JSON.stringify([ui.dirFilter, dd, S.unmasked, ui.directory.length, ui.photoVer]), directoryHTML(c.id, ui.dirFilter));
 
   // verdict
   const v = S.verdict, vp = $('#verdictPanel');
@@ -1038,6 +1085,7 @@ function adminShellHTML() {
     </section>
     <section class="panel"><div class="ph"><h2>RSVPs &amp; Roles</h2><span class="sub" id="rsvpSub"></span></div>
       <p class="note" style="margin:0 0 12px">Give each guest a character, then tap <b>Copy role text</b> to send them their character and code word privately. Characters marked <span class="pill must">★ MUST CAST</span> carry the solution: fill them first. Under each guest you can add <b>backup roles</b>: if their character dies, their phone switches to the first backup that's still free, using the same code word.</p>
+      <div class="row-gap" style="margin:0 0 12px"><button class="btn sm" id="copyContacts">COPY CONTACT LIST</button><span class="note">Names, Dickinson emails, phone numbers and roles, ready to paste into a spreadsheet. Only this host terminal can read them.</span></div>
       <div id="openRoles"></div>
       <div id="rsvpList"></div>
     </section>
@@ -1138,6 +1186,28 @@ function verdictReveal() {
 }
 
 /* ---------------- host: background jobs (hints, backup roles) ---------------- */
+/* RSVP photos follow the guest onto whichever character they're assigned (and onto a backup role
+   if that character dies). Locked with the Who's Who key, so only people with a code word can see them. */
+async function syncPhotoLinks() {
+  if (!ui.dirKey || !HOST.rsvpKey) return;
+  await syncRsvpSecrets();
+  const want = {};
+  for (const [key, cid] of Object.entries(HOST.assign.map || {})) {
+    if (key.includes('#')) continue;                                // plus-ones don't send a photo
+    const r = S.rsvps[key], sec = HOST.rsvpSec[key];
+    if (!r || !r.sec || !sec || !sec.d || !sec.d.photo || (HOST.assign.nophoto || {})[key]) continue;
+    want[cid] = { src: key + ':' + r.sec.iv, photo: sec.d.photo };
+  }
+  for (const [deadId, s] of Object.entries(S.succession)) if (s && s.to && want[deadId] && !want[s.to]) want[s.to] = want[deadId];
+  const upd = {};
+  for (const [cid, w] of Object.entries(want)) {
+    const cur = S.photos[cid];
+    if (cur && cur.src === w.src && cur.b === HOST.built) continue;
+    upd['live/photos/' + cid] = Object.assign(await encryptJSON(ui.dirKey, { p: w.photo }), { src: w.src, b: HOST.built });
+  }
+  for (const cid of Object.keys(S.photos)) if (!want[cid]) upd['live/photos/' + cid] = null;
+  if (Object.keys(upd).length) await backend.update(upd);
+}
 async function hostJobs() {
   if (!HOST || !ready || ui.jobBusy) return;
   ui.jobBusy = true;
@@ -1159,6 +1229,7 @@ async function hostJobs() {
         log(`${cc.name}'s player continues as ${nc.name}`);
       }
     }
+    await syncPhotoLinks();
   } catch (e) { console.warn(e); }
   ui.jobBusy = false;
 }
@@ -1512,6 +1583,16 @@ function bindAdmin() {
     const bk = e.target.closest('[data-addbackup]');
     if (bk && bk.value) { const key = bk.dataset.addbackup; HOST.assign.chain = HOST.assign.chain || {}; (HOST.assign.chain[key] = HOST.assign.chain[key] || []).push(bk.value); await saveAssign(); toast('BACKUP ROLE ADDED', `${rname(bk.value)} is next if their character dies.`, 'ok'); }
   });
+  $('#copyContacts').addEventListener('click', async () => {
+    await syncRsvpSecrets();
+    const rows = [['Name', 'Attending', 'Email', 'Phone', 'Character', 'Plus-one', 'Note']];
+    Object.entries(S.rsvps).filter(([, r]) => r && r.name).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0)).forEach(([id, r]) => {
+      const d = (HOST.rsvpSec[id] || {}).d || {};
+      rows.push([r.name, r.attending, d.email || '', d.phone || '', HOST.assign.map[id] ? rname(HOST.assign.map[id]) : '', r.plusOne ? (r.plusOneName || 'yes') + (HOST.assign.map[id + '#p'] ? ' (' + rname(HOST.assign.map[id + '#p']) + ')' : '') : '', (d.note || r.note || '').replace(/\s+/g, ' ')]);
+    });
+    const ok = await copyText(rows.map(r => r.join('\t')).join('\n'));
+    toast(ok ? 'COPIED' : 'COPY FAILED', ok ? `${rows.length - 1} guests. Paste into Google Sheets or Excel.` : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err');
+  });
   $('#rsvpList').addEventListener('click', async e => {
     const rb = e.target.closest('[data-rmbackup]');
     if (rb) { const [key, idx] = rb.dataset.rmbackup.split('|'); (HOST.assign.chain[key] || []).splice(+idx, 1); await saveAssign(); return; }
@@ -1523,6 +1604,8 @@ function bindAdmin() {
       toast('ROLE TEXT COPIED', `Paste it into a private message to ${name}.`, 'ok'); return;
     }
     const aq = e.target.closest('[data-accessqr]'); if (aq) { const cid = HOST.assign.map[aq.dataset.accessqr]; if (cid) accessQR(cid); else toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
+    const nph = e.target.closest('[data-nophoto]');
+    if (nph) { const id = nph.dataset.nophoto; HOST.assign.nophoto = HOST.assign.nophoto || {}; if (HOST.assign.nophoto[id]) delete HOST.assign.nophoto[id]; else HOST.assign.nophoto[id] = true; await saveAssign(); hostJobs(); return; }
     const del = e.target.closest('[data-delrsvp]');
     if (del) {
       const id = del.dataset.delrsvp;
@@ -1659,13 +1742,18 @@ function renderGuests(who) {
   const prefs = { big: 'Big dramatic role', medium: 'Medium role', small: 'Small, low-pressure role', surprise: 'Surprise me' };
   const card = ([id, r]) => {
     const st = r.attending === 'yes' ? ['green', 'COMING'] : r.attending === 'maybe' ? ['gold', 'MAYBE'] : ['', "CAN'T MAKE IT"];
-    const meta = [r.plusOne ? `Plus-one: ${esc(r.plusOneName || 'yes')}` : '', r.pref ? esc(prefs[r.pref] || r.pref) : '', r.diet ? 'Diet: ' + esc(r.diet) : '', r.note ? '“' + esc(r.note) + '”' : ''].filter(Boolean).join(' · ');
+    const sec = HOST.rsvpSec[id], d = (sec && sec.d) || {}, np = !!(HOST.assign.nophoto || {})[id];
+    const meta = [r.plusOne ? `Plus-one: ${esc(r.plusOneName || 'yes')}` : '', r.pref ? esc(prefs[r.pref] || r.pref) : '', r.diet ? 'Diet: ' + esc(r.diet) : '', (d.note || r.note) ? '“' + esc(d.note || r.note) + '”' : ''].filter(Boolean).join(' · ');
+    const linked = HOST.assign.map[id];
+    const contact = r.sec ? (sec && sec.err ? `<div class="contact" style="color:var(--red2)">Locked details couldn't be opened (sent with a different key).</div>`
+      : `<div class="contact">${d.email ? `<a href="mailto:${esc(d.email)}">✉ ${esc(d.email)}</a>` : ''}${d.phone ? `<a href="tel:${esc(d.phone.replace(/[^\d+]/g, ''))}">☏ ${esc(d.phone)}</a>` : ''}</div>`
+      + (d.photo ? `<div class="contact" style="align-items:center"><span style="color:var(--muted)">${np ? 'Photo not used on their profile' : linked ? `Photo shows on <b style="color:var(--gold2)">${esc(rname(linked))}</b>'s profile` : 'Photo will show on their profile once you assign a role'}</span><button class="btn sm ghost" data-nophoto="${esc(id)}">${np ? 'USE PHOTO' : "DON'T USE PHOTO"}</button></div>` : '')) : '';
     const assignRow = (key, name) => { const s = HOST.assign.sent[key]; return `<div class="assign">${select(key)}<button class="btn sm" data-rolemsg="${esc(key)}" data-name="${esc(name)}">COPY ROLE TEXT</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><span class="who">${esc(name)} ${HOST.assign.map[key] ? (s ? `<span class="pill green">ROLE SENT ${fmtTime(s)}</span>` : '<span class="pill gold">NOT SENT YET</span>') : ''}</span>${backupsRow(key)}</div>`; };
-    return `<div class="guest"><div class="top"><span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
-      ${meta ? `<div class="meta">${meta}</div>` : ''}
+    return `<div class="guest"><div class="top">${d.photo ? `<img class="gphoto" src="${d.photo}" alt="">` : ''}<span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
+      ${contact}${meta ? `<div class="meta">${meta}</div>` : ''}
       ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") : '') : ''}</div>`;
   };
-  patch($('#rsvpList'), JSON.stringify([rs, HOST.assign, Object.keys(S.succession), Object.keys(dead())]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
+  patch($('#rsvpList'), JSON.stringify([rs.map(([id, r]) => [id, r.ts, r.name, r.attending, r.plusOne, r.plusOneName, r.pref, r.note, r.sec && r.sec.iv]), Object.entries(HOST.rsvpSec).map(([k, v]) => k + v.iv + !!v.d), HOST.assign, Object.keys(S.succession), Object.keys(dead())]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
 }
 function renderTools() {
   const ps = projectorState(S);
