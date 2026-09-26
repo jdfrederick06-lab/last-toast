@@ -190,54 +190,8 @@ function hintStatus(S, isOnlineFn) {
   return { round, votes: votes.length, needed, eligible: eligible.length, left: Math.max(0, (S.hintTotal || 0) - round) };
 }
 
-/* ---------- sound (synthesized, no files to download) ---------- */
-const Sound = (() => {
-  let ctx = null, muted = store.get('muted') === '1';
-  const ac = () => {
-    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
-    if (ctx.state === 'suspended') ctx.resume();
-    return ctx;
-  };
-  ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, ac, { passive: true }));
-  function tone(freq, dur, o = {}) {
-    const c = ac(); if (!c || muted) return;
-    const t = c.currentTime + (o.delay || 0), osc = c.createOscillator(), g = c.createGain();
-    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(freq, t);
-    if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq + o.slide), t + dur);
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(o.vol || 0.12, t + (o.attack || 0.01)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    osc.connect(g).connect(c.destination); osc.start(t); osc.stop(t + dur + 0.05);
-  }
-  function noise(dur, o = {}) {
-    const c = ac(); if (!c || muted) return;
-    const t = c.currentTime + (o.delay || 0), buf = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate), d = buf.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-    src.buffer = buf; f.type = 'lowpass'; f.frequency.value = o.filter || 1000;
-    g.gain.setValueAtTime(o.vol || 0.1, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    src.connect(f).connect(g).connect(c.destination); src.start(t);
-  }
-  const FX = {
-    tap() { tone(1200, 0.05, { type: 'triangle', vol: 0.03 }); },
-    ok() { tone(660, 0.14, { vol: 0.07 }); tone(990, 0.22, { vol: 0.07, delay: 0.08 }); },
-    error() { tone(196, 0.3, { type: 'square', vol: 0.04 }); tone(147, 0.35, { type: 'square', vol: 0.04, delay: 0.12 }); },
-    chime() { [880, 1175, 1568, 2093].forEach((f, i) => tone(f, 0.7, { vol: 0.06, delay: i * 0.08 })); },
-    memory() { [392, 494, 587, 740].forEach((f, i) => tone(f, 1.6, { vol: 0.045, delay: i * 0.14, attack: 0.2 })); },
-    radio() { noise(0.14, { vol: 0.06, filter: 3500 }); tone(1500, 0.07, { type: 'square', vol: 0.03, delay: 0.16 }); tone(1500, 0.07, { type: 'square', vol: 0.03, delay: 0.28 }); },
-    door() { tone(90, 0.7, { type: 'sawtooth', vol: 0.04, slide: 50, attack: 0.1 }); noise(0.5, { vol: 0.04, filter: 400, delay: 0.1 }); tone(523, 0.5, { vol: 0.04, delay: 0.35 }); },
-    alarm() { for (let i = 0; i < 3; i++) { tone(620, 0.34, { type: 'square', vol: 0.06, delay: i * 0.7, slide: 260 }); tone(880, 0.34, { type: 'square', vol: 0.06, delay: i * 0.7 + 0.35, slide: -260 }); } },
-    death() { tone(55, 2.2, { vol: 0.3, slide: -18 }); noise(1.4, { vol: 0.2, filter: 260 }); tone(233, 1.6, { type: 'sawtooth', vol: 0.035, delay: 0.1, slide: -120 }); },
-    killer() { tone(41, 3.4, { type: 'sawtooth', vol: 0.09, attack: 0.4 }); tone(62, 3.2, { vol: 0.09, delay: 0.3, attack: 0.4 }); tone(311, 2.4, { type: 'triangle', vol: 0.03, delay: 0.9, slide: -40 }); },
-    reveal() { for (let i = 0; i < 18; i++) noise(0.05, { vol: 0.03 + i * 0.006, filter: 1400, delay: i * 0.075 }); [98, 147, 196, 294].forEach(f => tone(f, 2.8, { type: 'sawtooth', vol: 0.05, delay: 1.4 })); noise(0.9, { vol: 0.25, filter: 2200, delay: 1.4 }); },
-    vote() { tone(740, 0.1, { type: 'triangle', vol: 0.05 }); tone(1109, 0.16, { type: 'triangle', vol: 0.05, delay: 0.07 }); },
-    phase() { tone(523, 0.18, { vol: 0.06 }); tone(784, 0.3, { vol: 0.06, delay: 0.1 }); }
-  };
-  return {
-    play(name) { try { FX[name] && FX[name](); } catch (e) { } },
-    get muted() { return muted; },
-    toggle() { muted = !muted; store.set('muted', muted ? '1' : '0'); if (!muted) FX.tap(); return muted; },
-    context: ac
-  };
-})();
+/* Sound was removed on request. This silent stub keeps older calls harmless. */
+const Sound = { play() { }, muted: true, toggle() { return true; }, context() { return null; } };
 
 /** Smoothly count a number up/down inside an element. */
 function animateNum(el, to) {
@@ -295,4 +249,4 @@ function openModal(html, wide) {
 }
 function closeModal() { const m = document.getElementById('modal'); m.classList.remove('open'); m.innerHTML = ''; }
 
-const LOGO = s => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><linearGradient id="lg${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5dc93"/><stop offset="1" stop-color="#b8862e"/></linearGradient></defs><path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" stroke="url(#lg${s})" stroke-width="2.5"/><path d="M32 12 49 22v20L32 52 15 42V22z" stroke="rgba(90,214,255,.55)" stroke-width="1"/><path d="M25 20v24M25 32l11-12M28.5 29 38 44" stroke="url(#lg${s})" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOGO = s => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none" aria-hidden="true" class="kane-logo"><defs><linearGradient id="lg${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe7b0"/><stop offset=".5" stop-color="#d4a24c"/><stop offset="1" stop-color="#8a5f22"/></linearGradient><linearGradient id="lh${s}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" fill="url(#lg${s})"/><path d="M32 3 57 17.5v14.5H7V17.5z" fill="url(#lh${s})"/><path d="M32 7.5 53 19.7v24.6L32 56.5 11 44.3V19.7z" stroke="#07080b" stroke-opacity=".35" stroke-width=".8"/><path d="M25 20v24M25 32l11-12M28.5 29 38 44" stroke="#0b0a0e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;

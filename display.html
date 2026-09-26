@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Kane Oil Display</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
 html,body{height:100%;overflow:hidden}
@@ -17,20 +17,20 @@ body.idle{cursor:none}
 .scene.enter{animation:sceneIn .9s cubic-bezier(.2,.7,.2,1)}
 @keyframes sceneIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
 .kicker{font-family:var(--mono);letter-spacing:.35em;text-transform:uppercase;color:var(--cyan);font-size:clamp(12px,1.25vw,22px)}
-.huge{font-weight:900;letter-spacing:.06em;line-height:1.02;font-size:clamp(40px,7.5vw,150px);margin:.25em 0}
-.gold{color:var(--gold2);text-shadow:0 0 40px rgba(217,178,91,.35)}
+.huge{font-weight:500;letter-spacing:.02em;line-height:1.02;font-size:clamp(40px,7.5vw,150px);margin:.25em 0}
+.huge.gold{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 40px rgba(212,162,76,.3))}
 .lede{font-size:clamp(18px,2.1vw,40px);color:var(--muted);max-width:60ch;line-height:1.4}
 .rule{width:min(40vw,520px);height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:3vh auto}
 
 /* company page */
 .corp-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:1.2vw;padding:3vh 4vw}
-.corp-top svg{width:clamp(36px,3.6vw,68px);height:auto;filter:drop-shadow(0 0 12px rgba(217,178,91,.5))}
-.corp-top b{font-size:clamp(16px,1.6vw,30px);letter-spacing:.3em;color:var(--gold2)}
+.corp-top svg{width:clamp(36px,3.6vw,68px);height:auto;filter:drop-shadow(0 0 12px rgba(212,162,76,.5))}
+.corp-top b{font-size:clamp(16px,1.6vw,30px);letter-spacing:.3em;font-weight:500;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .corp-top .clock{margin-left:auto;font-family:var(--mono);font-size:clamp(16px,1.8vw,34px);color:var(--text);letter-spacing:.08em}
-.bulletin{margin-top:5vh;border:1px solid var(--line2);border-radius:16px;padding:2.2vh 3vw;background:rgba(8,14,28,.7);min-width:min(70vw,1100px)}
+.bulletin{margin-top:5vh;border:1px solid var(--line);border-radius:28px;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:inset 0 1px 0 rgba(255,255,255,.07);padding:2.2vh 3vw;background:rgba(255,255,255,.05);min-width:min(70vw,1100px)}
 .bulletin .k{font-family:var(--mono);letter-spacing:.3em;font-size:clamp(11px,1vw,18px);color:var(--gold)}
 .bulletin .s{font-size:clamp(18px,2.2vw,42px);font-weight:600;margin-top:1vh;transition:opacity .5s}
-.ticker{position:absolute;left:0;right:0;bottom:0;border-top:1px solid var(--line2);background:rgba(3,6,14,.92);overflow:hidden;height:clamp(40px,5vh,70px);display:flex;align-items:center}
+.ticker{position:absolute;left:0;right:0;bottom:0;border-top:1px solid var(--line);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);background:rgba(10,10,13,.8);overflow:hidden;height:clamp(40px,5vh,70px);display:flex;align-items:center}
 .ticker .track{display:flex;gap:4vw;white-space:nowrap;animation:tick 40s linear infinite;padding-left:100%}
 .ticker span{font-family:var(--mono);font-size:clamp(14px,1.5vw,28px);letter-spacing:.06em}
 .ticker .up{color:var(--green)}.ticker .dn{color:var(--red2)}
@@ -39,56 +39,56 @@ body.idle{cursor:none}
 
 /* title card */
 .title .huge{font-family:var(--serif);font-weight:700;letter-spacing:.04em;font-size:clamp(56px,10vw,200px)}
-.title .glass{width:clamp(50px,6vw,110px);height:auto;margin-bottom:2vh;filter:drop-shadow(0 0 20px rgba(217,178,91,.6))}
+.title .glass{width:clamp(50px,6vw,110px);height:auto;margin-bottom:2vh;filter:drop-shadow(0 0 20px rgba(212,162,76,.6))}
 .title .sub{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3vw,58px);color:var(--text)}
 .title .host{font-family:var(--mono);letter-spacing:.3em;color:var(--muted);font-size:clamp(12px,1.2vw,22px);margin-top:3vh;text-transform:uppercase}
 
 /* evidence */
-.evcard{max-width:min(88vw,1500px);width:100%;text-align:left;border:1px solid rgba(217,178,91,.5);border-radius:20px;background:linear-gradient(180deg,rgba(14,22,42,.92),rgba(6,10,20,.92));padding:4vh 4vw;box-shadow:0 0 80px rgba(217,178,91,.15)}
-.stampx{display:inline-block;font-family:var(--mono);letter-spacing:.3em;font-size:clamp(12px,1.2vw,22px);color:var(--red2);border:2px solid var(--red);padding:.4em .8em;border-radius:8px;transform:rotate(-2deg);margin-bottom:2vh;box-shadow:0 0 24px rgba(255,59,84,.35)}
+.evcard{max-width:min(88vw,1500px);width:100%;text-align:left;border:1px solid rgba(212,162,76,.4);border-radius:32px;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);background:linear-gradient(180deg,rgba(34,31,40,.78),rgba(14,13,18,.86));padding:4vh 4vw;box-shadow:0 0 80px rgba(212,162,76,.15)}
+.stampx{display:inline-block;font-family:var(--mono);letter-spacing:.3em;font-size:clamp(12px,1.2vw,22px);color:var(--red2);border:2px solid var(--red);padding:.4em .8em;border-radius:8px;transform:rotate(-2deg);margin-bottom:2vh;box-shadow:0 0 24px rgba(255,77,94,.35)}
 .evcard h1{margin:0 0 1vh;font-size:clamp(28px,4vw,76px);line-height:1.08;color:var(--gold2)}
 .evcard .src{font-family:var(--mono);color:var(--cyan);font-size:clamp(12px,1.2vw,22px);letter-spacing:.06em;margin-bottom:3vh}
 .evcard .finder{font:600 clamp(13px,1.35vw,24px) var(--sans);color:var(--gold);letter-spacing:.04em;margin:-.5vh 0 1vh}
-.evcard .body{white-space:pre-line;line-height:1.5;color:#e2e9f7}
+.evcard .body{white-space:pre-line;line-height:1.5;color:#ece6da}
 .wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(28vw,480px),1fr));gap:2vh 2vw;width:100%;max-width:1700px;margin-top:3vh;text-align:left}
-.wall .w{border:1px solid var(--line2);border-radius:14px;padding:2vh 1.6vw;background:rgba(8,14,28,.85)}
+.wall .w{border:1px solid var(--line);border-radius:22px;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);padding:2vh 1.6vw;background:rgba(255,255,255,.05)}
 .wall .w b{display:block;font-size:clamp(16px,1.7vw,32px);color:var(--gold2)}
 .wall .w span{display:block;font-family:var(--mono);font-size:clamp(11px,.95vw,17px);color:var(--muted);margin-top:.6vh}
-.wall .w.new{border-color:var(--gold);box-shadow:0 0 30px rgba(217,178,91,.3)}
+.wall .w.new{border-color:var(--gold);box-shadow:0 0 30px rgba(212,162,76,.3)}
 
 /* voting & results */
-.count{font-size:clamp(60px,12vw,240px);font-weight:900;color:var(--gold2);line-height:1;text-shadow:0 0 50px rgba(217,178,91,.4)}
+.count{font-size:clamp(60px,12vw,240px);font-weight:300;line-height:1;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .tbars{width:min(86vw,1400px);display:flex;flex-direction:column;gap:2.2vh;margin-top:4vh}
 .tbar{display:grid;grid-template-columns:minmax(0,30%) 1fr 5vw;gap:1.5vw;align-items:center;font-size:clamp(16px,2vw,38px);text-align:left}
 .tbar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
-.tbar .tr{height:clamp(16px,3vh,40px);border-radius:999px;background:rgba(88,140,255,.1);overflow:hidden;border:1px solid var(--line)}
-.tbar .f{height:100%;border-radius:999px;background:linear-gradient(90deg,#3d8bff,#5ad6ff);transition:width 1s ease}
-.tbar.lead .f{background:linear-gradient(90deg,#c79b3f,#f5dc93);box-shadow:0 0 30px rgba(217,178,91,.7)}
+.tbar .tr{height:clamp(16px,3vh,40px);border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;border:1px solid var(--line)}
+.tbar .f{height:100%;border-radius:999px;background:linear-gradient(90deg,#5b3fb0,#c9b8ff);transition:width 1s ease}
+.tbar.lead .f{background:linear-gradient(90deg,#b98533,#f5dc93);box-shadow:0 0 30px rgba(212,162,76,.7)}
 .tbar.lead .n{color:var(--gold2)}
 .tbar .c{font-family:var(--mono);font-weight:700;text-align:right}
 
 /* takeovers */
 .lock{background:radial-gradient(circle at 50% 45%,rgba(130,8,26,.97),rgba(8,1,4,1) 72%)}
-.lock::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,59,84,.08) 0 40px,transparent 40px 80px);animation:slide 3s linear infinite}
+.lock::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,77,94,.08) 0 40px,transparent 40px 80px);animation:slide 3s linear infinite}
 @keyframes slide{to{background-position:113px 0}}
-.lock .huge{color:#fff;text-shadow:0 0 60px rgba(255,59,84,.95);position:relative}
+.lock .huge{color:#fff;text-shadow:0 0 60px rgba(255,77,94,.95);position:relative}
 .lock .lede{color:#ffd6dc;position:relative}
-.ring{position:relative;width:clamp(100px,12vw,220px);aspect-ratio:1;border-radius:50%;border:4px solid var(--red);display:grid;place-items:center;box-shadow:0 0 80px rgba(255,59,84,.8),inset 0 0 40px rgba(255,59,84,.5);animation:pulse 1.4s ease-in-out infinite;margin-bottom:3vh}
+.ring{position:relative;width:clamp(100px,12vw,220px);aspect-ratio:1;border-radius:50%;border:4px solid var(--red);display:grid;place-items:center;box-shadow:0 0 80px rgba(255,77,94,.8),inset 0 0 40px rgba(255,77,94,.5);animation:pulse 1.4s ease-in-out infinite;margin-bottom:3vh}
 .ring svg{width:45%;height:auto}
 @keyframes pulse{50%{transform:scale(1.07)}}
 .incident{animation:flashbg 1.2s steps(1) infinite}
 @keyframes flashbg{0%{background:radial-gradient(circle,#7a0a1d,#1a0207 75%)}50%{background:radial-gradient(circle,#2a030a,#070103 75%)}}
 .incident .kicker{color:var(--red2)}
-.incident .msg{font-size:clamp(28px,4.4vw,88px);font-weight:800;line-height:1.2;max-width:24ch;color:#fff;text-shadow:0 0 40px rgba(255,59,84,.8)}
+.incident .msg{font-size:clamp(28px,4.4vw,88px);font-weight:600;line-height:1.2;max-width:24ch;color:#fff;text-shadow:0 0 40px rgba(255,77,94,.8)}
 .notice .msg,.message .msg{font-size:clamp(28px,4.4vw,88px);font-weight:700;line-height:1.25;max-width:26ch}
 .notice .kicker{color:var(--gold)}
 
 .reveal{background:radial-gradient(circle at 50% 40%,rgba(70,6,18,.9),rgba(3,2,6,.98) 72%)}
-.reveal .kname{color:#fff;font-size:clamp(48px,8.5vw,170px);text-shadow:0 0 60px rgba(255,59,84,.85);animation:namein 1.8s .5s cubic-bezier(.2,.7,.2,1) both}
+.reveal .kname{color:#fff;font-size:clamp(48px,8.5vw,170px);text-shadow:0 0 60px rgba(255,77,94,.85);animation:namein 1.8s .5s cubic-bezier(.2,.7,.2,1) both}
 @keyframes namein{from{opacity:0;letter-spacing:.5em;filter:blur(12px)}to{opacity:1;letter-spacing:.06em;filter:none}}
 .reveal .alias{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.6vw,48px);color:var(--gold2);animation:rise 1s 2.1s both}
 .reveal .rule,.reveal .verdict-line{animation:rise 1s 2.6s both}
-.reveal .sum{margin-top:2.5vh;max-width:min(80vw,1300px);font-size:clamp(15px,1.5vw,28px);line-height:1.55;color:#d8e2f3;animation:rise 1s 3.2s both}
+.reveal .sum{margin-top:2.5vh;max-width:min(80vw,1300px);font-size:clamp(15px,1.5vw,28px);line-height:1.55;color:#ece6da;animation:rise 1s 3.2s both}
 .reveal .solvers{margin-top:3vh;font-family:var(--mono);letter-spacing:.12em;font-size:clamp(12px,1.2vw,22px);color:var(--green);animation:rise 1s 3.8s both}
 .reveal .solvers span{color:var(--muted)}
 .accused .huge{animation:namein 1.4s .3s cubic-bezier(.2,.7,.2,1) both}
@@ -96,16 +96,16 @@ body.idle{cursor:none}
 .gerr{color:var(--red2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;min-height:18px;margin-top:10px}
 #ctrls{position:fixed;right:18px;bottom:18px;z-index:10;display:flex;gap:8px;transition:opacity .4s}
 body.idle #ctrls,body.idle #conn{opacity:0}
-#hintPill{position:fixed;left:50%;bottom:clamp(50px,6.5vh,86px);transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:14px;padding:10px 18px;border:1px solid var(--gold);border-radius:999px;background:rgba(12,10,4,.9);font-family:var(--mono);letter-spacing:.16em;font-size:clamp(11px,1vw,17px);color:var(--gold2);box-shadow:0 0 30px rgba(217,178,91,.25);animation:rise .5s ease both}
-#hintPill .m{width:clamp(120px,14vw,260px);height:10px;border-radius:999px;background:rgba(217,178,91,.15);overflow:hidden}
-#hintPill .m i{display:block;height:100%;background:linear-gradient(90deg,#c79b3f,#f5dc93);transition:width .8s ease}
+#hintPill{position:fixed;left:50%;bottom:clamp(50px,6.5vh,86px);transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:14px;padding:10px 18px;border:1px solid var(--gold);border-radius:999px;background:rgba(12,10,4,.9);font-family:var(--mono);letter-spacing:.16em;font-size:clamp(11px,1vw,17px);color:var(--gold2);box-shadow:0 0 30px rgba(212,162,76,.25);animation:rise .5s ease both}
+#hintPill .m{width:clamp(120px,14vw,260px);height:10px;border-radius:999px;background:rgba(212,162,76,.15);overflow:hidden}
+#hintPill .m i{display:block;height:100%;background:linear-gradient(90deg,#b98533,#f5dc93);transition:width .8s ease}
 #conn{position:fixed;left:18px;bottom:18px;z-index:10;transition:opacity .4s}
 </style>
 </head>
-<body class="grid">
+<body>
 <div id="stage"></div>
 <span class="chip warn" id="conn"><span class="d"></span><span class="lbl">CONNECTING</span></span>
-<div id="ctrls"><button class="iconbtn" id="ambBtn">♪ AMBIENCE OFF</button><button class="iconbtn" id="muteBtn2">🔊 SOUND ON</button><button class="iconbtn" id="fsBtn">⛶ FULL SCREEN</button></div>
+<div id="ctrls"><button class="iconbtn" id="fsBtn">⛶ FULL SCREEN</button></div>
 <div id="hintPill" class="hidden"></div>
 
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
@@ -180,8 +180,6 @@ function render() {
   const stage = $('#stage');
   stage.innerHTML = sc.html;
   if (realKind !== last.kind) stage.firstElementChild.classList.add('enter');
-  // a sound for each big moment (not on the very first draw)
-  if (last.sig !== null) { const fx = { loc: 'alarm', inc: 'death', not: 'radio', rev: 'reveal', acc: 'killer', vot: 'phase', tal: 'phase', tit: 'chime' }[realKind] || (realKind.startsWith('ev') ? 'chime' : null); if (fx && sc.sig !== last.sig) Sound.play(fx); }
   last = { sig: sc.sig, kind: realKind };
   updateClock(); jitter();
 }
@@ -192,17 +190,6 @@ function renderHintPill() {
   if (!hs.left) { el.classList.add('hidden'); return; }
   el.classList.remove('hidden');
   el.innerHTML = `<span>HINT VOTE</span><div class="m"><i style="width:${Math.min(100, Math.round(hs.votes / hs.needed * 100))}%"></i></div><b>${hs.votes} / ${hs.needed}</b>`;
-}
-/* optional ambience: a low, slow drone under the gala (press A or the ♪ button) */
-let amb = null;
-function toggleAmbience() {
-  const c = Sound.context(); if (!c) return;
-  if (amb) { amb.g.gain.setTargetAtTime(0, c.currentTime, .6); setTimeout(() => { try { amb.o.forEach(o => o.stop()); } catch (e) { } amb = null; }, 2500); $('#ambBtn').textContent = '♪ AMBIENCE OFF'; return; }
-  const g = c.createGain(), f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 700; g.gain.value = 0; g.connect(c.destination); f.connect(g);
-  const o = [110, 164.8, 220.5, 329.6].map((hz, i) => { const x = c.createOscillator(); x.type = i % 2 ? 'triangle' : 'sine'; x.frequency.value = hz; x.detune.value = (i - 1.5) * 6; x.connect(f); x.start(); return x; });
-  const lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = .07; lg.gain.value = 250; lfo.connect(lg).connect(f.frequency); lfo.start(); o.push(lfo);
-  g.gain.setTargetAtTime(.035, c.currentTime, 2);
-  amb = { g, o }; $('#ambBtn').textContent = '♪ AMBIENCE ON';
 }
 function renderConn() {
   const el = $('#conn'); if (!backend) return;
@@ -230,7 +217,7 @@ const GATE_KEY = 'kane:' + CONFIG.GAME_ID + ':display';
 const isUnlocked = () => { try { return sessionStorage.getItem(GATE_KEY) === '1'; } catch (e) { return false; } };
 function showGate() {
   $('#stage').innerHTML = `<div class="scene gate"><div class="gatebox panel gold">
-    <div style="width:72px;margin:0 auto 12px">${LOGO(72)}</div>
+    <div class="scanring"><div class="arc"></div><div class="inner"></div><div class="core">${LOGO(48)}</div></div>
     <div class="kicker">Kane Oil · Projector access</div>
     <h1 style="margin:10px 0 18px;font-size:clamp(20px,2.4vw,30px);letter-spacing:.14em">HOST CODE REQUIRED</h1>
     <form id="gateForm" autocomplete="off"><input class="input" id="gateIn" type="password" placeholder="Host code" autofocus style="text-align:center;font-family:var(--mono);letter-spacing:.2em">
@@ -261,12 +248,7 @@ async function start() {
   let idleT; const wake = () => { document.body.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add('idle'), 2500); };
   document.addEventListener('mousemove', wake); wake();
   $('#fsBtn').onclick = () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); };
-  $('#ambBtn').onclick = toggleAmbience;
-  $('#muteBtn2').onclick = () => { const m = Sound.toggle(); $('#muteBtn2').textContent = m ? '🔇 SOUND OFF' : '🔊 SOUND ON'; };
-  $('#muteBtn2').textContent = Sound.muted ? '🔇 SOUND OFF' : '🔊 SOUND ON';
-  document.addEventListener('keydown', e => { if (e.key === 'a' || e.key === 'A') toggleAmbience(); if (e.key === 'm' || e.key === 'M') $('#muteBtn2').click(); });
   setInterval(renderHintPill, 2000);
-  Sound.play('chime');
 }
 </script>
 </body>
