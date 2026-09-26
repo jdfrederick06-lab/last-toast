@@ -166,6 +166,33 @@ tr{break-inside:avoid}
 .prop.official .seal b{font:700 14pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;display:block}
 .prop.photo .back .qr{position:absolute;right:8pt;bottom:8pt;top:auto;left:auto;transform:scale(.72);transform-origin:bottom right}
 .prop.official .stampx{position:absolute;right:.55in;top:.62in;border:2.5pt solid var(--red);color:var(--red);font:700 13pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;padding:4pt 10pt;transform:rotate(-8deg)}
+.prop.board{background:#f6efe0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.prop.board .bt{font-size:26pt;margin-bottom:12pt;transform:rotate(-2deg)}
+.prop.board table.cb{width:auto;border-collapse:collapse;border:3pt solid #3b2f22;margin:0;background:#fbf7ec}
+.prop.board .cb th{font:700 12pt Georgia,serif;color:#6b5a44;border:0;padding:3pt 6pt;text-align:center;letter-spacing:0;text-transform:none;background:#f6efe0}
+.prop.board .cb td{width:.64in;height:.64in;padding:0;text-align:center;vertical-align:middle;font:700 28pt/1 'Caveat',cursive;color:#1d3a8a;border:1px solid #3b2f22}
+.prop.board .cb td.dk{background:#cdb994}
+.prop.board .bn{font-size:22pt;margin-top:16pt;max-width:4.3in;text-align:center;transform:rotate(-1deg)}
+.brief{border:1.5pt solid var(--blue);border-radius:6pt;padding:8pt 12pt;margin:10pt 0;background:#f7f9fd;break-inside:avoid-page}
+.brief .lbl{font:700 8pt 'Segoe UI',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin:6pt 0 2pt}
+.brief .lbl:first-child{margin-top:0}
+.brief p,.brief li{font-size:10pt}
+.brief ul{margin:0 0 4pt;padding-left:16pt}
+.puz{border:1.5pt solid var(--gold);border-radius:8pt;padding:10pt 14pt;margin:12pt 0;break-inside:avoid}
+.puz .ans{font:700 18pt Consolas,monospace;letter-spacing:.2em;color:var(--red)}
+.nb h1{font:700 19pt Georgia,serif;margin:0}
+.nb h3{margin:6pt 0 2pt}
+.nb .prop-of{font:9.5pt 'Segoe UI',Arial,sans-serif;color:var(--muted);margin:3pt 0 6pt}
+.nb table{font-size:8.5pt;margin:2pt 0 6pt}
+.nb th{padding:3pt 6pt}
+.nb td{height:.41in;padding:2pt 6pt;line-height:1.15}
+.nb.p2 td{height:.35in}
+.nb td b{font-size:9pt}
+.nb td small{display:block;font-size:7.5pt;color:var(--muted)}
+.nb .ck{width:.3in;text-align:center;font:12pt 'Segoe UI Symbol',sans-serif;color:#9aa0ab}
+.nb .acc{border:2pt solid var(--ink);border-radius:6pt;padding:8pt 12pt;margin-top:8pt;font:10pt 'Segoe UI',Arial,sans-serif}
+.nb .al{display:flex;gap:8pt;align-items:flex-end;height:22pt;color:var(--muted)}
+.nb .al i{flex:1;border-bottom:1px solid #9aa0ab;height:16pt}
 .err{background:#fde8e8;border:1px solid var(--red);color:var(--red);padding:12pt;border-radius:6pt;font:11pt 'Segoe UI',Arial,sans-serif}
 `;
 
@@ -194,14 +221,14 @@ tr{break-inside:avoid}
     const qrFor = (e, cls) => opts.qr ? opts.qr((opts.base || '') + 'database.html#e=' + encodeURIComponent(e.qr)) : `<div class="noqr ${cls || ''}">QR codes need an internet connection. Print from the dashboard.</div>`;
     const hosted = [P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ');
     const FLAGS = { lockdown: 'Lockdown', killer: 'Strike window', killerKnows: 'Killer learns the truth', voting: 'Voting', sealed: 'Seal dossiers', hints: 'Hint voting' };
-    const SC = { company: 'Company page', title: 'Title card', evidence: 'Latest evidence', wall: 'Evidence wall', voting: 'Voting screen', tally: 'Results' };
+    const SC = { company: 'Company page', title: 'Title card', evidence: 'Latest evidence', wall: 'Evidence wall', voting: 'Voting screen', tally: 'Results', confessions: 'The confessions' };
     const act = a => {
       switch (a.do) {
         case 'flag': return a.flag === 'sealed' ? (a.value ? 'Seal all dossiers' : 'Dossiers open') : a.flag === 'killerKnows' ? (a.value ? 'The killer learns the truth (their phone only)' : 'Killer knowledge hidden') : a.flag === 'killer' ? (a.value ? 'The killer may now choose a third victim' : 'Strike window closed') : `${FLAGS[a.flag] || a.flag} <b>${a.value ? 'ON' : 'OFF'}</b>`;
         case 'death': return `<b>${esc(nm(a.id))}</b> dies (red alert on every screen)`;
         case 'room': return `<b>${esc(room(a.id))}</b> opens`;
         case 'deliver': return `<b>${esc((EV[a.id] || {}).title || a.id)}</b> goes to the Inspector to read aloud`;
-        case 'scene': return `Projector: ${esc(SC[a.scene] || a.scene)}`;
+        case 'scene': return `Projector: ${esc(SC[a.scene] || a.scene)}`+ (a.order ? ` (in order: ${a.order.map(id => esc(nm(id))).join(' → ')}, skipping anyone not there)` : '');
         case 'broadcast': return `Announcement: “${esc(a.text)}”`;
         case 'verdict': return a.stage === 'reveal' ? '<b>The truth</b> is revealed on every screen' : 'You <b>name the accused</b>';
       }
@@ -217,7 +244,7 @@ tr{break-inside:avoid}
 
     /* ---------------- HOST BOOK ---------------- */
     const host = () => cover('Host Book', 'Everything you need to run the night', 'CONFIDENTIAL · HOST EYES ONLY') +
-      `<h2 style="margin-top:0">Contents</h2><ol class="toc"><li>The case at a glance</li><li>The schedule</li><li>Setting the stage</li><li>Evidence placement</li><li>The night, phase by phase</li><li>Evidence files</li><li>Memories &amp; hints</li><li>Cast &amp; code words</li><li>Using the terminal</li><li>Checklists</li></ol>` +
+      `<h2 style="margin-top:0">Contents</h2><ol class="toc"><li>The case at a glance</li><li>The schedule</li><li>Setting the stage</li><li>Evidence placement</li><li>The night, phase by phase</li><li>Evidence files</li><li>Memories &amp; hints</li><li>Cast &amp; code words</li><li>Using the terminal</li><li>Puzzles &amp; answers</li><li>Checklists</li></ol>` +
 
       part('Part 1', 'The Case at a Glance') +
       `<div class="box red"><div class="lbl">The killer</div><p style="font-size:14pt;margin:0"><b>${esc(killer ? killer.name : '—')}</b> ${S.solution && S.solution.alias ? `<i>(${esc(S.solution.alias)})</i>` : ''}</p>${killer ? `<p class="small muted" style="margin:3pt 0 0">Code word <span class="mono">${esc(killer.code)}</span> · learns the truth on their phone when doors open, so they're surprised at the party and have an hour to plan the toast.</p>` : ''}</div>
@@ -239,17 +266,17 @@ tr{break-inside:avoid}
       <table><tr><th>When</th><th>Task</th></tr>
       <tr><td><b>3–4 weeks before</b></td><td>Book the four spaces through Residence Life. Confirm quiet hours, capacity and decoration rules. Send the invitation.</td></tr>
       <tr><td><b>2 weeks before</b></td><td>Close RSVPs. Assign roles (must-cast first, then the Inspector). Send role texts. Start gathering props (shopping list below).</td></tr>
-      <tr><td><b>1 week before</b></td><td>Fill in the real room names in story.js and rebuild. Print the tags, props, badges and signs. Test-scan a tag on your phone.</td></tr>
+      <tr><td><b>1 week before</b></td><td>Guests → EMAIL REMINDER TO ALL. Fill in the real room names in story.js and rebuild. Print the tags, props, badges and signs. Test-scan a tag on your phone.</td></tr>
       <tr><td><b>2 days before</b></td><td>Two-phone rehearsal with your co-host: NEXT through a few phases, scan a tag, cast a vote. Brief the Inspector, Alex and Gordon on their big moments.</td></tr>
       <tr><td><b>5:30 PM</b></td><td>Start setup: Gala Hall first (biggest job), then the Archive Lounge, Alex's Office, Gordon's Study.</td></tr>
       <tr><td><b>7:00 PM</b></td><td>Place every tag and prop. Test-scan each one. Hang SEALED signs, close the doors. Projector on.</td></tr>
       <tr><td><b>7:30 PM</b></td><td>Tools → HARD RESET. Hosts in costume. Name badges and a pen at the door. Music on.</td></tr>
-      <tr><td><b>After the party</b></td><td>Take down every tag, sign and piece of tape. Leave the rooms as you found them. Export a backup, then delete the RSVPs.</td></tr></table>
+      <tr><td><b>After the party</b></td><td>Tools → Case Files: add the honors and album link, then PUBLISH. Take down every tag, sign and piece of tape. Leave the rooms as you found them. Export a backup, then delete the RSVPs.</td></tr></table>
       <h3>Shopping list</h3>
       <table><tr><th>For</th><th>Items</th></tr>
       <tr><td><b>Gala Hall</b></td><td>Black tablecloths, gold runners, battery LED candles, warm string lights, gold/black/white balloons, plastic flutes and coupes, sparkling cider or ginger ale, place-card holders, an easel or frame for Richard Kane's portrait, a white sheet, CAUTION tape, a cork board or poster board, push pins</td></tr>
-      <tr><td><b>Alex's Office</b></td><td>Desk lamp, dark blazer, envelope, manila folder, desk mat, chess set, 2 picture frames, a tray of cheap watches (or printed pictures)</td></tr>
-      <tr><td><b>Archive Lounge</b></td><td>Clipboard, toy walkie-talkie, lanyard, flashlight, 3–4 banker's boxes, a binder, a photo album or large envelope, old newspapers</td></tr>
+      <tr><td><b>Alex's Office</b></td><td>A small 4-digit resettable lockbox (about $10–15), desk lamp, dark blazer, envelope, manila folder, desk mat, chess set, 2 picture frames, a tray of cheap watches (or printed pictures)</td></tr>
+      <tr><td><b>Archive Lounge</b></td><td>Cardstock for Richard's number board (or a cheap 8×10 frame), clipboard, toy walkie-talkie, lanyard, flashlight, 3–4 banker's boxes, a binder, a photo album or large envelope, old newspapers</td></tr>
       <tr><td><b>Gordon's Study</b></td><td>Desk lamp, rocks glass, empty bottle, golf club, boxing gloves, cigar box, pillow and blanket for Gordon</td></tr>
       <tr><td><b>Everywhere</b></td><td>Painter's tape (never regular tape on walls), 40 badge holders (3×4 in), power strip and chargers, a speaker for music, a laptop and projector with HDMI</td></tr></table>
       <h3>Residence Life–friendly rules</h3>
@@ -297,8 +324,8 @@ tr{break-inside:avoid}
       <table><tr><th>Tab</th><th>What it's for</th></tr>
       <tr><td><b>Game</b></td><td>The only tab you need on the night. The bar at the bottom shows what's next: <b>press and hold START</b>. Also: the must-cast warning, Lockdown, announcements, hint voting, rooms, the Evidence Board, accusations, deaths and backup roles.</td></tr>
       <tr><td><b>Players</b></td><td>Every character, code word and player. Access QR, Revoke / Restore, Sign out, emergency Message, Kill / Undo.</td></tr>
-      <tr><td><b>Guests</b></td><td>Invite links, RSVPs, assign roles (★ must-cast first), add backup roles, copy role texts.</td></tr>
-      <tr><td><b>Tools</b></td><td>Manual switches, projector control, live invitation editor, emergency tools, activity log, hard reset.</td></tr></table>
+      <tr><td><b>Guests</b></td><td>Invite links, RSVPs, assign roles (★ must-cast first), add backup roles, copy or email role texts, email everyone a reminder.</td></tr>
+      <tr><td><b>Tools</b></td><td>Manual switches, projector control, live invitation editor (including the calendar dates), Case Files (the recap you publish after the game), emergency tools, activity log, hard reset.</td></tr></table>
       <h3>If something goes wrong</h3><table><tr><th>Problem</th><th>Fix</th></tr>
       <tr><td>Started a phase too early or skipped one</td><td>Game → All phases → JUMP or RE-RUN</td></tr>
       <tr><td>An evidence tag is lost or won't scan</td><td>Game → Evidence Board → REVEAL NOW</td></tr>
@@ -311,9 +338,15 @@ tr{break-inside:avoid}
       <tr><td>A death happened by mistake</td><td>Game → Deaths → UNDO</td></tr>
       <tr><td>Total failure</td><td>Printed dossiers + read evidence aloud from Part 6</td></tr></table>` +
 
-      part('Part 10', 'Checklists') +
-      `<h3>The week before</h3><ul class="check"><li>All ★ must-cast roles filled, then the Inspector</li><li>Backup roles set for Alex's and Gordon's players</li><li>Role texts sent (Guests tab shows "ROLE SENT")</li><li>Real room names filled in and story rebuilt</li><li>Tags, props, badges, signs and Host Book printed</li><li>Props bought (shopping list, Part 3)</li><li>Rehearsal with your co-host</li><li>Spaces confirmed with Residence Life</li></ul>
-      <h3>On the day</h3><ul class="check"><li>Firebase rules open (not locked)</li><li>Rooms set up and decorated (Part 3)</li><li>Tags and props placed and test-scanned (Part 4)</li><li>SEALED signs up, doors closed</li><li>Tools → HARD RESET</li><li>Projector: display.html unlocked, F11, clicked once for sound</li><li>Badge says LINK SECURE</li><li>Name badges, badge holders and a pen at the door</li><li>Wi-Fi details posted, charging station live</li><li>This book, open to Part 5</li></ul>`;
+      part('Part 10', 'Puzzles & Answers') +
+      `<p class="muted small">Players solve these with what they find. Nobody has to: every answer also arrives through a hint or the Inspector if the room gets stuck.</p>` +
+      (S.puzzles || []).map((z, i) => `<div class="puz"><span class="tag gold">Puzzle ${i + 1}</span>${z.difficulty ? `<span class="tag">${esc(z.difficulty)}</span>` : ''}<h3 style="margin-top:6pt">${esc(z.title)}</h3>
+        ${z.where ? `<h4>Where the pieces are</h4><p>${esc(z.where)}</p>` : ''}${z.solve ? `<h4>How it's solved</h4><p>${esc(z.solve)}</p>` : ''}
+        <h4>Answer</h4><p class="ans">${esc(z.answer)}</p>${z.setup ? `<h4>Setting it up</h4><p>${esc(z.setup)}</p>` : ''}</div>`).join('') +
+
+      part('Part 11', 'Checklists') +
+      `<h3>The week before</h3><ul class="check"><li>All ★ must-cast roles filled, then the Inspector</li><li>Backup roles set for Alex's and Gordon's players</li><li>Role texts sent (Guests tab shows "ROLE SENT")</li><li>Real room names filled in and story rebuilt</li><li>Tags, props, badges, signs and Host Book printed</li><li>Props bought (shopping list, Part 3)</li><li>Rehearsal with your co-host</li><li>Lockbox bought, code set (Part 10)</li><li>Spaces confirmed with Residence Life</li></ul>
+      <h3>On the day</h3><ul class="check"><li>Firebase rules open (not locked)</li><li>Rooms set up and decorated (Part 3)</li><li>Tags and props placed and test-scanned (Part 4)</li><li>SEALED signs up, doors closed</li><li>Tools → HARD RESET</li><li>Projector: display.html unlocked and full screen (F11). Its corner chip says LIVE</li><li>Host terminal's status chip says LINK SECURE (not LOCAL MODE)</li><li>Lockbox set to its code, letter inside, locked, on Alex's desk</li><li>Name badges, badge holders and a pen at the door</li><li>Wi-Fi details posted, charging station live</li><li>This book, open to Part 5</li></ul>`;
 
     /* ---------------- QR TAGS ---------------- */
     const tags = () => {
@@ -335,6 +368,7 @@ tr{break-inside:avoid}
         case 'termsheet': return `<section class="prop termsheet"><div class="lh"><div><b>VELEZ ENERGY HOLDINGS</b><small>CONFIDENTIAL DRAFT · TERM SHEET · NOT AN OFFER</small></div></div><h3 class="sans" style="margin-top:0">Proposed Acquisition of Kane Oil Gulf Assets</h3>${paras(text)}${note ? `<div class="hand">${esc(note)}</div>` : ''}${propQR(e)}</section>`;
         case 'log': { const rows = text.split('\n').filter(Boolean).map(l => l.split('|').map(s => s.trim())); return `<section class="prop log">${LH('KANE ESTATE SECURITY', 'MOVEMENT LOG · EAST WING · TONIGHT')}<table><tr><th>Time</th><th>Location</th><th>Event</th><th>Init.</th></tr>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table><p class="small">Incident report filed: ☐ Yes &nbsp; ☒ No</p><p style="margin-top:30pt">Supervisor: <span class="hand" style="font-size:20pt">M. Reid</span></p>${propQR(e)}</section>`; }
         case 'ledger': { const rows = text.split('\n').filter(Boolean).map(l => l.split('|').map(s => s.trim())), nt = (note.match(/✓/g) || []).length; return `<section class="prop ledger">${LH('ACCOUNTS PAYABLE', "KANE OIL & ENERGY · LEDGER · RICHARD KANE'S FINAL YEAR · RECOVERED")}<table><tr><th class="tk"></th><th>Date</th><th>Payee</th><th>Coded as</th><th>Amount</th><th>Approved</th></tr>${rows.map((r, i) => `<tr><td class="tk">${i < nt ? '✓' : ''}</td>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table><p class="small" style="margin-top:20pt">Invoices on file: NONE · Work orders on file: NONE</p>${propQR(e)}</section>`; }
+        case 'board': { const rows = e.board || []; return `<section class="prop board"><div class="bt hand">R.K. — for Alex, age 9</div><table class="cb"><tr><th></th>${[...'abcdefgh'].map(f => `<th>${f}</th>`).join('')}<th></th></tr>${rows.map((r, i) => `<tr><th>${8 - i}</th>${[...r].map((d, j) => `<td class="${(i + j) % 2 ? 'dk' : ''}">${esc(d)}</td>`).join('')}<th>${8 - i}</th></tr>`).join('')}<tr><th></th>${[...'abcdefgh'].map(f => `<th>${f}</th>`).join('')}<th></th></tr></table>${note ? `<div class="hand bn">${esc(note)}</div>` : ''}${propQR(e)}</section>`; }
         case 'handwritten': return `<section class="prop handwritten"><div class="hand">${lines(text)}</div>${propQR(e)}</section>`;
         case 'typed': return `<section class="prop typed"><div>${paras(text)}</div>${propQR(e)}</section>`;
         case 'photo': return `<section class="prop photo"><div class="print">${PHOTO_SVG}</div><div class="fold">✂ cut out the photograph · fold along the dashed line so the caption is on the back</div><div class="back hand" style="position:relative">${esc(text)}${propQR(e)}</div></section>`;
@@ -344,7 +378,7 @@ tr{break-inside:avoid}
     const props = () => `<section class="cover" style="min-height:auto;padding:20pt 0">${HEX}<div class="k">Kane Oil &amp; Energy · Evidence Props</div><h1 style="font-size:34pt">Evidence Props</h1><div class="sub">One page per piece of evidence</div></section>
       <div class="box gold"><div class="lbl">How to use these <span class="tag red">Host only · don't leave this page out</span></div>
       <ul class="tight"><li>Each hidden-evidence page already has its <b>QR code printed in the corner</b>. Put the page where the Host Book says, and scanning it reveals the evidence on the phone.</li>
-      <li><b>Will draft:</b> fold in thirds, into the "H. Bennett" envelope. <b>Speech notes:</b> cut along the torn edge, crumple slightly, into the blazer pocket. <b>Ledger:</b> into the Accounts Payable binder. <b>Security log:</b> on the clipboard. <b>Photograph:</b> cut out and fold so the caption is on the back, into the album. <b>Confession:</b> fold once, on Gordon's desk. <b>Memo:</b> in the PRIVILEGED folder. <b>Term sheet:</b> fold into the clutch bag.</li>
+      <li><b>Will draft:</b> fold in thirds, into the "H. Bennett" envelope. <b>Speech notes:</b> cut along the torn edge, crumple slightly, into the blazer pocket. <b>Ledger:</b> into the Accounts Payable binder. <b>Security log:</b> on the clipboard. <b>Photograph:</b> cut out and fold so the caption is on the back, into the album. <b>Confession:</b> fold once, on Gordon's desk. <b>Memo:</b> in the PRIVILEGED folder. <b>Term sheet:</b> fold into the clutch bag. <b>Torn page:</b> tear along the edge, tuck under the chess set with a corner showing. <b>Number board:</b> print on cardstock, into the LOCKED box in the Archive Lounge. <b>Alex's letter:</b> fold, lock inside the lockbox (code in Part 10 of the Host Book). <b>Daniel's notes:</b> into an envelope marked D. ORTIZ, in the study desk drawer.</li>
       <li>Official reports have no QR code: they're paper copies for the Inspector to read from (optional).</li>
       <li>Printing on cream or ivory paper for the legal documents makes them look expensive.</li></ul></div>` + ev.map(propPage).join('');
 
@@ -392,6 +426,15 @@ tr{break-inside:avoid}
       `<div class="step"><div class="step-h"><span class="n">★</span><span class="t">The Truth</span></div><p class="muted">Your final lines arrive on your phone when the host reveals the verdict. Read them slowly.</p></div>`;
 
     /* ---------------- DOSSIERS ---------------- */
+    const briefBox = c => {
+      const b = c.brief || {}, ul = (l, arr) => arr && arr.length ? `<div class="lbl">${l}</div><ul>${arr.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : '';
+      if (!c.brief && !c.confession) return '';
+      return `<div class="brief"><div class="lbl">Their Brief (its own tab on their phone)</div>${b.goal ? `<p><b>Goal tonight:</b> ${esc(b.goal)}</p>` : ''}
+        ${ul('Share tonight', b.share)}${ul('Only if someone asks directly', b.ifAsked)}${ul('Timeline', b.timeline)}
+        ${b.secret ? `<div class="lbl" style="color:var(--red)">Sealed until they learn the truth</div><p>${esc(b.secret)}</p>` : ''}
+        ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(b.costume)}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(b.note)}</i></p>` : ''}
+        ${c.confession ? `<div class="lbl">Their confession${c.killer ? ' <span class="tag red">A lie</span>' : ''}</div><p><i>“${esc(c.confession)}”</i></p>` : ''}</div>`;
+    };
     const dossier = c => {
       const mems = memOf(c), d = DIR[c.id];
       return `<section class="dossier"><div class="dos-head"><div><div class="file">PERSONNEL FILE ${esc(c.file || '')}${c.tier === 'ext' ? ' · EXTENDED CAST' : ''}</div><h2>${esc(c.name)}</h2>
@@ -402,12 +445,30 @@ tr{break-inside:avoid}
           ${s.sealed && s.sealed !== true ? `<div class="box" style="margin:3pt 0 0;padding:5pt 9pt"><span class="small muted"><b class="sans">Until then the player only sees:</b> ${esc(s.sealed)}</span></div>` : ''}</div>`).join('')}
         ${c.killer ? `<div class="box red"><div class="lbl">The killer's reveal</div><p class="small"><b>Reveal screen:</b> ${(c.killer.reveal || []).map(esc).join(' / ')}</p><p class="small" style="margin:0"><b>Can choose to kill:</b> ${(c.killer.shortlist || []).map(t => esc(nm(t.id))).join(', ')}</p></div>` : ''}
         ${c.scriptedDeath ? `<div class="box red"><div class="lbl">Death alert</div><p class="small" style="margin:0">${esc(c.deathAlert || '')}</p></div>` : ''}
+        ${briefBox(c)}
         ${mems.length ? `<div class="box gold"><div class="lbl">Memories that surface automatically</div>${mems.map((m, i) => `<p class="small"><b>${i + 1}.</b> <span class="tag">${m.cue ? 'Cue' : 'Memory'} · ${esc(whenText(m.when))}</span> ${esc(m.text)}</p>`).join('')}</div>` : ''}</section>`;
     };
     const dossiers = () => cover('Character Dossiers', `All ${chars.length} personnel files, as written`, 'CONFIDENTIAL · CONTAINS SPOILERS') +
       `<h2 style="margin-top:0">Index</h2><table><tr><th>#</th><th>Character</th><th>Code word</th><th>Occupation</th></tr>${chars.map(c => `<tr><td class="mono">${esc(c.file || '')}</td><td><b>${esc(c.name)}</b>${c.mustCast ? ' <span class="tag red">★</span>' : ''}</td><td class="mono">${esc(c.code)}</td><td>${esc(c.occ || '')}</td></tr>`).join('')}</table>
       <p class="small muted">Each dossier starts on a new page. Red tags show what players don't see. Gold boxes list memories that pop up on that player's phone during the game.</p>` +
       chars.map(dossier).join('');
+
+    /* ---------------- DETECTIVE'S NOTEBOOK (a handout for every guest: no spoilers) ---------------- */
+    const notebook = () => {
+      const sus = chars.filter(c => c.tier !== 'ext' && c.suspect !== false && !c.inspector).map(c => { const d = DIR[c.id] || {}; return { name: d.name || c.name, title: d.title || c.occ || '' }; })
+        .sort((a, b) => a.name.replace(/^(Dr\.|Senator|Judge)\s+/, '').replace(/"[^"]*"\s*/, '').localeCompare(b.name.replace(/^(Dr\.|Senator|Judge)\s+/, '').replace(/"[^"]*"\s*/, '')));
+      const times = ['8:00', '8:30', '9:00', '9:30', '10:00', '10:30', '11:00'];
+      return `<section class="nb"><div class="part-kicker">Kane Oil &amp; Energy · Annual Gala</div><h1>Detective's Notebook</h1>
+        <div class="prop-of">Property of: ________________________________ &nbsp; (your character)</div>
+        <table><tr><th class="ck">✓</th><th>Suspect</th><th>Motive</th><th>Where were they?</th><th>What they told me</th></tr>
+        ${sus.map(s => `<tr><td class="ck">☐</td><td><b>${esc(s.name)}</b><small>${esc(s.title)}</small></td><td></td><td></td><td></td></tr>`).join('')}</table>
+        <p class="small muted">Tick the box when you've ruled someone out. Trust no one who ticks their own box.</p></section>
+        <section class="nb p2" style="break-before:page"><h3 style="margin-top:0">Timeline of the night</h3>
+        <table><tr><th style="width:.8in">Time</th><th>What happened, and who was where</th></tr>${times.map(t => `<tr><td class="mono"><b>${t}</b></td><td></td></tr>`).join('')}</table>
+        <h3>Evidence log</h3>
+        <table><tr><th style="width:.6in">Tag</th><th>What it is</th><th>Found by / where</th><th>What it means</th></tr>${qrEv.map(e => `<tr><td class="mono"><b>${tagNum(e.id)}</b></td><td></td><td></td><td></td></tr>`).join('')}</table>
+        <div class="acc"><b style="letter-spacing:.14em;font-size:9pt">MY ACCUSATION</b><div class="al">The killer is <i></i></div><div class="al">because <i></i></div><div class="al"><i></i></div></div></section>`;
+    };
 
     /* ---------------- INVITATION & RULES ---------------- */
     const D = P.display || {};
@@ -436,15 +497,15 @@ tr{break-inside:avoid}
       </section>`;
     };
 
-    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast };
+    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast, notebook };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {
     const d = build(S, P, opts);
-    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'toast', 'dossiers', 'invite'];
+    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'toast', 'notebook', 'dossiers', 'invite'];
     const html = which === 'all' ? order.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + d[k]()).join('') : (d[which] || d.host)();
     const label = LABELS[which] || LABELS.host;
     const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST · ${label}";font:7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;

@@ -1,12 +1,16 @@
-Latest update: Sep 25, late evening
-(new code words, story fixes, Alex's toast, plus-one photos, desktop invitation layout, printout fixes)
+Latest update: Sep 26
+(Brief tab, confessions, Case Files recap page, email role/reminder buttons, add-to-calendar,
+ the lockbox and shorthand puzzles, new evidence, Detective's Notebook, printout updates)
 
-Upload ALL 9 of these to your GitHub repo (Add file -> Upload files), replacing the old ones.
+Upload ALL 10 of these to your GitHub repo (Add file -> Upload files), replacing the old ones.
 These are every file in the website, so after this your site is completely up to date:
   config.js  core.js  database.html  display.html  index.html
-  party.js  printkit.js  story.locked.js  theme.css
+  party.js  printkit.js  recap.html  story.locked.js  theme.css
+
+recap.html is NEW. It stays "sealed" until you publish the Case Files after the party
+(host terminal -> Tools -> Case Files -> PUBLISH), so it's safe to upload now.
 
 Don't upload this READ ME file.
 After uploading, wait a minute, then in the host terminal: Tools -> FORCE REFRESH ALL.
 
-IMPORTANT: every character's code word has changed. Don't use any code words from older printouts.
+Code words have NOT changed since the Sep 25 late-evening update.

@@ -92,6 +92,10 @@ body.idle{cursor:none}
 .reveal .solvers{margin-top:3vh;font-family:var(--mono);letter-spacing:.12em;font-size:clamp(12px,1.2vw,22px);color:var(--green);animation:rise 1s 3.8s both}
 .reveal .solvers span{color:var(--muted)}
 .accused .huge{animation:namein 1.4s .3s cubic-bezier(.2,.7,.2,1) both}
+.conf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.6vh 3vw;width:min(88vw,1500px);margin-top:3vh;text-align:left;counter-reset:c}
+.conf li{list-style:none;display:flex;align-items:baseline;gap:1.2vw;padding:1.4vh 1.4vw;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.05);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);font-size:clamp(16px,2vw,38px);font-weight:600;animation:rise .7s both}
+.conf li i{font-style:normal;font-family:var(--mono);color:var(--gold);font-size:.8em;min-width:1.6em}
+.conf li:last-child{border-color:rgba(212,162,76,.5)}
 .gatebox{width:min(92vw,420px);text-align:center}
 .gerr{color:var(--red2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;min-height:18px;margin-top:10px}
 #ctrls{position:fixed;right:18px;bottom:18px;z-index:10;display:flex;gap:8px;transition:opacity .4s}
@@ -143,6 +147,11 @@ function scene(kind) {
       Object.values(S.players).forEach(p => { if (p && p.epoch === S.epoch && p.vote && p.vote.suspect) counts[p.vote.suspect] = (counts[p.vote.suspect] || 0) + 1; });
       const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]), max = rows.length ? rows[0][1] : 0;
       return { sig: 'tally' + JSON.stringify(rows), html: `<div class="scene"><div class="kicker">Official results</div><div class="huge gold" style="font-size:clamp(32px,5vw,100px)">THE ROOM ACCUSES</div>${rows.length ? `<div class="tbars">${rows.map(([id, n]) => `<div class="tbar ${n === max ? 'lead' : ''}"><span class="n">${esc(rname(id))}</span><div class="tr"><div class="f" style="width:${Math.round(n / max * 100)}%"></div></div><span class="c">${n}</span></div>`).join('')}</div>` : `<div class="lede">No accusations have been filed.</div>`}</div>` };
+    }
+    case 'confessions': {
+      const gone = deathsOf(S), all = (ps.d.order || []).filter(id => !(id in gone));
+      const here = all.filter(id => { const p = S.players[id]; return p && p.epoch === S.epoch; }), list = here.length ? here : all;
+      return { sig: 'conf' + list.join(), html: `<div class="scene"><div class="kicker">Before the Inspector names the killer</div><div class="huge gold" style="font-size:clamp(34px,5.4vw,110px)">THE CONFESSIONS</div><div class="lede">When the Inspector calls your name, stand and tell the room what you've been hiding.</div>${list.length ? `<ol class="conf">${list.map((id, i) => `<li style="animation-delay:${(i * .12).toFixed(2)}s"><i>${i + 1}</i>${esc(rname(id))}</li>`).join('')}</ol>` : ''}</div>` };
     }
     case 'accused': {
       const v = S.verdict; if (!v || !v.accused) return scene('company');

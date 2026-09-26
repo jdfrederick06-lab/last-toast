@@ -19,6 +19,11 @@ window.PARTY = {
   address: `[Street address, City]`,
   dress: `Black tie optional. Dress for a corporate gala.`,
   rsvpBy: `[RSVP-by date]`,
+  // "Add to calendar" buttons appear on the invitation once both of these are set.
+  // Format: `YYYY-MM-DDTHH:MM` in 24-hour time, e.g. `2026-10-24T20:00`. You can also set them from the host dashboard.
+  calStart: ``,
+  calEnd: ``,
+  timeZone: `America/New_York`,
   rsvpOpen: true,            // false closes the RSVP form
   showDatabaseLink: true,    // false hides the "Database" buttons on the invitation
   notice: ``,                // optional gold announcement banner at the top of the invitation
@@ -57,8 +62,10 @@ window.PARTY = {
   rules: [
     { title: `Stay in character`, text: `From the moment you arrive until the final reveal, you're your character. Accents, grudges, and dramatic exits are encouraged.` },
     { title: `Guard your code word`, text: `Never share your code word or show your dossier screen to anyone. What's on it is yours to reveal, trade, or hide.` },
+    { title: `Read your brief`, text: `Your phone has two tabs about you. My File is who you are. Your Brief is how to play tonight: your goal, the things to share, the things to keep until someone asks you directly, and your timeline. The costume idea in it is only a suggestion. Make the character your own.` },
     { title: `Only the killer may lie about the murder`, text: `Everyone else can dodge, deflect, and keep their personal secrets, but can't tell an outright lie about the crime itself.` },
     { title: `Closed doors are sealed rooms`, text: `Some rooms are crime scenes. Don't open a closed door until the Estate Map on your phone says that room is OPEN.` },
+    { title: `Locked means puzzle, not crowbar`, text: `Some evidence is locked away. The code is always hidden somewhere in the clues. Never force a lock, pry anything open, or move furniture: nothing in this game is hidden anywhere you'd have to break something to reach.` },
     { title: `Hunt for evidence tags`, text: `Kane Oil evidence tags (QR codes) are hidden on objects in the rooms. Scan one with your phone camera to examine it. Then it's your call: reveal it to everyone, or keep it to yourself for now. Leave the tag where you found it for others.` },
     { title: `Know who's who`, text: `Your phone has a Who's Who directory of everyone at the gala. Wear your name badge all night so people can find you.` },
     { title: `Stuck? Vote for a hint`, text: `At some point the hosts may open hint voting. If more than half of the players still in the game ask for a hint, one unlocks for everyone.` },
@@ -66,7 +73,7 @@ window.PARTY = {
     { title: `Lockdown means eyes up`, text: `If your screen goes red with LOCKDOWN, put your phone down and look to the front of the room. Something is about to happen.` },
     { title: `If you die`, text: `Your screen will tell you. Play it out dramatically, then stay in character as the body. The dead can listen, but they can't share clues or collect evidence.` },
     { title: `Cooperate with the Inspector`, text: `Once there's a crime, an Inspector will take charge. You don't have to tell them everything, but you'd better have a good reason not to.` },
-    { title: `The accusation`, text: `Near the end of the night, voting opens on your phone. Name one suspect and make your case for the record. You can change your vote until voting closes.` },
+    { title: `The accusation`, text: `Near the end of the night, voting opens on your phone. Name one suspect and make your case for the record. You can change your vote until voting closes. Then, before the Inspector reveals the truth, the main suspects confess what they've been hiding.` },
     { title: `No hacking the database`, text: `Peeking at someone else's screen or tampering with the Kane Oil Database is a firing offense.` }
   ],
 
@@ -83,7 +90,7 @@ window.PARTY = {
       `412 days without a safety incident`,
       `Tonight: a special announcement from our CEO`,
       `Powering tomorrow since 1974`,
-      `Please enjoy the champagne. The toast begins at 9:30`
+      `Please enjoy the champagne. The toast begins at 9:00`
     ],
     tickers: [
       ['KOE', 142.18], ['VLZ', 88.40], ['BRENT', 81.22], ['WTI', 77.90], ['NATGAS', 2.84], ['DJIA', 39112], ['S&P', 5231]
