@@ -18,19 +18,30 @@
 @keyframes float{50%{transform:translateY(-4px)}}
 .login h1{margin:0;font-size:22px;letter-spacing:.22em;font-weight:800;color:var(--gold2);text-shadow:0 0 22px rgba(217,178,91,.35)}
 .login .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--cyan);margin:6px 0 20px;text-transform:uppercase}
-.scanwait{border:1px solid var(--cyan);background:rgba(90,214,255,.08);color:var(--cyan);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;margin-bottom:14px}
+.scanwait{border:1px solid var(--cyan);background:rgba(90,214,255,.08);color:var(--cyan);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;margin-bottom:14px;animation:pdot 1.6s ease-in-out infinite}
 .term{text-align:left;font-family:var(--mono);font-size:12px;line-height:1.7;color:#7fb2ff;background:rgba(2,6,14,.85);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:16px;min-height:96px}
 .term .ok{color:var(--green)}.term .err{color:var(--red2)}
 .term div{animation:typein .25s ease both}
 @keyframes typein{from{opacity:0;transform:translateX(-4px)}}
 .term .cursor{display:inline-block;width:8px;height:14px;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.code-input{text-align:center;letter-spacing:.3em;font-family:var(--mono);font-size:20px;text-transform:uppercase;font-weight:700}
+.code-input{text-align:center;letter-spacing:.24em;font-family:var(--mono);font-size:19px;text-transform:uppercase;font-weight:700}
 .login .foot{margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim)}
 .shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 .login-err{color:var(--red2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;min-height:18px;margin-top:10px}
 .loading{min-height:60vh;display:grid;place-items:center;font-family:var(--mono);letter-spacing:.2em;color:var(--cyan);font-size:12px}
+
+/* ---------- player navigation ---------- */
+.pnav{position:sticky;top:72px;z-index:19;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;margin:-6px 0 16px;border:1px solid var(--line2);border-radius:14px;background:rgba(6,11,22,.92);backdrop-filter:blur(10px);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.pnav button{position:relative;border:0;background:transparent;border-radius:10px;padding:9px 4px 8px;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;transition:.25s}
+.pnav button svg{width:19px;height:19px;transition:transform .25s}
+.pnav button.on{color:var(--gold2);background:linear-gradient(180deg,rgba(217,178,91,.18),rgba(217,178,91,.06));box-shadow:inset 0 0 0 1px rgba(217,178,91,.4)}
+.pnav button.on svg{transform:translateY(-1px) scale(1.08)}
+.pnav .nb{position:absolute;top:5px;right:calc(50% - 20px);min-width:16px;height:16px;border-radius:999px;background:var(--red);color:#fff;font-size:9.5px;letter-spacing:0;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 10px rgba(255,59,84,.6);animation:pop .3s ease}
+.view{animation:viewIn .35s cubic-bezier(.2,.7,.2,1) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}}
+@media(max-width:520px){.pnav{top:66px}}
 
 /* ---------- dossier ---------- */
 .dhead{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
@@ -46,7 +57,7 @@
 .kv div{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:rgba(3,7,16,.5)}
 .kv b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:500;margin-bottom:3px;text-transform:uppercase}
 .kv span{font-size:14px;font-weight:600}
-.sec{padding:16px 0;border-top:1px dashed rgba(88,140,255,.18)}
+.sec{padding:16px 0;border-top:1px dashed rgba(88,140,255,.18);animation:rise .4s ease both}
 .sec:first-child{border-top:0}
 .sec h3{margin:0 0 8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;display:flex;gap:8px;align-items:center}
 .sec p{margin:0;font-size:16.5px;line-height:1.7;color:#dbe4f4;max-width:72ch}
@@ -59,8 +70,25 @@
 .sealed small{display:block;margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--red2)}
 .stamp{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--dim);text-align:center;margin-top:8px}
 
-/* ---------- evidence / memories / map ---------- */
-.ev{border:1px solid var(--line2);border-radius:12px;background:rgba(3,7,16,.6);margin-bottom:10px;overflow:hidden}
+/* ---------- who's who ---------- */
+.dir-tools{display:flex;gap:8px;margin-bottom:12px}
+.dir-tools .input{flex:1}
+.dir-group{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin:16px 0 8px;display:flex;align-items:center;gap:10px}
+.dir-group::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(217,178,91,.4),transparent)}
+.dir{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.person{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(3,7,16,.55);animation:rise .4s ease both;transition:.2s}
+.person:hover{border-color:rgba(217,178,91,.45)}
+.person .mono-av{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:var(--gold2);background:linear-gradient(135deg,rgba(217,178,91,.22),rgba(61,139,255,.12));border:1px solid rgba(217,178,91,.4)}
+.person b{display:block;font-size:15px}
+.person .ti{display:block;font-size:12.5px;color:var(--cyan);margin:2px 0 5px}
+.person p{margin:0;font-size:13.5px;line-height:1.5;color:#c9d4e8}
+.person.me{border-color:var(--gold);box-shadow:0 0 18px rgba(217,178,91,.18)}
+.person.gone{opacity:.62}
+.person.gone b{text-decoration:line-through;text-decoration-color:rgba(255,59,84,.6)}
+.person .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+
+/* ---------- evidence / memories / map / hints ---------- */
+.ev{border:1px solid var(--line2);border-radius:12px;background:rgba(3,7,16,.6);margin-bottom:10px;overflow:hidden;animation:rise .35s ease both}
 .ev summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;align-items:center;gap:10px}
 .ev summary::-webkit-details-marker{display:none}
 .ev summary .t{flex:1;font-weight:700;font-size:15px}
@@ -72,27 +100,34 @@
 .ev .who{font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:8px;white-space:normal}
 .ev.new{border-color:var(--gold);box-shadow:0 0 22px rgba(217,178,91,.3);animation:evglow 1.6s ease-in-out 3}
 @keyframes evglow{50%{box-shadow:0 0 36px rgba(217,178,91,.6)}}
-.tx{border:1px solid rgba(90,214,255,.35);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:linear-gradient(90deg,rgba(90,214,255,.07),transparent)}
+.tx{border:1px solid rgba(90,214,255,.35);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:linear-gradient(90deg,rgba(90,214,255,.07),transparent);animation:rise .35s ease both}
 .tx .h{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--cyan);margin-bottom:6px;flex-wrap:wrap}
 .tx p{margin:0;font-size:15.5px;line-height:1.65;white-space:pre-line}
 .tx.cue{border-color:rgba(217,178,91,.45);background:linear-gradient(90deg,rgba(217,178,91,.08),transparent)}
 .tx.cue .h{color:var(--gold)}
 .rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
-.room{border:1px solid var(--line2);border-radius:12px;padding:11px 12px;background:rgba(3,7,16,.55);display:flex;gap:10px;align-items:flex-start;transition:.3s}
+.room{border:1px solid var(--line2);border-radius:12px;padding:11px 12px;background:rgba(3,7,16,.55);display:flex;gap:10px;align-items:flex-start;transition:.4s}
 .room .ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;border:1px solid var(--line2)}
 .room b{display:block;font-size:14.5px}
 .room small{display:block;color:var(--muted);font-size:12px;line-height:1.4;margin-top:2px}
 .room.open{border-color:rgba(47,227,155,.45);background:linear-gradient(90deg,rgba(47,227,155,.07),transparent)}
 .room.open .ico{border-color:var(--green);color:var(--green);box-shadow:0 0 12px rgba(47,227,155,.3)}
+.room.fresh{animation:roomOpen 1.4s ease 2}
+@keyframes roomOpen{50%{box-shadow:0 0 30px rgba(47,227,155,.55);transform:scale(1.02)}}
 .room.closed .ico{border-color:rgba(255,59,84,.45);color:var(--red2)}
 .room .st{font-family:var(--mono);font-size:10px;letter-spacing:.14em;margin-top:4px}
 .room.open .st{color:var(--green)}.room.closed .st{color:var(--red2)}
 .lines{font-family:var(--serif);font-size:19px;line-height:1.6;color:#f1ead8;white-space:pre-line;background:linear-gradient(180deg,rgba(217,178,91,.08),rgba(217,178,91,.02));border:1px solid rgba(217,178,91,.35);border-radius:12px;padding:14px 16px}
 .lines-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.official{border:1px solid rgba(90,214,255,.45);border-radius:12px;padding:14px;margin-top:12px;background:rgba(3,10,22,.7)}
+.official{border:1px solid rgba(90,214,255,.45);border-radius:12px;padding:14px;margin-top:12px;background:rgba(3,10,22,.7);animation:rise .4s ease both}
 .official h4{margin:4px 0 2px;font-size:17px}
 .official .src{font-family:var(--mono);font-size:11px;color:var(--cyan);margin-bottom:8px}
 .official .body{white-space:pre-line;font-size:15.5px;line-height:1.7;color:#d8e2f3;margin-bottom:12px}
+.hint{border-left:3px solid var(--gold);padding:8px 0 8px 12px;margin-bottom:10px;font-size:15.5px;line-height:1.6;animation:rise .4s ease both}
+.hint b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--gold);margin-bottom:2px}
+.meter{height:10px;border-radius:999px;background:rgba(88,140,255,.1);border:1px solid var(--line);overflow:hidden;margin:10px 0 6px}
+.meter i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#c79b3f,#f5dc93);box-shadow:0 0 14px rgba(217,178,91,.6);transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.btn.voted-on{border-color:var(--green);color:var(--green);background:rgba(47,227,155,.1)}
 
 /* ---------- vote / directive / verdict ---------- */
 .voted{border:1px solid rgba(47,227,155,.4);background:rgba(47,227,155,.06);border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:14px;line-height:1.5}
@@ -117,6 +152,7 @@
 .tab:hover{color:var(--text)}
 .tab.on{border-color:var(--gold);color:var(--gold2);background:var(--gold-dim);box-shadow:0 0 18px rgba(217,178,91,.18)}
 .tab .badge{background:var(--red);color:#fff;border-radius:999px;font-size:10px;padding:1px 6px;letter-spacing:0}
+[data-pane]{animation:viewIn .35s ease both}
 .grid2{display:grid;grid-template-columns:1fr;gap:0 16px}
 @media(min-width:900px){.grid2{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
@@ -125,6 +161,8 @@
 .stat b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
 .stat b em{font-style:normal;font-size:14px;color:var(--dim);font-weight:600}
 .stat>span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.warnbar{display:flex;gap:10px;align-items:center;border:1px solid rgba(255,59,84,.5);background:linear-gradient(90deg,rgba(255,59,84,.12),transparent);border-radius:12px;padding:11px 14px;margin-bottom:14px;font-size:14px;cursor:pointer;animation:rise .4s ease both}
+.warnbar b{color:var(--red2)}
 .ctl{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
 .ctl:first-of-type{border-top:0;padding-top:0}
 .ctl .txt{flex:1;min-width:0}
@@ -163,8 +201,13 @@
 .guest .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .guest .gn{font-weight:700;font-size:15px;flex:1;min-width:120px}
 .guest .meta{font-size:12.5px;color:var(--muted);margin:6px 0 8px;line-height:1.5}
-.assign{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin-top:8px}
-.assign .who{font-size:12px;color:var(--dim);font-family:var(--mono);grid-column:1 / -1;display:flex;gap:8px;align-items:center}
+.assign{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.assign .who{font-size:12px;color:var(--dim);font-family:var(--mono);grid-column:1 / -1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.backups{grid-column:1 / -1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
+.chip2{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(90,214,255,.4);color:var(--cyan);border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;background:rgba(90,214,255,.06)}
+.chip2 button{border:0;background:rgba(255,255,255,.08);color:inherit;border-radius:50%;width:20px;height:20px;cursor:pointer;line-height:1}
+.chip2.used{border-color:rgba(47,227,155,.5);color:var(--green)}
+.chip2.gone{border-color:rgba(255,59,84,.45);color:var(--red2);text-decoration:line-through}
 .qrbox{background:#fff;border-radius:12px;padding:14px;display:inline-block}
 .qrbox img{display:block;image-rendering:pixelated;width:240px;height:240px}
 .cast-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
@@ -178,9 +221,13 @@
 .crow .l2{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 10px;font-size:12.5px;color:var(--muted)}
 .crow .code{font-family:var(--mono);font-weight:700;letter-spacing:.14em;color:var(--gold2);background:var(--gold-dim);border:1px solid rgba(217,178,91,.35);border-radius:6px;padding:2px 8px}
 .crow .acts{display:flex;gap:6px;flex-wrap:wrap}
+.pill.must{border-color:var(--red);color:#fff;background:linear-gradient(180deg,#ff5068,#c21c35)}
 /* game tab */
-.phase-now{border:1px solid rgba(217,178,91,.45);border-radius:14px;padding:14px;background:linear-gradient(180deg,rgba(217,178,91,.08),transparent);margin-bottom:14px}
-.phase-now .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--gold)}
+.phase-now{border:1px solid rgba(217,178,91,.45);border-radius:14px;padding:14px;background:linear-gradient(180deg,rgba(217,178,91,.08),transparent);margin-bottom:12px}
+.phase-now.flash{animation:phaseFlash 1.2s ease}
+@keyframes phaseFlash{0%{box-shadow:0 0 0 rgba(217,178,91,0);transform:scale(.985)}30%{box-shadow:0 0 50px rgba(217,178,91,.55);transform:scale(1.01)}100%{box-shadow:0 0 0 rgba(217,178,91,0);transform:none}}
+.phase-now .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--gold);display:flex;gap:10px;flex-wrap:wrap}
+.phase-now .timer{color:var(--cyan)}
 .phase-now h3{margin:4px 0 10px;font-size:22px}
 .cue{font-size:14px;color:#c9d4e8;line-height:1.6;white-space:pre-line;border-left:2px solid var(--cyan);padding:2px 0 2px 12px;margin:8px 0}
 .cue b{color:var(--cyan);font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;display:block;margin-bottom:2px}
@@ -188,25 +235,21 @@
 .say b{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--gold);display:block;margin-bottom:4px}
 details.more>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--cyan);list-style:none;margin-top:6px}
 details.more>summary::-webkit-details-marker{display:none}
-.next-box{border:1px dashed rgba(90,214,255,.4);border-radius:14px;padding:14px;margin-bottom:12px}
-.next-box .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--cyan)}
-.next-box h4{margin:4px 0 8px;font-size:17px}
-.auto{margin:0 0 12px;padding-left:18px;color:#c9d4e8;font-size:14px;line-height:1.7}
-.bignext{width:100%;min-height:64px;font-size:17px;letter-spacing:.08em}
+.auto{margin:0;padding-left:18px;color:#c9d4e8;font-size:13.5px;line-height:1.7}
 .phases{margin-top:12px}
 .phases .ph-row{display:flex;gap:10px;align-items:center;padding:8px 2px;border-top:1px solid var(--line);font-size:14px}
 .phases .ph-row .n{font-family:var(--mono);color:var(--dim);width:22px}
-.phases .ph-row .tm{font-family:var(--mono);color:var(--cyan);font-size:11px;min-width:64px}
+.phases .ph-row .tm{font-family:var(--mono);color:var(--cyan);font-size:11px;min-width:70px}
 .phases .ph-row .t{flex:1}
 .phases .ph-row.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(47,227,155,.5)}
 .phases .ph-row.cur .t{color:var(--gold2);font-weight:700}
 .progress{height:6px;border-radius:999px;background:rgba(88,140,255,.12);overflow:hidden;margin:2px 0 14px}
-.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 12px rgba(217,178,91,.6);transition:width .6s ease}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 12px rgba(217,178,91,.6);transition:width .8s cubic-bezier(.2,.7,.2,1)}
 .quick{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .quick .input{flex:1;min-width:180px}
 .lockbtn{min-width:190px}
-.lockbtn.on{background:linear-gradient(180deg,#ff5068,#c21c35);border-color:#ff8494;color:#fff;box-shadow:0 0 22px rgba(255,59,84,.45)}
-.evrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;background:rgba(3,7,16,.5)}
+.lockbtn.on{background:linear-gradient(180deg,#ff5068,#c21c35);border-color:#ff8494;color:#fff;box-shadow:0 0 22px rgba(255,59,84,.45);animation:pulse 1.6s ease-in-out infinite}
+.evrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;background:rgba(3,7,16,.5);transition:.3s}
 .evrow b{font-size:14.5px}
 .evrow small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:3px}
 .evrow .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
@@ -218,6 +261,21 @@ details.more>summary::-webkit-details-marker{display:none}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .check{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer;margin:6px 0}
 .check input{width:18px;height:18px;accent-color:#d9b25b}
+/* the NEXT bar */
+.nextbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;width:min(1148px,calc(100% - 24px));display:flex;gap:12px;align-items:center;padding:10px 10px 10px 16px;border:1px solid rgba(217,178,91,.55);border-radius:16px;background:linear-gradient(180deg,rgba(24,20,10,.96),rgba(10,9,6,.97));box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 30px rgba(217,178,91,.15);backdrop-filter:blur(10px);animation:barIn .5s cubic-bezier(.2,.8,.3,1.1) both}
+@keyframes barIn{from{transform:translate(-50%,120%)}}
+.nextbar .nx{flex:1;min-width:0}
+.nextbar .nx small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--gold)}
+.nextbar .nx b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nextbar .nx span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hold{position:relative;overflow:hidden;min-width:170px;min-height:56px;border-radius:12px;border:1px solid #f5dc93;background:linear-gradient(180deg,#f0d487,#c79b3f);color:#1a1204;font-weight:800;letter-spacing:.08em;font-size:14px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
+.hold .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.55);pointer-events:none}
+.hold .lbl2{position:relative;display:flex;flex-direction:column;line-height:1.15}
+.hold .lbl2 small{font-size:9.5px;letter-spacing:.2em;opacity:.75;font-weight:700}
+.hold.go{animation:goFlash .6s ease}
+@keyframes goFlash{50%{box-shadow:0 0 40px rgba(245,220,147,.9);transform:scale(1.04)}}
+.hold:disabled{opacity:.5;cursor:default}
+body.has-nextbar #app{padding-bottom:120px}
 
 /* ---------- overlays ---------- */
 #alertbar{position:fixed;left:0;right:0;top:0;z-index:60;pointer-events:none}
@@ -232,11 +290,13 @@ details.more>summary::-webkit-details-marker{display:none}
 @keyframes ovIn{from{opacity:0}}
 .overlay .box{animation:rise .5s .1s cubic-bezier(.2,.7,.2,1) both}
 #lockdown{background:radial-gradient(circle at 50% 40%,rgba(120,8,24,.96),rgba(10,2,6,.99) 70%);flex-direction:column}
-#lockdown::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,59,84,.07) 0 22px,transparent 22px 44px)}
+#lockdown::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,59,84,.07) 0 22px,transparent 22px 44px);animation:slide 3s linear infinite}
+@keyframes slide{to{background-position:62px 0}}
 .lk{position:relative;max-width:560px}
 .lk .ring{width:120px;height:120px;margin:0 auto 22px;border-radius:50%;border:3px solid var(--red);display:grid;place-items:center;box-shadow:0 0 50px rgba(255,59,84,.7),inset 0 0 30px rgba(255,59,84,.5);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{transform:scale(1.07);box-shadow:0 0 80px rgba(255,59,84,.95),inset 0 0 40px rgba(255,59,84,.7)}}
-.lk h1{margin:0 0 10px;font-size:clamp(28px,8vw,46px);letter-spacing:.14em;font-weight:800;color:#fff;text-shadow:0 0 24px rgba(255,59,84,.9)}
+.lk h1{margin:0 0 10px;font-size:clamp(28px,8vw,46px);letter-spacing:.14em;font-weight:800;color:#fff;text-shadow:0 0 24px rgba(255,59,84,.9);animation:jolt .5s ease}
+@keyframes jolt{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 .lk p{margin:0 auto;font-size:clamp(17px,4.4vw,21px);line-height:1.5;color:#ffd6dc;max-width:30ch}
 .lk .m{margin-top:20px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--red2)}
 .fullmsg{background:rgba(2,4,10,.97);flex-direction:column;overflow-y:auto;align-items:stretch}
@@ -247,7 +307,9 @@ details.more>summary::-webkit-details-marker{display:none}
 .fullmsg.dead{background:radial-gradient(circle at 50% 40%,rgba(90,0,14,.97),rgba(4,0,2,.99) 70%)}
 .fullmsg.dead h1{color:#fff;text-shadow:0 0 30px var(--red)}
 .fullmsg.dead .k,.fullmsg.blocked .k{color:var(--red2)}
-.fullmsg.reveal h1{color:var(--red2);text-shadow:0 0 30px rgba(255,59,84,.7)}
+.fullmsg.reveal{background:radial-gradient(circle at 50% 40%,rgba(60,0,10,.97),rgba(2,0,2,.99) 72%)}
+.fullmsg.reveal h1{color:var(--red2);text-shadow:0 0 30px rgba(255,59,84,.7);animation:glitch 2.4s steps(1) infinite}
+@keyframes glitch{0%,100%{transform:none;text-shadow:0 0 30px rgba(255,59,84,.7)}92%{transform:translate(2px,-1px) skewX(-6deg);text-shadow:-3px 0 #5ad6ff,3px 0 #ff3b54}94%{transform:translate(-3px,1px);text-shadow:3px 0 #5ad6ff,-3px 0 #ff3b54}96%{transform:none}}
 .fullmsg.reveal .k,.fullmsg.verdict .k{color:var(--gold2)}
 .fullmsg.incoming{background:radial-gradient(circle at 50% 30%,rgba(10,40,70,.97),rgba(2,4,10,.99) 70%)}
 .fullmsg.incoming .k{color:var(--cyan)}
@@ -255,18 +317,29 @@ details.more>summary::-webkit-details-marker{display:none}
 .fullmsg.memory .k{color:var(--gold2)}
 .fullmsg .msg{font-size:19px;line-height:1.65;text-align:left;border:1px solid rgba(90,214,255,.4);border-radius:14px;padding:16px;background:rgba(3,10,22,.8);white-space:pre-line;margin-bottom:18px;box-shadow:0 0 30px rgba(90,214,255,.15)}
 .fullmsg.memory .msg{border-color:rgba(217,178,91,.45);background:rgba(20,15,4,.8);font-family:var(--serif);font-size:21px;box-shadow:0 0 30px rgba(217,178,91,.15)}
+.wipe{animation:wipe 1.8s cubic-bezier(.3,.6,.3,1) .25s both}
+@keyframes wipe{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
 .fullmsg.found{background:radial-gradient(circle at 50% 20%,rgba(40,32,8,.97),rgba(3,3,2,.99) 72%)}
 .fullmsg.found .k{color:var(--gold2)}
-.fullmsg .evbody{text-align:left;border:1px solid rgba(217,178,91,.5);border-radius:14px;padding:16px;background:rgba(8,10,18,.9);margin-bottom:16px;box-shadow:0 0 36px rgba(217,178,91,.18)}
+.fullmsg .evbody{position:relative;overflow:hidden;text-align:left;border:1px solid rgba(217,178,91,.5);border-radius:14px;padding:16px;background:rgba(8,10,18,.9);margin-bottom:16px;box-shadow:0 0 36px rgba(217,178,91,.18)}
+.fullmsg .evbody::after{content:"";position:absolute;left:0;right:0;height:60px;top:-60px;background:linear-gradient(180deg,transparent,rgba(245,220,147,.25),transparent);animation:scanline 1.6s ease-out .2s 1 both;pointer-events:none}
+@keyframes scanline{to{top:110%}}
 .fullmsg .evbody h2{margin:2px 0 4px;font-size:22px;color:var(--gold2)}
 .fullmsg .evbody .src{font-family:var(--mono);font-size:11px;color:var(--cyan);margin-bottom:10px}
 .fullmsg .evbody .txt{white-space:pre-line;font-size:16px;line-height:1.7;color:#e2e9f7}
 .fullmsg.verdict{background:radial-gradient(circle at 50% 30%,rgba(60,44,10,.97),rgba(3,3,2,.99) 72%)}
 .fullmsg.verdict h1{color:var(--gold2);text-shadow:0 0 30px rgba(217,178,91,.6)}
+.fullmsg.succ{background:radial-gradient(circle at 50% 30%,rgba(10,40,34,.97),rgba(2,4,6,.99) 72%)}
+.fullmsg.succ .k{color:var(--green)}
 .typed{font-family:var(--mono);font-size:13px;line-height:1.8;color:#9fc3ff;text-align:left;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 18px}
+.typed span{display:block;opacity:0;animation:typein .3s ease forwards}
 .antenna{width:74px;height:74px;margin:0 auto 16px;border-radius:50%;border:2px solid var(--cyan);display:grid;place-items:center;box-shadow:0 0 30px rgba(90,214,255,.5);animation:pulse 1.6s ease-in-out infinite}
 .antenna.gold{border-color:var(--gold);box-shadow:0 0 30px rgba(217,178,91,.5)}
-@media(max-width:520px){.dhead{grid-template-columns:1fr}.hex{width:64px;height:72px}}
+.antenna.green{border-color:var(--green);box-shadow:0 0 30px rgba(47,227,155,.5)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:85;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media(max-width:520px){.dhead{grid-template-columns:1fr}.hex{width:64px;height:72px}.nextbar{padding:8px 8px 8px 12px}.hold{min-width:132px}}
 </style>
 </head>
 <body class="grid">
@@ -282,25 +355,33 @@ details.more>summary::-webkit-details-marker{display:none}
   </div>
 </div>
 <div id="fullmsg"></div>
+<div id="nextbarRoot"></div>
 
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
 ['config.js', 'party.js', 'story.locked.js', 'core.js', 'printkit.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 /* =========================================================================
-   KANE OIL DATABASE — player dossiers, evidence scanning, the Inspector's
-   case file, and the host's master control terminal
+   KANE OIL DATABASE — player dossiers, evidence scanning, Who's Who, hints,
+   the Inspector's case file, and the host's master control terminal
    ========================================================================= */
 const ROSTER_LIST = window.STORY_ROSTER || [];
 const ROSTER = Object.fromEntries(ROSTER_LIST.map(r => [r.id, r]));
 const ROOMS = window.STORY_ROOMS || [];
 let backend = null, S = normRoot({}), RAW = {}, ready = false;
-let ME = null;    // this device's decrypted bundle: {type:'player', c, inspector?} or {type:'host', …}
+let ME = null;    // this device's decrypted bundle
 let HOST = null;  // host-only conveniences
 const rname = id => (ROSTER[id] && ROSTER[id].name) || (HOST && HOST.chars[id] && HOST.chars[id].name) || id || '—';
 const PL = id => 'live/players/' + id;
-const FLAGS = { lockdown: 'Lockdown', killer: 'Killer Phase', voting: 'Voting', sealed: 'Dossiers sealed' };
+const FLAGS = { lockdown: 'Lockdown', killerKnows: 'Killer knows the truth', killer: 'Strike window (3rd victim)', voting: 'Voting', sealed: 'Dossiers sealed', hints: 'Hint voting' };
 const SCENES = { company: 'Company page', title: 'Title card', evidence: 'Latest evidence', wall: 'Evidence wall', voting: 'Voting screen', tally: 'Results', message: 'Message', accused: 'The accused', reveal: 'The truth' };
+const GROUPS = ['The Investigation', 'Kane Oil Leadership', 'Office of the CEO', 'The Kane Family', 'Friends of the CEO', 'Distinguished Guests', 'Shareholders', 'Estate & Household Staff', 'Event Staff', 'Press', 'Guests'];
 const PEND = 'kane:' + CONFIG.GAME_ID + ':pendingScan';
+const ICON = {
+  now: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  ev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>',
+  people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>',
+  file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>'
+};
 
 /* Sessions.
    Host: kept only in this browser tab. Closing the tab, logging out, or 30 minutes idle locks the terminal.
@@ -326,7 +407,8 @@ setInterval(() => {
   if (session && session.role === 'admin' && Date.now() - (session.active || 0) > HOST_IDLE_MS) { signOut(true); toast('TERMINAL LOCKED', 'Locked after 30 minutes of inactivity. Enter the host code to continue.', 'err'); }
 }, 20000);
 
-const ui = { built: null, bypass: false, selTarget: null, seenEvidence: null, tab: store.get('hostTab') || 'game', msgCache: {}, msgKey: null, loggedOpen: null, castFilter: '', scan: null, finds: {} };
+const ui = { built: null, bypass: false, selTarget: null, seenEvidence: null, tab: store.get('hostTab') || 'game', msgCache: {}, msgKey: null, loggedOpen: null, castFilter: '', scan: null, finds: {},
+  view: (() => { try { return sessionStorage.getItem('kane:view') || 'now'; } catch (e) { return 'now'; } })(), dirFilter: '', directory: [], evSeenCount: +(store.get('evSeen') || 0), succ: null };
 const isHostDevice = () => store.get('hostDevice') === '1';
 const dead = () => deathsOf(S);
 const log = (t, k) => backend && logEvent(backend, t, k);
@@ -339,6 +421,8 @@ function fillLines(t) {
   const acc = S.verdict && S.verdict.accused ? rname(S.verdict.accused) : '[the accused]';
   return String(t || '').replace(/\{victim3\}/g, v3).replace(/\{accused\}/g, acc);
 }
+const muteBtn = () => `<button class="iconbtn" id="muteBtn" title="Sound on/off">${Sound.muted ? '🔇' : '🔊'}</button>`;
+function bindMute() { const b = $('#muteBtn'); if (b) b.onclick = () => { const m = Sound.toggle(); b.textContent = m ? '🔇' : '🔊'; }; }
 
 /* ---------------- boot ---------------- */
 async function boot() {
@@ -358,7 +442,8 @@ async function boot() {
   }
   checkPendingScan();
   setInterval(heartbeat, CONFIG.HEARTBEAT_MS);
-  setInterval(() => { if (HOST) renderAdmin(); }, 2000);
+  setInterval(() => { if (HOST) { renderAdmin(); hostJobs(); } }, 2000);
+  setInterval(tickTimer, 1000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) heartbeat(); });
 }
 const offline = msg => `<div class="panel red" style="margin-top:40px"><div class="ph"><h2>System offline</h2></div><p class="note">${esc(msg)}</p></div>`;
@@ -369,14 +454,15 @@ async function restore() {
   ui.built = null; render();
 }
 async function adopt(b) {
-  ME = b; ui.msgCache = {}; ui.msgKey = null; ui.finds = {};
+  ME = b; ui.msgCache = {}; ui.msgKey = null; ui.finds = {}; ui.succ = null;
+  try { ui.directory = await openDirectory(b.dirKey); } catch (e) { ui.directory = []; }
   if (b.type === 'host') {
     HOST = {
       list: b.characters, chars: Object.fromEntries(b.characters.map(c => [c.id, c])),
       evidence: b.evidence, ev: Object.fromEntries(b.evidence.map(e => [e.id, e])),
       notes: b.hostNotes, killerId: b.killerId, inspectorId: b.inspectorId, built: b.built,
-      rooms: b.rooms || [], show: b.show || [], solution: b.solution || {},
-      assign: { map: {}, sent: {} }, assignCt: null, assignKey: await deriveAssignKey(session.code), msgKeys: {}, threadCache: {}
+      rooms: b.rooms || [], show: b.show || [], solution: b.solution || {}, hints: b.hints || [], directory: b.directory || ui.directory,
+      assign: { map: {}, sent: {}, chain: {} }, assignCt: null, assignKey: await deriveAssignKey(session.code), msgKeys: {}, threadCache: {}
     };
     await syncAssign();
   } else {
@@ -390,9 +476,9 @@ async function syncAssign() {
   const blob = S.assign, ct = blob ? blob.ct : '';
   if (ct === HOST.assignCt) return;
   HOST.assignCt = ct;
-  if (!blob) { HOST.assign = { map: {}, sent: {} }; return; }
-  try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? { map: d.map || {}, sent: d.sent || {} } : { map: d || {}, sent: {} }; }
-  catch (e) { HOST.assign = { map: {}, sent: {} }; }
+  if (!blob) { HOST.assign = { map: {}, sent: {}, chain: {} }; return; }
+  try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? { map: d.map || {}, sent: d.sent || {}, chain: d.chain || {} } : { map: d || {}, sent: {}, chain: {} }; }
+  catch (e) { HOST.assign = { map: {}, sent: {}, chain: {} }; }
 }
 async function saveAssign() {
   const blob = await encryptJSON(HOST.assignKey, HOST.assign);
@@ -408,19 +494,27 @@ function onState(prev, was) {
     else if ((S.kick[id] || 0) !== (session.kick || 0)) { signOut(true); toast('SIGNED OUT', 'The Command Center has signed this device out.', 'err'); }
   }
   if (!S.flags.lockdown) ui.bypass = false;
-  if (was && ME && ME.type === 'player') {
-    const newEv = Object.keys(S.evidence).filter(id => !prev.evidence[id]);
-    if (newEv.length) toast('EVIDENCE REVEALED', (S.evidence[newEv[0]].title || '') + (newEv.length > 1 ? ` (+${newEv.length - 1} more)` : ''), '', () => scrollToId('evidencePanel'));
-    if (S.flags.voting && !prev.flags.voting && !isInspector()) toast('VOTING IS NOW OPEN', 'Submit your official accusation.', 'ok', () => scrollToId('votePanel'));
+  if (was && ME) {
+    // sounds & toasts for changes everyone should notice
+    if (S.flags.lockdown && !prev.flags.lockdown) Sound.play('alarm');
+    if (S.alert && (!prev.alert || prev.alert.id !== S.alert.id)) { if (S.alert.type === 'kill') { Sound.play('death'); buzz([300, 120, 300, 120, 500]); } else Sound.play('radio'); }
     const newRooms = Object.keys(S.rooms).filter(r => !prev.rooms[r]);
-    if (newRooms.length) toast('ROOM OPENED', newRooms.map(roomName).join(', ') + ' can now be searched.', 'ok', () => scrollToId('mapPanel'));
-    decryptInbox();
+    if (newRooms.length) { Sound.play('door'); ui.freshRooms = new Set(newRooms); if (ME.type === 'player') toast('ROOM OPENED', newRooms.map(roomName).join(', ') + ' can now be searched.', 'ok', () => goView('now', 'mapPanel')); }
+    const newHints = Object.keys(S.hintsOpen).filter(i => !prev.hintsOpen[i]);
+    if (newHints.length) { Sound.play('chime'); if (ME.type === 'player') toast('HINT UNLOCKED', S.hintsOpen[newHints[0]].text, 'ok', () => goView('now', 'hintPanel')); }
+    if (ME.type === 'player') {
+      const newEv = Object.keys(S.evidence).filter(id => !prev.evidence[id]);
+      if (newEv.length) { Sound.play('vote'); toast('EVIDENCE REVEALED', (S.evidence[newEv[0]].title || '') + (newEv.length > 1 ? ` (+${newEv.length - 1} more)` : ''), '', () => goView('evidence')); }
+      if (S.flags.voting && !prev.flags.voting && !isInspector()) toast('VOTING IS NOW OPEN', 'Submit your official accusation.', 'ok', () => goView('now', 'votePanel'));
+      if (S.flags.hints && !prev.flags.hints) toast('HINTS AVAILABLE', 'Stuck? The room can now vote for a hint.', 'ok', () => goView('now', 'hintPanel'));
+      decryptInbox(); checkSuccession();
+    }
   }
-  if (was && S.alert && (!prev.alert || prev.alert.id !== S.alert.id) && S.alert.type === 'kill') buzz([300, 120, 300, 120, 500]);
   if (ME && ME.type === 'player' && !playerRec(ME.c.id)) heartbeat();
   if (HOST && (S.assign ? S.assign.ct : '') !== HOST.assignCt) syncAssign().then(renderAdmin);
   render();
-  checkPendingScan();   // a scanned tag waits until we're logged in and connected
+  if (HOST) hostJobs();
+  checkPendingScan();
 }
 const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) { } };
 
@@ -437,6 +531,7 @@ function heartbeat() {
 function signOut(silent) {
   if (!silent && ME && ME.type === 'player') backend.update({ [PL(ME.c.id) + '/lastSeen']: 0 });
   saveSession(null); ME = null; HOST = null; ui.built = null; ui.scan = null;
+  $('#nextbarRoot').innerHTML = ''; document.body.classList.remove('has-nextbar');
   render(); window.scrollTo(0, 0);
 }
 
@@ -462,13 +557,14 @@ function renderConn() {
   if (backend) { if (backend.mode === 'local') txt = 'LOCAL MODE'; else if (backend.connected) { cls = ''; txt = 'LINK SECURE'; } else { cls = 'bad'; txt = 'RECONNECTING'; } }
   el.className = 'chip ' + cls; el.innerHTML = `<span class="d"></span><span class="lbl">${txt}</span>`;
 }
-const topbar = (sub, extra = '') => `<header class="topbar"><div class="brand">${LOGO(34)}<div><b>KANE OIL</b><small>${sub}</small></div></div><span class="chip" id="connChip"></span>${extra}<button class="iconbtn" id="logoutBtn">LOG OUT</button></header>`;
-function bindLogout() { $('#logoutBtn').addEventListener('click', () => signOut(false)); }
+const topbar = (sub, extra = '') => `<header class="topbar"><div class="brand">${LOGO(34)}<div><b>KANE OIL</b><small>${sub}</small></div></div><span class="chip" id="connChip"></span>${extra}${muteBtn()}<button class="iconbtn" id="logoutBtn">LOG OUT</button></header>`;
+function bindLogout() { $('#logoutBtn').addEventListener('click', () => signOut(false)); bindMute(); }
 function scrollToId(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
 /* ---------------- login (reveals nothing about roles or files) ---------------- */
 function loginHTML() {
   let pending = false; try { pending = !!sessionStorage.getItem(PEND); } catch (e) { }
+  const P = party();
   return `<div class="login-wrap"><div class="login panel gold">
     <div class="logo">${LOGO(84)}</div>
     <h1>KANE OIL &amp; ENERGY</h1>
@@ -477,12 +573,12 @@ function loginHTML() {
     <div class="term" id="term"></div>
     <form id="loginForm" autocomplete="off">
       <label class="lbl" for="codeIn" style="text-align:left">Code word</label>
-      <input class="input code-input" id="codeIn" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="••••••••" maxlength="40">
+      <input class="input code-input" id="codeIn" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="••••••••" maxlength="60">
       <div style="height:12px"></div>
       <button class="btn gold block" id="authBtn" type="submit">AUTHENTICATE</button>
       <div class="login-err" id="loginErr"></div>
     </form>
-    <div class="foot">AUTHORIZED PERSONNEL ONLY · ALL ACCESS IS LOGGED</div>
+    <div class="foot">AUTHORIZED PERSONNEL ONLY · ALL ACCESS IS LOGGED${P.sponsor ? '<br>' + esc((P.host ? 'HOSTED BY ' + P.host + ' · ' : '') + 'SPONSORED BY ' + P.sponsor).toUpperCase() : ''}</div>
   </div></div>`;
 }
 function bindLogin() {
@@ -492,7 +588,7 @@ function bindLogin() {
   (function next() { if (!term.isConnected) return; if (i < lines.length) { term.innerHTML = lines.slice(0, ++i).map(([c, t]) => `<div class="${c}">${esc(t)}</div>`).join('') + '<span class="cursor"></span>'; setTimeout(next, 380); } })();
   $('#loginForm').addEventListener('submit', e => { e.preventDefault(); doLogin($('#codeIn').value); });
 }
-async function doLogin(raw) {
+async function doLogin(raw, quiet) {
   if (ui.built !== 'login') { ui.built = null; saveSession(null); render(); }
   const code = normCode(raw), err = $('#loginErr'), card = $('.login'), btn = $('#authBtn'), term = $('#term');
   if (!code) return;
@@ -502,12 +598,12 @@ async function doLogin(raw) {
     if (count) { const fails = (+store.get('fails') || 0) + 1; if (fails >= 5) { store.set('lockUntil', String(Date.now() + 30000)); store.set('fails', '0'); msg = 'TOO MANY ATTEMPTS · TRY AGAIN IN 30s'; } else store.set('fails', String(fails)); }
     term.insertAdjacentHTML('beforeend', `<div class="err">  [FAIL] ${esc(msg.toLowerCase())}</div>`);
     err.textContent = msg; card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
-    btn.disabled = false; btn.textContent = 'AUTHENTICATE';
+    btn.disabled = false; btn.textContent = 'AUTHENTICATE'; Sound.play('error');
   };
   btn.disabled = true; btn.textContent = 'VERIFYING…'; err.textContent = '';
   term.querySelector('.cursor')?.remove();
   term.insertAdjacentHTML('beforeend', `<div>&gt; verifying credential…</div>`);
-  const [b] = await Promise.all([unlockStory(code).catch(() => null), sleep(700)]);
+  const [b] = await Promise.all([unlockStory(code).catch(() => null), sleep(quiet ? 300 : 700)]);
   if (!b) return deny('ACCESS DENIED', true);
   if (b.type === 'evidence') return deny('THAT IS AN EVIDENCE TAG · SCAN IT WITH YOUR CAMERA', false);
   store.set('fails', '0');
@@ -517,14 +613,30 @@ async function doLogin(raw) {
     if (S.flags.sealed) return deny('DATABASE SEALED · DOSSIERS ARE NOT OPEN YET');
   }
   term.insertAdjacentHTML('beforeend', `<div class="ok">  [ OK ] access granted</div>`);
+  Sound.play('ok');
   await sleep(250);
   const id = b.c ? b.c.id : null;
   saveSession({ role: b.type === 'host' ? 'admin' : 'player', code, id, epoch: S.epoch, kick: id ? (S.kick[id] || 0) : 0, active: Date.now() });
   if (b.type === 'host') store.set('hostDevice', '1');
   await adopt(b);
   if (b.type === 'player') { backend.onDisconnect(PL(id) + '/lastSeen', 0); heartbeat(); }
-  ui.built = null; render(); window.scrollTo(0, 0);
+  ui.built = null; ui.view = 'now'; render(); window.scrollTo(0, 0);
   checkPendingScan();
+}
+
+/* ---------------- backup roles (a dead player continues as someone new) ---------------- */
+async function checkSuccession() {
+  if (!ME || ME.type !== 'player' || !ui.msgKey) return;
+  const s = S.succession[ME.c.id]; if (!s || !(ME.c.id in dead())) { ui.succ = null; return; }
+  if (ui.succ && ui.succ.ts === s.ts) return;
+  try { const d = await decryptJSON(ui.msgKey, s); ui.succ = Object.assign({ ts: s.ts }, d); render(); } catch (e) { }
+}
+async function becomeNext() {
+  const next = ui.succ; if (!next) return;
+  log(`${ME.c.name}'s player continues as ${next.name}`, 'player');
+  store.set('termAck', ''); ui.succ = null; saveSession(null); ME = null;
+  await doLogin(next.code, true);
+  toast('NEW IDENTITY', `You are now ${next.name}. Read your dossier.`, 'ok');
 }
 
 /* ---------------- evidence tags (QR scans) ---------------- */
@@ -550,8 +662,8 @@ async function checkPendingScan() {
     const st = evStatus(e.id);
     openModal(`<div class="ph"><h2>Tag test · ${esc(e.title)}</h2><span class="sub">HOST PREVIEW</span></div>
       <p class="note">Room: <b>${esc(roomName(e.room))}</b> (${roomOpen(S, e.room) ? 'open' : 'sealed'})${e.after ? ` · can't be scanned until "${esc((HOST.show.find(s => s.id === e.after) || {}).title || e.after)}"` : ''}<br>Status: ${esc(st.text)}</p>
-      <p class="note">This tag works. Players who scan it will see the evidence once its room is open.</p>`);
-    return;
+      <p class="note" style="color:var(--green)">✓ This tag works.</p>`);
+    Sound.play('ok'); return;
   }
   const me = ME.c.id;
   if (me in dead()) { ui.scan = { kind: 'dead' }; render(); return; }
@@ -563,15 +675,16 @@ async function checkPendingScan() {
 }
 function revealEvidence(e, byId, where, kind) {
   if (S.evidence[e.id]) return;
-  const upd = { ['live/evidence/' + e.id]: { ts: backend.TS(), title: e.title, src: e.src || '', body: e.body, tier: e.tier || '', by: byId || null, where: where || '', kind: kind || 'found' } };
-  upd['live/display'] = { scene: 'evidence', evidenceId: e.id, ts: backend.TS() };
-  backend.update(upd);
+  backend.update({
+    ['live/evidence/' + e.id]: { ts: backend.TS(), title: e.title, src: e.src || '', body: e.body, tier: e.tier || '', by: byId || null, where: where || '', kind: kind || 'found' },
+    'live/display': { scene: 'evidence', evidenceId: e.id, ts: backend.TS() }
+  });
 }
 
 /* ---------------- dossier ---------------- */
-// killer: revealed at Killer Phase · Inspector: once their first lines arrive · everyone else: when they die
+// killer: revealed when they learn the truth · Inspector: once their first lines arrive · everyone else: when they die
 const inspectorActive = () => !!(ME && ME.inspector && Object.keys(ME.inspector.scripts || {}).some(id => S.phaseLog[id]));
-function revealedFor(c, host) { return host || (c.killer ? S.flags.killer : c.inspector ? inspectorActive() : (c.id in dead())); }
+function revealedFor(c, host) { return host || (c.killer ? S.flags.killerKnows : c.inspector ? inspectorActive() : (c.id in dead())); }
 function hexBadge(c, red) {
   const col = red ? '#ff3b54' : '#d9b25b';
   return `<div class="hex ${red ? 'red' : ''}"><svg viewBox="0 0 78 88"><path d="M39 2 75 22.5v43L39 86 3 65.5v-43z" fill="rgba(3,7,16,.7)" stroke="${col}" stroke-width="2"/><path d="M39 10 68 26.5v35L39 78 10 61.5v-35z" fill="none" stroke="rgba(90,214,255,.35)"/></svg><span>${esc(initials(c.name))}</span></div>`;
@@ -581,14 +694,14 @@ function dossierHTML(c, host = false) {
   const rv = revealedFor(c, host), isDead = c.id in dead();
   const cls = rv && c.clsSecret ? c.clsSecret : c.cls;
   const red = (rv && c.killer) || isDead;
-  const secs = c.sections.map(s => {
+  const secs = c.sections.map((s, i) => {
     if (s.hostOnly && !host) return '';
     if (s.sealed && !rv) {
       if (s.sealed === true) return `<div class="sec"><h3>${esc(s.h)}</h3>${sealedBlock()}</div>`;
       return `<div class="sec ${s.role ? 'role' : ''}"><h3>${esc(s.h)}</h3><p>${esc(s.sealed)}</p><div style="margin-top:10px">${sealedBlock('ADDITIONAL RECORDS SEALED', [80])}</div></div>`;
     }
     const tag = s.hostOnly ? '<span class="pill gold">HOST ONLY</span>' : '';
-    return `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h3>${esc(s.h)} ${tag}</h3><p>${esc(s.t)}</p></div>`;
+    return `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}" style="animation-delay:${Math.min(i, 10) * 40}ms"><h3>${esc(s.h)} ${tag}</h3><p>${esc(s.t)}</p></div>`;
   }).join('');
   return `
     <div class="dhead">${hexBadge(c, red)}
@@ -605,58 +718,106 @@ function dossierHTML(c, host = false) {
     <div class="stamp">████ END OF FILE ████</div>`;
 }
 
+/* ---------------- who's who ---------------- */
+function dirEntry(d) { return (d.revealed && S.unmasked[d.id]) ? Object.assign({}, d, d.revealed) : d; }
+function directoryHTML(meId, filter) {
+  const dd = dead(), list = ui.directory.map(dirEntry).filter(d => !filter || (d.name + ' ' + d.title + ' ' + d.group + ' ' + d.blurb).toLowerCase().includes(filter));
+  if (!ui.directory.length) return `<div class="empty">THE DIRECTORY IS UNAVAILABLE ON THIS DEVICE</div>`;
+  const groups = [...new Set([...GROUPS, ...list.map(d => d.group)])].filter(g => list.some(d => d.group === g));
+  return groups.map(g => `<div class="dir-group">${esc(g)}</div><div class="dir">${list.filter(d => d.group === g).map((d, i) => {
+    const isMe = d.id === meId, gone = d.id in dd;
+    return `<div class="person ${isMe ? 'me' : ''} ${gone ? 'gone' : ''}" style="animation-delay:${Math.min(i, 8) * 35}ms"><div class="mono-av">${esc(initials(d.name))}</div><div><b>${esc(d.name)}</b><span class="ti">${esc(d.title)}</span><p>${esc(d.blurb)}</p>
+      <div class="tags">${gone ? '<span class="pill red">DECEASED</span>' : ''}${isMe ? '<span class="pill gold">YOU</span><button class="btn sm" data-view-go="file" style="min-height:26px;padding:3px 10px">OPEN MY DOSSIER</button>' : ''}</div></div></div>`;
+  }).join('')}</div>`).join('') || `<div class="empty">NO MATCHES</div>`;
+}
+
 /* ---------------- player view ---------------- */
-const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
+const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
 function playerShellHTML() {
+  const views = [['now', 'Now', ICON.now], ['evidence', 'Evidence', ICON.ev], ['people', "Who's Who", ICON.people], ['file', 'My File', ICON.file]];
   return `${topbar(ME.c.inspector ? 'INVESTIGATOR ACCESS' : 'SECURE PERSONNEL DOSSIER')}
-    <div id="deadStrip"></div>
-    <section class="panel gold hidden" id="verdictPanel"></section>
-    <section class="panel hidden" id="casePanel" style="border-color:rgba(90,214,255,.45)"></section>
-    <section class="panel red hidden" id="directivePanel"></section>
-    <section class="panel hidden" id="memPanel"><div class="ph"><h2>Memories &amp; Messages</h2><span class="sub">FOR YOUR EYES ONLY</span></div><div id="memList"></div></section>
-    <section class="panel gold hidden" id="votePanel">
-      <div class="ph"><h2>Official Accusation</h2><span class="sub">VOTING OPEN</span></div>
-      <div id="voteStatus"></div>
-      <form id="voteForm">
-        <div class="field"><label class="lbl" for="suspectSel">Name your suspect</label><select class="input" id="suspectSel"></select></div>
-        <div class="field"><label class="lbl" for="stmtIn">Official statement for the record</label><textarea class="input" id="stmtIn" maxlength="800" placeholder="What did you see? Why them? Motive, means, opportunity…"></textarea></div>
-        <button class="btn gold block" type="submit" id="voteBtn">SUBMIT ACCUSATION</button>
-      </form>
-    </section>
-    <section class="panel" id="mapPanel"><div class="ph"><h2>Estate Map</h2><span class="sub">SCAN EVIDENCE TAGS WITH YOUR CAMERA</span></div><div id="mapBody"></div></section>
-    <section class="panel hidden" id="findsPanel"><div class="ph"><h2>Evidence You Found</h2><span class="sub">ONLY YOU CAN SEE UNREVEALED FINDS</span></div><div id="findsList"></div></section>
-    <section class="panel hidden" id="evidencePanel"><div class="ph"><h2>Evidence Locker</h2><span class="sub" id="evCount"></span></div><div id="evList"></div></section>
-    <section class="panel"><div class="ph"><h2>Personnel Dossier</h2><span class="sub">EYES ONLY</span></div><div id="dossierBody"></div></section>`;
+    <nav class="pnav" id="pnav">${views.map(([k, l, ic]) => `<button data-view="${k}">${ic}<span>${l}</span><span class="nb hidden" id="nb-${k}"></span></button>`).join('')}</nav>
+    <div class="view" data-v="now">
+      <div id="deadStrip"></div>
+      <section class="panel gold hidden" id="verdictPanel"></section>
+      <section class="panel hidden" id="casePanel" style="border-color:rgba(90,214,255,.45)"></section>
+      <section class="panel red hidden" id="directivePanel"></section>
+      <section class="panel gold hidden" id="votePanel">
+        <div class="ph"><h2>Official Accusation</h2><span class="sub">VOTING OPEN</span></div>
+        <div id="voteStatus"></div>
+        <form id="voteForm">
+          <div class="field"><label class="lbl" for="suspectSel">Name your suspect</label><select class="input" id="suspectSel"></select></div>
+          <div class="field"><label class="lbl" for="stmtIn">Official statement for the record</label><textarea class="input" id="stmtIn" maxlength="800" placeholder="What did you see? Why them? Motive, means, opportunity…"></textarea></div>
+          <button class="btn gold block" type="submit" id="voteBtn">SUBMIT ACCUSATION</button>
+        </form>
+      </section>
+      <section class="panel hidden" id="hintPanel"><div class="ph"><h2>Hints</h2><span class="sub" id="hintSub"></span></div><div id="hintBody"></div></section>
+      <section class="panel hidden" id="memPanel"><div class="ph"><h2>Memories &amp; Messages</h2><span class="sub">FOR YOUR EYES ONLY</span></div><div id="memList"></div></section>
+      <section class="panel" id="mapPanel"><div class="ph"><h2>Estate Map</h2><span class="sub">SCAN EVIDENCE TAGS WITH YOUR CAMERA</span></div><div id="mapBody"></div></section>
+      <section class="panel hidden" id="findsPanel"><div class="ph"><h2>Evidence You Found</h2><span class="sub">ONLY YOU CAN SEE UNREVEALED FINDS</span></div><div id="findsList"></div></section>
+    </div>
+    <div class="view hidden" data-v="evidence">
+      <section class="panel" id="evidencePanel"><div class="ph"><h2>Evidence Locker</h2><span class="sub" id="evCount"></span></div><div id="evList"></div></section>
+    </div>
+    <div class="view hidden" data-v="people">
+      <section class="panel gold"><div class="ph"><h2>Who's Who</h2><span class="sub">KANE OIL · GALA DIRECTORY</span></div>
+        <div class="dir-tools"><input class="input" id="dirFilter" placeholder="Search names, titles, departments…"></div>
+        <div id="dirBody"></div></section>
+    </div>
+    <div class="view hidden" data-v="file">
+      <section class="panel"><div class="ph"><h2>Personnel Dossier</h2><span class="sub">EYES ONLY</span></div><div id="dossierBody"></div></section>
+    </div>`;
+}
+function goView(v, anchor) {
+  ui.view = v; try { sessionStorage.setItem('kane:view', v); } catch (e) { }
+  $$('#pnav [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+  $$('.view').forEach(el => { const on = el.dataset.v === v; if (on && el.classList.contains('hidden')) { el.classList.remove('hidden'); el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; } else if (!on) el.classList.add('hidden'); });
+  if (v === 'evidence') { ui.evSeenCount = releasedEvidence(S).length; store.set('evSeen', String(ui.evSeenCount)); }
+  Sound.play('tap');
+  if (anchor) setTimeout(() => scrollToId(anchor), 60); else window.scrollTo({ top: 0, behavior: 'smooth' });
+  renderPlayer();
 }
 function bindPlayer() {
   bindLogout();
   ui.selTarget = null; ui.seenEvidence = null;
+  $('#pnav').onclick = e => { const b = e.target.closest('[data-view]'); if (b) goView(b.dataset.view); };
+  goView(['now', 'evidence', 'people', 'file'].includes(ui.view) ? ui.view : 'now');
+  $('#dirFilter').addEventListener('input', e => { ui.dirFilter = e.target.value.toLowerCase(); renderPlayer(); });
   $('#voteForm').addEventListener('submit', e => {
     e.preventDefault();
     const suspect = $('#suspectSel').value, statement = $('#stmtIn').value.trim();
-    if (!suspect) { toast('INCOMPLETE', 'Select a suspect first.', 'err'); return; }
+    if (!suspect) { toast('INCOMPLETE', 'Select a suspect first.', 'err'); Sound.play('error'); return; }
     if (!S.flags.voting) { toast('VOTING CLOSED', 'The host has closed voting.', 'err'); return; }
     const had = playerRec(ME.c.id) && playerRec(ME.c.id).vote;
     backend.update({ [PL(ME.c.id) + '/vote']: { suspect, statement, ts: backend.TS() } });
     log(`${ME.c.name} ${had ? 'changed their accusation to' : 'accused'} ${rname(suspect)}`, 'player');
+    Sound.play('vote');
     toast('ACCUSATION LOGGED', 'Your statement is on the record. You can update it until voting closes.', 'ok');
   });
   $('#app').onclick = e => {
     const a = e.target.closest('[data-ack]'); if (a) { ackMsg(a.dataset.ack); return; }
     const r = e.target.closest('[data-reveal]'); if (r) { const f = ui.finds[r.dataset.reveal]; if (f) confirmReveal(f.e); return; }
-    const rel = e.target.closest('[data-release]'); if (rel) releaseOfficial(rel.dataset.release);
+    const rel = e.target.closest('[data-release]'); if (rel) { releaseOfficial(rel.dataset.release); return; }
+    const vg = e.target.closest('[data-view-go]'); if (vg) { goView(vg.dataset.viewGo); return; }
+    if (e.target.closest('#hintVoteBtn')) toggleHintVote();
   };
+}
+function toggleHintVote() {
+  const st = hintStatus(S, isOnline), me = ME.c.id, mine = !!((S.hintVotes[st.round] || {})[me]);
+  backend.update({ [`live/hintVotes/${st.round}/${me}`]: mine ? null : backend.TS() });
+  Sound.play('vote');
+  if (!mine) log(`${ME.c.name} voted for a hint`, 'player');
 }
 function confirmReveal(e) {
   openModal(`<div class="ph"><h2>Reveal to everyone?</h2></div><p style="line-height:1.6"><b>${esc(e.title)}</b> will appear on every phone and on the big screen, with your name on it as the finder.</p>
     <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="revYes">REVEAL IT</button><button class="btn ghost" data-close>NOT YET</button></div>`);
-  $('#revYes').onclick = () => { revealEvidence(e, ME.c.id, roomName(e.room), 'found'); log(`${ME.c.name} revealed "${e.title}"`, 'player'); closeModal(); ui.scan = null; toast('REVEALED', 'Everyone can now see it.', 'ok'); render(); };
+  $('#revYes').onclick = () => { revealEvidence(e, ME.c.id, roomName(e.room), 'found'); log(`${ME.c.name} revealed "${e.title}"`, 'player'); closeModal(); ui.scan = null; Sound.play('chime'); toast('REVEALED', 'Everyone can now see it.', 'ok'); render(); };
 }
 function releaseOfficial(id) {
   const e = (ME.inspector && ME.inspector.official || []).find(x => x.id === id); if (!e) return;
   openModal(`<div class="ph"><h2>Release to everyone?</h2></div><p style="line-height:1.6">Have you read <b>${esc(e.title)}</b> aloud? Releasing it puts a copy on every phone and on the big screen.</p>
     <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="relYes">RELEASE TO ALL</button><button class="btn ghost" data-close>NOT YET</button></div>`);
-  $('#relYes').onclick = () => { revealEvidence(e, ME.c.id, 'Official report', 'official'); log(`Inspector released "${e.title}"`, 'player'); closeModal(); toast('RELEASED', e.title, 'ok'); };
+  $('#relYes').onclick = () => { revealEvidence(e, ME.c.id, 'Official report', 'official'); log(`Inspector released "${e.title}"`, 'player'); closeModal(); Sound.play('chime'); toast('RELEASED', e.title, 'ok'); };
 }
 async function decryptInbox() {
   if (!ME || ME.type !== 'player' || !ui.msgKey) return;
@@ -686,9 +847,11 @@ function currentLines() {
 
 function renderPlayer() {
   const c = ME.c, dd = dead(), iAmDead = c.id in dd;
+  const setNB = (k, n) => { const b = $('#nb-' + k); if (b) { b.textContent = n > 9 ? '9+' : n; b.classList.toggle('hidden', !n); } };
   patch($('#deadStrip'), String(iAmDead), iAmDead ? `<div class="deadstrip">STATUS: DECEASED · STAY IN CHARACTER · AWAIT HOST INSTRUCTIONS</div>` : '');
-  patch($('#dossierBody'), [S.flags.killer, JSON.stringify(dd), Object.keys(S.phaseLog).length].join('|'), dossierHTML(c));
-  patch($('#mapBody'), JSON.stringify(S.rooms), mapHTML());
+  patch($('#dossierBody'), [S.flags.killerKnows, JSON.stringify(dd), Object.keys(S.phaseLog).length].join('|'), dossierHTML(c));
+  patch($('#mapBody'), JSON.stringify(S.rooms) + (ui.freshRooms ? [...ui.freshRooms].join() : ''), mapHTML());
+  patch($('#dirBody'), JSON.stringify([ui.dirFilter, dd, S.unmasked, ui.directory.length]), directoryHTML(c.id, ui.dirFilter));
 
   // verdict
   const v = S.verdict, vp = $('#verdictPanel');
@@ -703,9 +866,21 @@ function renderPlayer() {
     patch(cp, JSON.stringify([lines && lines.id, S.phase, off.map(e => [e.id, !!S.evidence[e.id]]), S.kill && S.kill.victim, S.verdict && S.verdict.accused]),
       `<div class="ph"><h2 style="color:var(--cyan)">Inspector's Case File</h2><span class="sub">${S.phase && S.phase.i >= 0 ? 'PHASE ' + (S.phase.i + 1) : 'STANDING BY'}</span></div>
       ${lines ? `<div class="lines-lbl"><span class="pulse-dot"></span> YOUR LINES · ${esc(lines.title)}</div><div class="lines">${esc(fillLines(lines.text))}</div>`
-        : `<p class="note" style="margin:0">${S.phase && S.phase.i >= 0 ? 'No lines for this part of the night. Keep the investigation moving: question people, send searchers into open rooms.' : 'You are undercover. Mingle as a guest until Alex Kane gives her toast.'}</p>`}
+        : `<p class="note" style="margin:0">${S.phase && S.phase.i >= 0 && inspectorActive() ? 'No lines for this part of the night. Keep the investigation moving: question people, send searchers into open rooms.' : 'You are undercover. Mingle as a guest until Alex Kane gives her toast.'}</p>`}
       ${off.map(e => `<div class="official"><span class="pill ${S.evidence[e.id] ? 'green' : 'gold'}">${S.evidence[e.id] ? 'RELEASED' : 'OFFICIAL REPORT · READ ALOUD'}</span><h4>${esc(e.title)}</h4><div class="src">${esc(e.src)}</div>${S.evidence[e.id] ? '' : `<div class="body">${esc(e.body)}</div><button class="btn gold block" data-release="${esc(e.id)}">RELEASE TO ALL</button>`}</div>`).join('')}`);
   }
+
+  // hints
+  const hp = $('#hintPanel'), opened = Object.keys(S.hintsOpen).sort((a, b) => a - b).map(i => S.hintsOpen[i]), hs = hintStatus(S, isOnline);
+  const canVoteHint = S.flags.hints && hs.left > 0 && !iAmDead;
+  hp.classList.toggle('hidden', !S.flags.hints && !opened.length);
+  const myHintVote = !!((S.hintVotes[hs.round] || {})[c.id]);
+  $('#hintSub').textContent = opened.length ? `${opened.length} UNLOCKED` : 'VOTE TO UNLOCK';
+  patch($('#hintBody'), JSON.stringify([opened.length, S.flags.hints, hs, myHintVote, iAmDead]),
+    opened.map((h, i) => `<div class="hint"><b>HINT ${i + 1}</b>${esc(h.text)}</div>`).join('') +
+    (canVoteHint ? `<p class="note" style="margin:${opened.length ? '12px' : '0'} 0 0">Stuck? If more than half of the players still in the game vote yes, the next hint unlocks for everyone.</p>
+      <div class="meter"><i style="width:${Math.min(100, Math.round(hs.votes / hs.needed * 100))}%"></i></div>
+      <div class="row-gap" style="justify-content:space-between"><span class="mono" style="font-size:12px;color:var(--muted)">${hs.votes} OF ${hs.needed} VOTES NEEDED</span><button class="btn sm ${myHintVote ? 'voted-on' : 'gold'}" id="hintVoteBtn">${myHintVote ? '✓ YOU VOTED · UNDO' : 'I WANT A HINT'}</button></div>` : (S.flags.hints && !hs.left ? `<p class="note">No hints left. You're on your own.</p>` : '')));
 
   // memories & host messages
   const mems = myMemories(), msgs = myMessages(), mp = $('#memPanel');
@@ -722,8 +897,8 @@ function renderPlayer() {
     return `<details class="ev"><summary><span class="pill ${rev ? 'green' : 'gold'}">${rev ? 'REVEALED' : 'ONLY YOU'}</span><span class="t">${esc(f.e.title)}</span></summary><div class="body"><div class="src">${esc(roomName(f.e.room))} · ${esc(f.e.src)}</div>${esc(f.e.body)}${rev ? '' : `<div style="margin-top:12px"><button class="btn gold sm" data-reveal="${esc(f.e.id)}">REVEAL TO EVERYONE</button></div>`}</div></details>`;
   }).join(''));
 
-  // termination directive — killer only, only after the host enables Killer Phase
-  const dp = $('#directivePanel'), showDir = !!c.killer && S.flags.killer;
+  // termination directive — killer only, once the strike window opens
+  const dp = $('#directivePanel'), showDir = !!c.killer && S.flags.killer && S.flags.killerKnows;
   dp.classList.toggle('hidden', !showDir);
   if (showDir) {
     if (S.kill) {
@@ -736,7 +911,7 @@ function renderPlayer() {
         <p style="margin:0 0 12px;font-size:15.5px;line-height:1.6;color:#ffd6dc">Someone in this room is getting too close to your real name. Choose <b>one</b> target. Once you execute, every screen in the building gets the alert instantly. Do it where no one is watching you.</p>
         <div class="targets">${list.map(t => `<button type="button" class="target ${ui.selTarget === t.id ? 'sel' : ''}" data-target="${esc(t.id)}"><span class="rad"></span><span><b>${esc(rname(t.id))}</b><small>${esc(t.why)}</small></span></button>`).join('')}</div>
         <button class="btn danger block" id="execBtn" ${ui.selTarget ? '' : 'disabled'}>EXECUTE DIRECTIVE</button>`);
-      dp.querySelectorAll('[data-target]').forEach(b => b.onclick = () => { ui.selTarget = b.dataset.target; renderPlayer(); });
+      dp.querySelectorAll('[data-target]').forEach(b => b.onclick = () => { ui.selTarget = b.dataset.target; Sound.play('tap'); renderPlayer(); });
       const eb = $('#execBtn'); if (eb) eb.onclick = confirmKill;
     }
   }
@@ -762,19 +937,23 @@ function renderPlayer() {
   }
 
   // evidence locker
-  const evs = releasedEvidence(S), ep = $('#evidencePanel');
-  ep.classList.toggle('hidden', !evs.length);
+  const evs = releasedEvidence(S);
   const prevSeen = ui.seenEvidence; ui.seenEvidence = new Set(evs.map(e => e.id));
   $('#evCount').textContent = evs.length ? `${evs.length} FILE${evs.length > 1 ? 'S' : ''} REVEALED` : '';
-  patch($('#evList'), evs.map(e => e.id).join(), evs.map((e, i) => {
+  patch($('#evList'), evs.map(e => e.id).join(), evs.length ? evs.map((e, i) => {
     const isNew = prevSeen && !prevSeen.has(e.id);
-    return `<details class="ev ${isNew ? 'new' : ''}" ${i === 0 ? 'open' : ''}><summary><span class="pill ${isNew ? 'gold' : ''}">${isNew ? 'NEW' : 'FILE'}</span><span class="t">${esc(e.title)}</span><span class="when">${fmtTime(e.ts)}</span></summary>
+    return `<details class="ev ${isNew ? 'new' : ''}" ${i === 0 ? 'open' : ''} style="animation-delay:${Math.min(i, 8) * 40}ms"><summary><span class="pill ${isNew ? 'gold' : ''}">${isNew ? 'NEW' : 'FILE'}</span><span class="t">${esc(e.title)}</span><span class="when">${fmtTime(e.ts)}</span></summary>
       <div class="body">${evCredit(e)}<div class="src">SOURCE · ${esc(e.src)}</div>${esc(e.body)}</div></details>`;
-  }).join(''));
+  }).join('') : `<div class="empty">NOTHING REVEALED YET. SEARCH THE OPEN ROOMS FOR EVIDENCE TAGS.</div>`);
+  if (ui.view === 'evidence') { ui.evSeenCount = evs.length; store.set('evSeen', String(evs.length)); }
+
+  // nav badges
+  setNB('evidence', Math.max(0, evs.length - ui.evSeenCount));
+  setNB('now', (S.flags.voting && !c.inspector && !iAmDead && !(playerRec(c.id) && playerRec(c.id).vote) ? 1 : 0) + (canVoteHint && !myHintVote ? 1 : 0));
 }
 function evCredit(e) {
   if (!e.by) return '';
-  return `<div class="who">${e.kind === 'official' ? `OFFICIAL REPORT · RELEASED BY ${esc(rname(e.by).toUpperCase())}` : `FOUND BY ${esc(rname(e.by).toUpperCase())}${e.where ? ' · ' + esc(e.where.toUpperCase()) : ''}`}</div>`;
+  return `<div class="who">${e.kind === 'official' ? `OFFICIAL REPORT · RELEASED BY ${esc(rname(e.by).toUpperCase())}` : e.by === 'host' ? '' : `FOUND BY ${esc(rname(e.by).toUpperCase())}${e.where ? ' · ' + esc(e.where.toUpperCase()) : ''}`}</div>`;
 }
 function verdictHTML(v, c) {
   if (v.stage === 'accuse') return `<div class="verdict-box"><div class="mono" style="font-size:11px;letter-spacing:.24em;color:var(--gold)">THE ROOM HAS SPOKEN</div><div class="big">The accused: <span style="color:var(--gold2)">${esc(rname(v.accused))}</span></div><p class="note" style="text-align:center">All eyes to the front. The Inspector will now hear their defense.</p></div>`;
@@ -787,6 +966,12 @@ function verdictHTML(v, c) {
     <div class="big">The killer: <span style="color:var(--red2)">${esc(v.killerName)}</span></div>${v.alias ? `<div class="alias">${esc(v.alias)}</div>` : ''}
     <p style="margin-top:12px">${v.accused ? (roomRight ? '✓ The room accused the right person.' : `✕ The room accused ${esc(rname(v.accused))}. The killer walked free.`) : ''}</p>
     <p>${personal}</p>${v.summary ? `<p style="color:var(--muted)">${esc(v.summary)}</p>` : ''}</div>`;
+}
+function confetti() {
+  const wrap = document.createElement('div'); wrap.className = 'confetti';
+  const cols = ['#f5dc93', '#d9b25b', '#5ad6ff', '#2fe39b', '#ffffff'];
+  for (let i = 0; i < 70; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + 'vw'; p.style.background = cols[i % cols.length]; p.style.animationDuration = (2.2 + Math.random() * 2.2) + 's'; p.style.animationDelay = (Math.random() * .8) + 's'; wrap.appendChild(p); }
+  document.body.appendChild(wrap); setTimeout(() => wrap.remove(), 5500);
 }
 function confirmKill() {
   const id = ui.selTarget; if (!id) return;
@@ -815,8 +1000,9 @@ function adminShellHTML() {
   <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${l}<span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
   <div id="modeNote"></div>
 
-  <!-- GAME: the only tab you need on the night -->
+  <!-- GAME -->
   <div data-pane="game">
+    <div id="mustWarn"></div>
     <div class="stats">
       <div class="stat"><b><span id="n-phase">0</span><em> / ${HOST.show.length}</em></b><span>Phase</span></div>
       <div class="stat"><b><span id="n-online">0</span><em> online</em></b><span>Players connected</span></div>
@@ -827,18 +1013,21 @@ function adminShellHTML() {
       <section class="panel gold"><div class="ph"><h2>The Night</h2><span class="sub" id="phaseSub"></span></div>
         <div class="progress"><i id="phaseBar" style="width:0"></i></div>
         <div id="phaseNow"></div>
-        <div id="phaseNext"></div>
         <details class="more"><summary>▸ ALL PHASES (JUMP OR RE-RUN)</summary><div class="phases" id="phaseList"></div></details>
       </section>
       <section class="panel"><div class="ph"><h2>Quick Controls</h2></div>
         <div class="quick"><button class="btn lockbtn" id="lockBtn">LOCKDOWN</button><input class="input" id="bcIn" maxlength="200" placeholder="Announcement to every screen…"><button class="btn" id="bcBtn">SEND</button></div>
         <div id="alertStatus" style="margin-top:10px"></div>
       </section>
+      <section class="panel"><div class="ph"><h2>Hint Voting</h2><span class="sub" id="hintHostSub"></span></div>
+        <div class="ctl"><div class="txt"><b>Let players vote for hints</b><small>When more than half of the living players online vote yes, the next hint unlocks on every phone and the projector.</small></div><span class="state" id="st-hints"></span><button class="toggle" data-flag="hints" aria-label="Hint voting"></button></div>
+        <div id="hintHost" style="margin-top:10px"></div>
+      </section>
     </div><div>
       <section class="panel"><div class="ph"><h2>Rooms</h2><span class="sub">TAP TO OPEN OR SEAL</span></div><div class="relist" id="roomCtl"></div></section>
       <section class="panel"><div class="ph"><h2>Evidence Board</h2><span class="sub" id="evSub"></span></div><div id="evBoard"></div></section>
       <section class="panel gold hidden" id="tallyPanel"><div class="ph"><h2>Accusations</h2><span class="sub" id="tallySub"></span></div><div id="tally"></div><div id="verdictCtl" style="margin-top:12px"></div></section>
-      <section class="panel red"><div class="ph"><h2>Deaths</h2></div><div class="relist" id="deathList"></div><div style="margin-top:8px" id="killStatus"></div></section>
+      <section class="panel red"><div class="ph"><h2>Deaths &amp; Backup Roles</h2></div><div class="relist" id="deathList"></div><div style="margin-top:8px" id="killStatus"></div></section>
     </div></div>
   </div>
 
@@ -861,7 +1050,7 @@ function adminShellHTML() {
       <div class="row-gap" style="margin-top:10px"><button class="btn gold" id="copyInvite">COPY MESSAGE</button></div>
     </section>
     <section class="panel"><div class="ph"><h2>RSVPs &amp; Roles</h2><span class="sub" id="rsvpSub"></span></div>
-      <p class="note" style="margin:0 0 12px">Give each guest a character, then tap <b>Copy role text</b> to send them their character and code word privately. Don't forget to cast the <b>Inspector</b>: pick someone confident who likes to run a room.</p>
+      <p class="note" style="margin:0 0 12px">Give each guest a character, then tap <b>Copy role text</b> to send them their character and code word privately. Characters marked <span class="pill must">★ MUST CAST</span> carry the solution: fill them first. Under each guest you can add <b>backup roles</b>: if their character dies, their phone switches to the first backup that's still free, using the same code word.</p>
       <div id="openRoles"></div>
       <div id="rsvpList"></div>
     </section>
@@ -871,7 +1060,8 @@ function adminShellHTML() {
   <div data-pane="tools">
     <div class="grid2"><div>
       <section class="panel"><div class="ph"><h2>Manual Switches</h2><span class="sub">NEXT DOES THESE FOR YOU</span></div>
-        ${[['killer', 'red', 'Killer Phase', 'Reveals the killer\'s true file and the Termination Directive on their phone.'],
+        ${[['killerKnows', 'red', 'Killer knows the truth', 'Unseals the killer\'s file and shows them their plan. Happens automatically when doors open.'],
+           ['killer', 'red', 'Strike window', 'Lets the killer choose a third victim.'],
            ['voting', '', 'Voting', 'Opens the accusation form on every phone.'],
            ['sealed', 'red', 'Seal all dossiers', 'Locks every player out until you turn it off.']]
           .map(([f, cls, t, d]) => `<div class="ctl"><div class="txt"><b>${t}</b><small>${d}</small></div><span class="state" id="st-${f}"></span><button class="toggle ${cls}" data-flag="${f}" aria-label="${t}"></button></div>`).join('')}
@@ -920,15 +1110,20 @@ function adminShellHTML() {
 
 /* ---------------- host: actions (one place, used by every button) ---------------- */
 const A = {
-  flag(f, v) { backend.update({ ['live/flags/' + f]: v }); log(`${FLAGS[f]} ${v ? 'ON' : 'OFF'}`); },
+  flag(f, v) { const upd = { ['live/flags/' + f]: v }; if (f === 'hints' && v) upd['live/hintTotal'] = HOST.hints.length; backend.update(upd); log(`${FLAGS[f]} ${v ? 'ON' : 'OFF'}`); },
   scene(scene, extra = {}) { backend.update({ 'live/display': Object.assign({ scene, ts: backend.TS() }, extra) }); },
   broadcast(text) { backend.update({ 'live/alert': { id: uid('a'), type: 'notice', text, ts: backend.TS() } }); log(`Announcement: ${text}`); },
   death(id, text) { backend.update({ ['live/deaths/' + id]: backend.TS(), 'live/alert': { id: uid('a'), type: 'kill', text, ts: backend.TS() } }); log(`Death announced: ${rname(id)}`, 'alert'); },
-  undoDeath(id) { backend.update({ ['live/deaths/' + id]: null }); log(`Death undone: ${rname(id)}`); },
+  undoDeath(id) { backend.update({ ['live/deaths/' + id]: null, ['live/succession/' + id]: null }); log(`Death undone: ${rname(id)}`); },
   room(id, open) { backend.update({ ['live/rooms/' + id]: open ? backend.TS() : null, ...(open ? { 'live/alert': { id: uid('a'), type: 'notice', text: `${roomName(id)} is now open to investigators.`, ts: backend.TS() } } : {}) }); log(`${roomName(id)} ${open ? 'opened' : 'sealed'}`); },
   deliver(id) { backend.update({ ['live/delivered/' + id]: backend.TS() }); log(`Sent to the Inspector: ${(HOST.ev[id] || {}).title || id}`); },
   release(id, how) { const e = HOST.ev[id]; if (!e || S.evidence[id]) return; revealEvidence(e, how === 'official' ? HOST.inspectorId : 'host', how === 'official' ? 'Official report' : roomName(e.room), how === 'official' ? 'official' : 'found'); log(`Host released: ${e.title}`); },
   retract(id) { backend.update({ ['live/evidence/' + id]: null }); log(`Evidence retracted: ${(HOST.ev[id] || {}).title || id}`); },
+  unlockHint() {
+    const round = Object.keys(S.hintsOpen).length, text = HOST.hints[round]; if (!text || S.hintsOpen[round]) return;
+    backend.update({ [`live/hintsOpen/${round}`]: { text, ts: backend.TS() }, 'live/alert': { id: uid('a'), type: 'notice', text: `HINT ${round + 1}: ${text}`, ts: backend.TS() } });
+    log(`Hint ${round + 1} unlocked`);
+  },
   async message(id, text) {
     const c = HOST.chars[id]; if (!c || !text) return;
     if (!HOST.msgKeys[id]) HOST.msgKeys[id] = await deriveMsgKey(c.code);
@@ -955,16 +1150,42 @@ function verdictReveal() {
   return { stage: 'reveal', accused: (S.verdict && S.verdict.accused) || topVoted() || null, killer: k, killerName: kc.name || '', alias: HOST.solution.alias || '', summary: HOST.solution.summary || '', solvers, ts: backend.TS() };
 }
 
-/* ---------------- host: the game flow (NEXT) ---------------- */
+/* ---------------- host: background jobs (hints, backup roles) ---------------- */
+async function hostJobs() {
+  if (!HOST || !ready || ui.jobBusy) return;
+  ui.jobBusy = true;
+  try {
+    // hint voting: unlock the next hint once a majority asks for it
+    if (S.flags.hints) { const hs = hintStatus(S, isOnline); if (hs.left > 0 && hs.eligible > 0 && hs.votes >= hs.needed && !S.hintsOpen[hs.round]) A.unlockHint(); }
+    // backup roles: when a character dies, hand their player the next free backup
+    const primaries = new Set(Object.values(HOST.assign.map));
+    for (const [key, primary] of Object.entries(HOST.assign.map)) {
+      const seq = [primary, ...((HOST.assign.chain || {})[key] || [])];
+      for (let i = 0; i < seq.length - 1; i++) {
+        const cur = seq[i]; if (!(cur in dead()) || S.succession[cur]) continue;
+        const next = seq.slice(i + 1).find(id => !(id in dead()) && !(primaries.has(id) && id !== primary) && !(playerRec(id) && playerRec(id).unlocked) && !Object.keys(S.succession).some(k => S.succession[k] && S.succession[k].to === id));
+        if (!next) continue;
+        const cc = HOST.chars[cur], nc = HOST.chars[next];
+        if (!HOST.msgKeys[cur]) HOST.msgKeys[cur] = await deriveMsgKey(cc.code);
+        const blob = await encryptJSON(HOST.msgKeys[cur], { code: nc.code, name: nc.name, id: nc.id });
+        await backend.update({ ['live/succession/' + cur]: Object.assign(blob, { ts: backend.TS(), to: next }) });
+        log(`${cc.name}'s player continues as ${nc.name}`);
+      }
+    }
+  } catch (e) { console.warn(e); }
+  ui.jobBusy = false;
+}
+
+/* ---------------- host: the game flow (hold NEXT) ---------------- */
 function actLabel(a) {
   switch (a.do) {
-    case 'flag': return a.flag === 'sealed' ? (a.value ? 'Seal every dossier' : 'Dossiers open') : `${FLAGS[a.flag]} ${a.value ? 'ON' : 'OFF'}`;
+    case 'flag': return a.flag === 'sealed' ? (a.value ? 'Seal every dossier' : 'Dossiers open') : a.flag === 'killerKnows' ? (a.value ? '🗡 The killer learns the truth (on their phone only)' : 'Killer knowledge hidden') : a.flag === 'killer' ? (a.value ? '🗡 The killer may now choose a third victim' : 'Strike window closed') : `${FLAGS[a.flag]} ${a.value ? 'ON' : 'OFF'}`;
     case 'death': return `☠ ${rname(a.id)} dies (red alert on every screen)`;
     case 'room': return `🚪 ${roomName(a.id)} opens`;
-    case 'deliver': return `📁 "${(HOST.ev[a.id] || {}).title || a.id}" goes to the Inspector to read aloud`;
+    case 'deliver': return `📁 "${(HOST.ev[a.id] || {}).title || a.id}" goes to the Inspector`;
     case 'scene': return `Projector: ${SCENES[a.scene] || a.scene}`;
     case 'broadcast': return `Announcement: "${a.text}"`;
-    case 'verdict': return a.stage === 'reveal' ? '⚖ The truth is revealed on every screen' : '⚖ You name the accused (top vote pre-selected)';
+    case 'verdict': return a.stage === 'reveal' ? '⚖ The truth is revealed on every screen' : '⚖ You name the accused';
   }
   return a.do;
 }
@@ -979,7 +1200,7 @@ function runPhase(i, accused) {
   let alert = null, roomNames = [];
   for (const a of st.actions || []) {
     switch (a.do) {
-      case 'flag': upd['live/flags/' + a.flag] = !!a.value; break;
+      case 'flag': upd['live/flags/' + a.flag] = !!a.value; if (a.flag === 'hints' && a.value) upd['live/hintTotal'] = HOST.hints.length; break;
       case 'room': upd['live/rooms/' + a.id] = backend.TS(); roomNames.push(roomName(a.id)); break;
       case 'deliver': upd['live/delivered/' + a.id] = backend.TS(); break;
       case 'death': { const c = HOST.chars[a.id] || {}; upd['live/deaths/' + a.id] = backend.TS(); alert = { id: uid('a'), type: 'kill', text: c.deathAlert || `${c.name} has been found dead. All personnel remain where you are.`, ts: backend.TS() }; break; }
@@ -991,40 +1212,91 @@ function runPhase(i, accused) {
         break;
     }
   }
+  // the Inspector's cover is blown the first time they have lines to read
+  if (st.inspector && HOST.inspectorId && !S.unmasked[HOST.inspectorId]) upd['live/unmasked/' + HOST.inspectorId] = backend.TS();
   if (!alert && roomNames.length) alert = { id: uid('a'), type: 'notice', text: `${roomNames.join(' and ')} ${roomNames.length > 1 ? 'are' : 'is'} now open to investigators.`, ts: backend.TS() };
   if (alert) upd['live/alert'] = alert;
   backend.update(upd);
   log(`▶ Phase ${i + 1}: ${st.title}`);
+  Sound.play('phase');
+  ui.flashPhase = true;
+}
+function accusedPicker(i) {
+  const rows = tallyRows(), top = rows[0] ? rows[0][0] : '';
+  openModal(`<div class="ph"><h2>Name the accused</h2></div><p class="note" style="margin:0 0 10px">The top vote is pre-selected. If it's a tie, let the Inspector decide.</p>
+    <select class="input" id="accSel">${HOST.list.filter(c => c.suspect !== false).map(c => { const n = (rows.find(r => r[0] === c.id) || [0, 0])[1]; return `<option value="${esc(c.id)}" ${c.id === top ? 'selected' : ''}>${esc(c.name)}${n ? ` (${n} vote${n > 1 ? 's' : ''})` : ''}</option>`; }).join('')}</select>
+    <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="accGo">⚖ ACCUSE &amp; START PHASE</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+  $('#accGo').onclick = () => { runPhase(i, $('#accSel').value); closeModal(); };
 }
 function confirmPhase(i) {
   const st = HOST.show[i]; if (!st) return;
+  if ((st.actions || []).some(a => a.do === 'verdict' && a.stage === 'accuse')) return accusedPicker(i);
   const acts = (st.actions || []).map(actLabel), mems = phaseMemories(st);
-  const needsAccused = (st.actions || []).some(a => a.do === 'verdict' && a.stage === 'accuse');
-  const rows = tallyRows(), top = rows[0] ? rows[0][0] : '';
-  const accSel = needsAccused ? `<label class="lbl" for="accSel" style="margin-top:12px">The accused</label><select class="input" id="accSel">${HOST.list.filter(c => c.suspect !== false).map(c => { const n = (rows.find(r => r[0] === c.id) || [0, 0])[1]; return `<option value="${esc(c.id)}" ${c.id === top ? 'selected' : ''}>${esc(c.name)}${n ? ` (${n} vote${n > 1 ? 's' : ''})` : ''}</option>`; }).join('')}</select>` : '';
-  openModal(`<div class="ph"><h2>Start phase ${i + 1}: ${esc(st.title)}</h2></div>
-    ${acts.length || mems.length ? `<p class="note" style="margin:0 0 6px">This happens immediately:</p><ul class="auto">${acts.map(t => `<li>${esc(t)}</li>`).join('')}${mems.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : `<p class="note">Nothing automatic. This phase is just a marker for you and the Inspector.</p>`}
-    ${accSel}
-    <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="phaseGo">▶ START</button><button class="btn ghost" data-close>CANCEL</button></div>`);
-  $('#phaseGo').onclick = () => { runPhase(i, needsAccused ? $('#accSel').value : null); closeModal(); };
+  openModal(`<div class="ph"><h2>Run phase ${i + 1}: ${esc(st.title)}</h2></div>
+    ${acts.length || mems.length ? `<ul class="auto">${acts.map(t => `<li>${esc(t)}</li>`).join('')}${mems.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : `<p class="note">Nothing automatic. It's a marker for you and the Inspector.</p>`}
+    <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="phaseGo">▶ RUN IT</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+  $('#phaseGo').onclick = () => { runPhase(i); closeModal(); };
+}
+const parseClock = t => { const m = String(t || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i); if (!m) return null; let h = +m[1]; if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12; if (!m[3] && h < 7) h += 12; return h * 60 + (+m[2]); };
+function tickTimer() {
+  const el = $('#phaseTimer'); if (!el || !HOST || !S.phase || !S.phase.ts) return;
+  const secs = Math.max(0, Math.floor((backend.now() - S.phase.ts) / 1000));
+  el.textContent = `RUNNING ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+  const nx = HOST.show[S.phase.i + 1], now = new Date(), mins = now.getHours() * 60 + now.getMinutes(), target = nx && parseClock(nx.time);
+  const lateEl = $('#phaseLate');
+  if (lateEl) lateEl.textContent = target != null ? (mins > target ? `· ${mins - target} MIN BEHIND` : mins < target ? `· NEXT AT ${nx.time}` : '· RIGHT ON TIME') : '';
+}
+function renderNextBar() {
+  const root = $('#nextbarRoot'), on = HOST && ui.tab === 'game';
+  document.body.classList.toggle('has-nextbar', !!on);
+  if (!on) { root.innerHTML = ''; root._sig = null; return; }
+  const cur = S.phase && typeof S.phase.i === 'number' ? S.phase.i : -1, nx = HOST.show[cur + 1];
+  const sig = 'nb' + cur + (nx ? nx.id : '');
+  if (root._sig === sig) return; root._sig = sig;
+  if (!nx) { root.innerHTML = `<div class="nextbar"><div class="nx"><small>THE END</small><b>That was the final phase.</b><span>Thank everyone, take the photo.</span></div></div>`; return; }
+  const needsAcc = (nx.actions || []).some(a => a.do === 'verdict' && a.stage === 'accuse');
+  const acts = (nx.actions || []).map(actLabel).concat(phaseMemories(nx));
+  root.innerHTML = `<div class="nextbar"><div class="nx"><small>NEXT · ${esc(nx.time || '')}${nx.skippable ? ' · SKIPPABLE' : ''}</small><b>${esc(nx.title)}</b><span title="${esc(acts.join(' · '))}">${esc(acts.join(' · ') || 'No automatic actions')}</span></div>
+    <button class="hold" id="holdBtn" aria-label="Press and hold to start ${esc(nx.title)}"><span class="fill"></span><span class="lbl2">${needsAcc ? '⚖ CHOOSE ACCUSED<small>TAP</small>' : '▶ START<small>PRESS &amp; HOLD</small>'}</span></button></div>`;
+  const b = $('#holdBtn'), fill = b.querySelector('.fill');
+  if (needsAcc) { b.onclick = () => accusedPicker(cur + 1); return; }
+  // press & hold: a timer decides (reliable even if the tab is busy); the fill is just the animation
+  let timer = null;
+  const DUR = 850;
+  const stop = () => { if (!timer) return; clearTimeout(timer); timer = null; fill.style.transition = 'width .25s'; fill.style.width = '0'; };
+  const start = e => {
+    e.preventDefault(); if (timer) return; Sound.play('tap');
+    fill.style.transition = 'none'; fill.style.width = '0'; void fill.offsetWidth;
+    fill.style.transition = `width ${DUR}ms linear`; fill.style.width = '100%';
+    timer = setTimeout(() => { timer = null; b.classList.add('go'); runPhase(cur + 1); setTimeout(() => b.classList.remove('go'), 600); }, DUR);
+  };
+  b.addEventListener('pointerdown', start); ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop));
+  b.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) start(e); });
+  b.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') stop(); });
 }
 function renderGame() {
-  const steps = HOST.show, cur = S.phase && typeof S.phase.i === 'number' ? S.phase.i : -1, now = steps[cur], nxt = steps[cur + 1];
+  const steps = HOST.show, cur = S.phase && typeof S.phase.i === 'number' ? S.phase.i : -1, now = steps[cur];
   $('#phaseSub').textContent = cur >= 0 ? `PHASE ${cur + 1} OF ${steps.length}` : 'NOT STARTED';
   $('#phaseBar').style.width = Math.round((cur + 1) / Math.max(1, steps.length) * 100) + '%';
   animateNum($('#n-phase'), cur + 1);
-  const sig = JSON.stringify([cur, S.kill && S.kill.victim, S.verdict && S.verdict.accused, topVoted()]);
-  patch($('#phaseNow'), sig, now ? `<div class="phase-now"><div class="k">NOW · ${esc(now.time || '')}</div><h3>${esc(now.title)}</h3>
+  const sig = JSON.stringify([cur, S.kill && S.kill.victim, S.verdict && S.verdict.accused]);
+  if (patch($('#phaseNow'), sig, now ? `<div class="phase-now ${ui.flashPhase ? 'flash' : ''}"><div class="k"><span>NOW · ${esc(now.time || '')}</span><span class="timer" id="phaseTimer"></span><span id="phaseLate"></span></div><h3>${esc(now.title)}</h3>
       ${now.cue ? `<div class="cue"><b>YOUR CUE</b>${esc(now.cue)}</div>` : ''}
       ${now.host ? `<div class="say"><b>YOU SAY</b>${esc(fillLines(now.host))}</div>` : ''}
       ${now.inspector ? `<details class="more"><summary>▸ THE INSPECTOR IS READING THIS</summary><div class="say"><b>INSPECTOR</b>${esc(fillLines(now.inspector))}</div></details>` : ''}</div>`
-    : `<div class="phase-now"><div class="k">NOT STARTED</div><h3>Ready when you are</h3><p class="note" style="margin:0">Press the button below to begin. Each press starts the next part of the night and does everything that part needs: rooms, reports, deaths, the projector.</p></div>`);
-  patch($('#phaseNext'), sig + '|n', nxt ? `<div class="next-box"><div class="k">NEXT UP · ${esc(nxt.time || '')}</div><h4>${esc(nxt.title)}</h4>
-      ${nxt.cue ? `<div class="cue"><b>WHEN</b>${esc(nxt.cue)}</div>` : ''}
-      <button class="btn gold bignext" id="nextBtn">▶ START: ${esc(nxt.title.toUpperCase())}</button></div>`
-    : `<div class="next-box"><div class="k">THE END</div><h4>That was the final phase.</h4><p class="note" style="margin:0">Thank everyone and take the group photo.</p></div>`);
-  const nb = $('#nextBtn'); if (nb) nb.onclick = () => confirmPhase(cur + 1);
-  patch($('#phaseList'), 'pl' + cur, steps.map((st, i) => `<div class="ph-row ${i < cur ? 'done' : i === cur ? 'cur' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="tm">${esc(st.time || '')}</span><span class="t">${esc(st.title)}</span><button class="btn sm ghost" data-runphase="${i}">${i <= cur ? 'RE-RUN' : 'JUMP'}</button></div>`).join(''));
+    : `<div class="phase-now"><div class="k">NOT STARTED</div><h3>Ready when you are</h3><p class="note" style="margin:0">Press and hold <b>START</b> on the bar at the bottom of the screen. Each phase does everything it needs by itself: rooms, reports, deaths, the projector.</p></div>`)) { ui.flashPhase = false; tickTimer(); }
+  patch($('#phaseList'), 'pl' + cur, steps.map((st, i) => `<div class="ph-row ${i < cur ? 'done' : i === cur ? 'cur' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="tm">${esc(st.time || '')}</span><span class="t">${esc(st.title)}${st.skippable ? ' <span class="pill">SKIPPABLE</span>' : ''}</span><button class="btn sm ghost" data-runphase="${i}">${i <= cur ? 'RE-RUN' : 'JUMP'}</button></div>`).join(''));
+  renderNextBar();
+
+  // must-cast warning
+  const who = guestFor(), missing = HOST.list.filter(c => c.mustCast && !who[c.id]);
+  patch($('#mustWarn'), missing.map(c => c.id).join(), missing.length ? `<div class="warnbar" data-gotab="guests"><span class="pill must">★ MUST CAST</span><span><b>${missing.length} essential role${missing.length > 1 ? 's have' : ' has'} no player:</b> ${missing.map(c => esc(c.name)).join(', ')}. Tap to assign.</span></div>` : '');
+
+  // hints
+  const hs = hintStatus(S, isOnline), opened = Object.keys(S.hintsOpen).length;
+  $('#hintHostSub').textContent = `${opened} / ${HOST.hints.length} UNLOCKED`;
+  patch($('#hintHost'), JSON.stringify([hs, opened, S.flags.hints]), `${S.flags.hints && hs.left ? `<div class="meter"><i style="width:${Math.min(100, Math.round(hs.votes / hs.needed * 100))}%"></i></div><p class="note" style="margin:0 0 10px">${hs.votes} of ${hs.needed} votes for hint ${hs.round + 1} (${hs.eligible} living players online)</p>` : ''}
+    <div class="relist">${HOST.hints.map((h, i) => `<div class="reitem"><span class="pill ${S.hintsOpen[i] ? 'green' : i === opened ? 'gold' : ''}">${S.hintsOpen[i] ? 'UNLOCKED' : i === opened ? 'NEXT' : 'LOCKED'}</span><div class="t">${esc(h)}</div>${i === opened ? '<button class="btn sm" id="hintNow">GIVE NOW</button>' : ''}</div>`).join('')}</div>`);
 
   // rooms
   patch($('#roomCtl'), JSON.stringify(S.rooms), (HOST.rooms || []).map(r => { const o = roomOpen(S, r.id); return `<div class="reitem"><span class="pill ${o ? 'green' : 'red'}">${o ? 'OPEN' : 'SEALED'}</span><div class="t"><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small></div>${r.alwaysOpen ? '<span class="pill">ALWAYS OPEN</span>' : `<button class="btn sm ${o ? 'ghost' : ''}" data-room="${esc(r.id)}" data-open="${o ? '0' : '1'}">${o ? 'SEAL' : 'OPEN'}</button>`}</div>`; }).join(''));
@@ -1032,16 +1304,16 @@ function renderGame() {
   // evidence board
   const evs = releasedEvidence(S);
   $('#evSub').textContent = `${evs.length} REVEALED · ${Object.keys(S.found).filter(id => !S.evidence[id]).length} FOUND, NOT SHARED`;
-  patch($('#evBoard'), JSON.stringify([S.evidence && Object.keys(S.evidence), S.found, S.delivered, S.rooms, Object.keys(S.phaseLog)]), HOST.evidence.map(e => {
+  patch($('#evBoard'), JSON.stringify([Object.keys(S.evidence), S.found, S.delivered, S.rooms, Object.keys(S.phaseLog)]), HOST.evidence.map((e, i) => {
     const st = evStatus(e.id);
     let acts = '';
     if (S.evidence[e.id]) acts = `<button class="btn sm ghost" data-retract="${esc(e.id)}">RETRACT</button>`;
     else if (e.official) acts = S.delivered[e.id] ? `<button class="btn sm" data-release="${esc(e.id)}" data-how="official">RELEASE NOW</button>` : `<button class="btn sm" data-deliver="${esc(e.id)}">SEND TO INSPECTOR</button>`;
     else acts = `<button class="btn sm ghost" data-release="${esc(e.id)}" data-how="found">REVEAL NOW</button>`;
-    return `<div class="evrow"><div><span class="pill ${st.cls}">${esc(st.pill)}</span> <b>${esc(e.title)}</b><small>${e.official ? 'Official report' : '▣ QR tag · ' + esc(roomName(e.room))} · ${esc(st.text)}</small></div><div class="acts">${acts}</div></div>`;
+    return `<div class="evrow" style="animation:rise .35s ${i * 30}ms ease both"><div><span class="pill ${st.cls}">${esc(st.pill)}</span> <b>${esc(e.title)}</b><small>${e.official ? 'Official report' : '▣ QR tag · ' + esc(roomName(e.room))} · ${esc(st.text)}</small></div><div class="acts">${acts}</div></div>`;
   }).join(''));
 
-  // accusations + verdict (visible once voting starts)
+  // accusations + verdict
   const rows = tallyRows(), max = rows.length ? rows[0][1] : 0, v = S.verdict;
   $('#tallyPanel').classList.toggle('hidden', !S.flags.voting && !rows.length && !v);
   $('#tallySub').textContent = (S.flags.voting ? 'VOTING OPEN · ' : 'VOTING CLOSED · ') + rows.reduce((n, r) => n + r[1], 0) + ' CAST';
@@ -1050,12 +1322,12 @@ function renderGame() {
     ? `<div class="reitem"><span class="pill gold">ACCUSED</span><div class="t"><b>${esc(rname(v.accused))}</b><small>${v.accused === HOST.killerId ? '✓ This is the killer' : '✕ Not the killer'}</small></div><button class="btn sm ghost" id="vClear">CLEAR</button></div>`
     : `<div class="reitem" style="border-color:rgba(255,59,84,.5)"><span class="pill red">REVEALED</span><div class="t"><b>${esc(v.killerName)}</b><small>${(v.solvers || []).length} solved it${(v.solvers || []).length ? ': ' + esc(v.solvers.join(', ')) : ''}</small></div><button class="btn sm ghost" id="vClear">CLEAR</button></div>`);
 
-  // deaths
-  const scripted = HOST.list.filter(c => c.scriptedDeath);
-  patch($('#deathList'), JSON.stringify(S.deaths), scripted.map(c => { const t = S.deaths[c.id]; return `<div class="reitem"><span class="pill ${t ? 'red' : 'green'}">${t ? 'DECEASED' : 'ALIVE'}</span><div class="t">${esc(c.name)}<small>${t ? 'since ' + fmtTime(t) : 'dies when its phase starts'}</small></div>${t ? `<button class="btn sm ghost" data-undo-death="${esc(c.id)}">UNDO</button>` : ''}</div>`; }).join(''));
+  // deaths & backup roles
+  const scripted = HOST.list.filter(c => c.scriptedDeath || c.id in dead());
+  patch($('#deathList'), JSON.stringify([S.deaths, S.kill, Object.keys(S.succession)]), scripted.map(c => { const t = dead()[c.id], s = S.succession[c.id]; return `<div class="reitem"><span class="pill ${t ? 'red' : 'green'}">${t ? 'DECEASED' : 'ALIVE'}</span><div class="t">${esc(c.name)}<small>${t ? 'since ' + fmtTime(t) + (s ? ' · player now plays ' + esc(rname(s.to)) : '') : 'dies when its phase starts'}</small></div>${c.id in S.deaths ? `<button class="btn sm ghost" data-undo-death="${esc(c.id)}">UNDO</button>` : ''}</div>`; }).join(''));
   const k = S.kill;
-  patch($('#killStatus'), JSON.stringify([k, S.flags.killer]), k ? `<div class="reitem" style="border-color:rgba(255,59,84,.5)"><span class="pill red">STRIKE</span><div class="t"><b style="color:var(--red2)">${esc(rname(k.victim))}</b> was killed by ${esc(rname(HOST.killerId))}<small>${fmtTime(k.ts)}</small></div><button class="btn sm ghost" id="undoKill">UNDO</button></div>`
-    : `<div class="reitem"><span class="pill ${S.flags.killer ? 'red' : ''}">${S.flags.killer ? 'ARMED' : 'WAITING'}</span><div class="t">Third victim<small>${S.flags.killer ? 'The killer can strike at any moment.' : 'Chosen by the killer once Killer Phase starts.'}</small></div></div>`);
+  patch($('#killStatus'), JSON.stringify([k, S.flags.killer, S.flags.killerKnows]), k ? `<div class="reitem" style="border-color:rgba(255,59,84,.5)"><span class="pill red">STRIKE</span><div class="t"><b style="color:var(--red2)">${esc(rname(k.victim))}</b> was killed by ${esc(rname(HOST.killerId))}<small>${fmtTime(k.ts)}</small></div><button class="btn sm ghost" id="undoKill">UNDO</button></div>`
+    : `<div class="reitem"><span class="pill ${S.flags.killer ? 'red' : ''}">${S.flags.killer ? 'ARMED' : S.flags.killerKnows ? 'KILLER KNOWS' : 'WAITING'}</span><div class="t">Third victim<small>${S.flags.killer ? 'The killer can strike at any moment.' : 'Chosen by the killer once the strike window opens.'}</small></div></div>`);
 
   // quick controls
   const lb = $('#lockBtn'); lb.classList.toggle('on', !!S.flags.lockdown); lb.textContent = S.flags.lockdown ? '🔒 LOCKDOWN ON · LIFT' : 'LOCKDOWN';
@@ -1065,7 +1337,7 @@ function renderGame() {
 function evStatus(id) {
   const e = (HOST && HOST.ev[id]) || {};
   const rel = S.evidence[id];
-  if (rel) return { pill: 'REVEALED', cls: 'green', text: rel.kind === 'official' ? `released ${fmtTime(rel.ts)}` : `by ${rname(rel.by)} ${fmtTime(rel.ts)}` };
+  if (rel) return { pill: 'REVEALED', cls: 'green', text: rel.kind === 'official' ? `released ${fmtTime(rel.ts)}` : rel.by === 'host' ? 'revealed by you' : `by ${rname(rel.by)} ${fmtTime(rel.ts)}` };
   if (e.official) return S.delivered[id] ? { pill: 'WITH INSPECTOR', cls: 'gold', text: 'waiting for them to read & release' } : { pill: 'NOT SENT', cls: '', text: 'sent by its phase' };
   const f = S.found[id];
   if (f) return { pill: 'FOUND', cls: 'gold', text: `by ${rname(f.by)}, not shared yet` };
@@ -1122,7 +1394,7 @@ function confirmModal(title, body, yesLabel, fn, danger = true) {
 function openDossierModal(id) {
   const c = HOST.chars[id]; if (!c) return;
   const p = playerRec(id), v = p && p.vote, on = isOnline(id), who = guestFor();
-  openModal(`<div class="row-gap" style="margin-bottom:12px"><span class="pill ${on ? 'green' : ''}">${on ? '● ONLINE' : '○ OFFLINE'}</span><span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'OPENED ' + fmtTime(p.unlockedAt) : 'NOT YET OPENED'}</span>${who[id] ? `<span class="pill gold">PLAYED BY ${esc(who[id])}</span>` : ''}${S.revoked[id] ? '<span class="pill red">ACCESS REVOKED</span>' : ''}</div>
+  openModal(`<div class="row-gap" style="margin-bottom:12px"><span class="pill ${on ? 'green' : ''}">${on ? '● ONLINE' : '○ OFFLINE'}</span><span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'OPENED ' + fmtTime(p.unlockedAt) : 'NOT YET OPENED'}</span>${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${who[id] ? `<span class="pill gold">PLAYED BY ${esc(who[id])}</span>` : ''}${S.revoked[id] ? '<span class="pill red">ACCESS REVOKED</span>' : ''}</div>
     <div class="acts" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${castActions(c)}</div>
     ${v ? `<div class="voted"><b>ACCUSATION:</b> ${esc(rname(v.suspect))}${v.statement ? `<div style="margin-top:6px;color:var(--text);white-space:pre-line">“${esc(v.statement)}”</div>` : ''}</div>` : ''}
     ${(c.memories || []).length ? `<div class="lbl" style="margin-top:6px">Memories</div>${c.memories.map(m => `<div class="tx ${m.cue ? 'cue' : ''}"><div class="h"><span>${memoryDue(S, m.when) ? '✓ SURFACED' : 'WAITING'} · ${esc(whenText(m.when))}</span></div><p>${esc(m.text)}</p></div>`).join('')}` : ''}
@@ -1133,7 +1405,7 @@ function whenText(w) {
   if (w.phase) return 'phase: ' + ((HOST.show.find(s => s.id === w.phase) || {}).title || w.phase);
   if (w.evidence) return 'when revealed: ' + ((HOST.ev[w.evidence] || {}).title || w.evidence);
   if (w.death) return 'when ' + rname(w.death) + ' dies';
-  if (w.killer) return 'at Killer Phase';
+  if (w.killer) return 'when the killer learns the truth';
   return '';
 }
 function castActions(c) {
@@ -1164,16 +1436,19 @@ function handleCastAction(act, id) {
 /* ---------------- host: printable documents ---------------- */
 function printModal() {
   const docs = [
-    ['host', 'Host Book', 'Case summary, the game flow phase by phase, rooms & evidence placement, memories, cast & codes, emergency guide', true],
-    ['tags', 'Evidence QR Tags', 'Cut-out tags to tape onto objects, plus a placement key for you', true],
-    ['inspector', "Inspector's Lines", 'Every line the Inspector reads, for them to rehearse (the final reveal is left out)', true],
+    ['host', 'Host Book', 'The night phase by phase, room-by-room setup & decorating guide, evidence placement, memories, hints, cast & codes, emergency guide', true],
+    ['tags', 'Evidence QR Tags', 'Cut-out tags to tape onto objects, plus a placement key', true],
+    ['props', 'Evidence Props', 'Paper versions of every piece of evidence, styled as the real documents, with their QR codes printed on', true],
+    ['badges', 'Name Badges', 'A badge for every character (with the guest\'s name if assigned), sized for 3×4 in badge holders', false],
+    ['signs', 'Signs', 'Welcome sign, room door signs, SEALED crime-scene signs, direction arrows, coat check, charging, how-to-scan', false],
+    ['inspector', "Inspector's Lines", 'Every line the Inspector reads, to rehearse (the ending is left out)', true],
     ['dossiers', 'Character Dossiers', `All ${HOST.list.length} personnel files, one per page`, true],
     ['invite', 'Invitation & Rules', 'Everything guests read. No spoilers', false],
     ['all', 'Everything', 'All of the above in one file', true]
   ];
   openModal(`<div class="ph"><h2>Print the game</h2><span class="sub">OPENS IN A NEW TAB</span></div>
-    <p class="note" style="margin:0 0 12px">Built from the live story and your current page edits. In the new tab, press <b>Print</b> or choose <b>Save as PDF</b>.</p>
-    <div class="relist">${docs.map(([k, t, d, secret]) => `<button class="reitem" style="text-align:left;cursor:pointer" data-print="${k}"><span class="pill ${secret ? 'red' : 'green'}">${secret ? 'SPOILERS' : 'SAFE'}</span><span class="t"><b>${t}</b><small style="font-family:var(--sans);font-size:12px">${d}</small></span></button>`).join('')}</div>`);
+    <p class="note" style="margin:0 0 12px">Built from the live story, your role assignments and your page edits. In the new tab, press <b>Print</b> or choose <b>Save as PDF</b>.</p>
+    <div class="relist">${docs.map(([k, t, d, secret]) => `<button class="reitem" style="text-align:left;cursor:pointer" data-print="${k}"><span class="pill ${secret ? 'red' : 'green'}">${secret ? 'SPOILERS' : 'SAFE'}</span><span class="t"><b>${t}</b><small style="font-family:var(--sans);font-size:12px">${d}</small></span></button>`).join('')}</div>`, true);
   $$('[data-print]').forEach(b => b.onclick = () => { openPrint(b.dataset.print); closeModal(); });
 }
 async function openPrint(which) {
@@ -1181,12 +1456,12 @@ async function openPrint(which) {
   const w = window.open('', '_blank');
   if (!w) { toast('POP-UP BLOCKED', 'Allow pop-ups for this site, then press PRINT again.', 'err'); return; }
   w.document.write('<p style="font:16px sans-serif;padding:20px">Preparing…</p>');
-  if (which === 'tags' || which === 'all') { try { await loadQR(); } catch (e) { } }
+  if (['tags', 'props', 'all'].includes(which)) { try { await loadQR(); } catch (e) { } }
   const qr = window.qrcode ? (text => { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createImgTag(5, 0); }) : null;
-  const story = { characters: HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId };
-  const r = PrintKit.render(story, party(), which, { qr, base: siteBase() });
+  const story = { characters: HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId, hints: HOST.hints, directory: HOST.directory };
+  const r = PrintKit.render(story, party(), which, { qr, base: siteBase(), players: guestFor() });
   w.document.open();
-  w.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>The Last Toast · ${esc(r.label)}</title><style>${r.pageCSS}</style><style>${PrintKit.CSS}</style></head>
+  w.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>The Last Toast · ${esc(r.label)}</title>${PrintKit.FONTS}<style>${r.pageCSS}</style><style>${PrintKit.CSS}</style></head>
     <body><nav class="toolbar"><b>${esc(r.label)}</b><span class="sp"></span><button onclick="print()">🖨 Print / Save as PDF</button><button onclick="close()">Close</button></nav><main class="sheet">${r.html}</main></body></html>`);
   w.document.close();
   log(`Printable document opened: ${r.label}`);
@@ -1201,7 +1476,8 @@ function bindAdmin() {
     $$('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t));
     renderAdmin(true);
   };
-  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
+  ui.setTab = setTab;
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { Sound.play('tap'); setTab(b.dataset.tab); } });
   setTab(TABS.some(t => t[0] === ui.tab) ? ui.tab : 'game');
   $('#printBtn').onclick = printModal;
   $('#notesBtn').onclick = () => openModal(`<div class="ph"><h2>Host Notes</h2><span class="sub">DO NOT DISTRIBUTE</span></div><div class="host-notes">${HOST.notes || ''}</div>`);
@@ -1213,27 +1489,28 @@ function bindAdmin() {
     const ca = t.closest('[data-ca]'); if (ca) { handleCastAction(ca.dataset.ca, ca.dataset.id); return; }
     const c = t.closest('[data-copy]'); if (c) { const u = linkUrl(c.dataset.copy); await copyText(u); toast('COPIED', u, 'ok'); return; }
     const q = t.closest('[data-qr]'); if (q) { showQR(linkUrl(q.dataset.qr)); return; }
+    const gt = t.closest('[data-gotab]'); if (gt) { setTab(gt.dataset.gotab); return; }
     const rp = t.closest('[data-runphase]'); if (rp) { confirmPhase(+rp.dataset.runphase); return; }
     const rm = t.closest('[data-room]'); if (rm) { A.room(rm.dataset.room, rm.dataset.open === '1'); return; }
     const dl = t.closest('[data-deliver]'); if (dl) { A.deliver(dl.dataset.deliver); return; }
     const rl = t.closest('[data-release]'); if (rl) { const id = rl.dataset.release; confirmModal('Reveal to everyone now?', `<b>${esc((HOST.ev[id] || {}).title)}</b> goes to every phone and the projector without anyone finding it. Use this if a tag is lost or the Inspector's phone fails.`, 'REVEAL', () => A.release(id, rl.dataset.how), false); return; }
     const rt = t.closest('[data-retract]'); if (rt) { A.retract(rt.dataset.retract); return; }
     const ud = t.closest('[data-undo-death]'); if (ud) { A.undoDeath(ud.dataset.undoDeath); return; }
+    if (t.closest('#hintNow')) { confirmModal('Give the next hint now?', 'It unlocks on every phone and the projector immediately, without waiting for votes.', 'GIVE HINT', () => A.unlockHint(), false); return; }
     if (t.closest('#undoKill')) { confirmModal("Undo the killer's strike?", 'Clears the victim so the killer can choose again.', 'UNDO', () => { backend.update({ 'live/kill': null }); log('Killer strike undone'); }); return; }
     if (t.closest('#clearAlert')) { backend.update({ 'live/alert': null }); return; }
     if (t.closest('#vClear')) { confirmModal('Clear the verdict?', 'Phones and the projector go back to normal play.', 'CLEAR', () => A.clearVerdict(), false); return; }
   };
 
-  // quick controls
   $('#lockBtn').onclick = () => A.flag('lockdown', !S.flags.lockdown);
   $('#bcBtn').onclick = () => { const t = $('#bcIn').value.trim(); if (!t) return; A.broadcast(t); $('#bcIn').value = ''; toast('SENT', t, 'ok'); };
+  $$('[data-flag]').forEach(b => b.addEventListener('click', () => { Sound.play('tap'); A.flag(b.dataset.flag, !S.flags[b.dataset.flag]); }));
 
   // players
   const sc = $('#showCodes'); sc.checked = store.get('showCodes') !== '0'; sc.onchange = () => { store.set('showCodes', sc.checked ? '1' : '0'); renderAdmin(true); };
   $('#castFilter').addEventListener('input', e => { ui.castFilter = e.target.value.toLowerCase(); renderAdmin(true); });
 
-  // tools: flags & projector
-  $$('[data-flag]').forEach(b => b.addEventListener('click', () => A.flag(b.dataset.flag, !S.flags[b.dataset.flag])));
+  // tools: projector
   $('#openDisplay').href = siteBase() + 'display.html';
   $('#scenes').addEventListener('click', e => { const b = e.target.closest('[data-scene]'); if (b) A.scene(b.dataset.scene); });
   $('#msgBtn').addEventListener('click', () => { const t = $('#msgIn').value.trim(); if (t) A.scene('message', { text: t }); });
@@ -1241,21 +1518,22 @@ function bindAdmin() {
   // guests
   const base = siteBase(), P = party();
   $('#links').innerHTML = [['invite', 'Invitation & RSVP'], ['db', 'Kane Oil Database'], ['display', 'Projector display']].map(([k, label]) => `<div class="linkrow"><div><b>${label}</b><span class="u">${esc(linkUrl(k))}</span></div><div class="row-gap"><button class="btn sm ghost" data-copy="${k}">COPY</button><button class="btn sm ghost" data-qr="${k}">QR</button><a class="btn sm ghost" href="${esc(linkUrl(k))}" target="_blank" rel="noopener">OPEN</a></div></div>`).join('');
-  $('#inviteMsg').value = `You're invited to ${(P.title || 'The Last Toast').toUpperCase()}: ${P.subtitle || 'a murder mystery evening'}, hosted by ${P.host || 'me'}.\n\n${P.date || ''}${P.time ? ', ' + P.time : ''}\n${P.venue || ''}\n\nAll the details, and your RSVP, are here:\n${base}\n\nPlease RSVP by ${P.rsvpBy || 'soon'}. Roles and secret code words go out after that.`;
+  $('#inviteMsg').value = `You're invited to ${(P.title || 'The Last Toast').toUpperCase()}: ${P.subtitle || 'a murder mystery evening'}${P.host ? ', hosted by ' + P.host : ''}${P.sponsor ? ' and sponsored by ' + P.sponsor : ''}.\n\n${P.date || ''}${P.time ? ', ' + P.time : ''}\n${P.venue || ''}\n\nAll the details, and your RSVP, are here:\n${base}\n\nPlease RSVP by ${P.rsvpBy || 'soon'}. Roles and secret code words go out after that.`;
   $('#copyInvite').onclick = async () => { await copyText($('#inviteMsg').value); toast('COPIED', 'Invitation message copied.', 'ok'); };
   $('#rsvpList').addEventListener('change', async e => {
-    const s = e.target.closest('[data-assign]'); if (!s) return;
-    const key = s.dataset.assign;
-    if (s.value) HOST.assign.map[key] = s.value; else delete HOST.assign.map[key];
-    delete HOST.assign.sent[key];
-    await saveAssign();
+    const s = e.target.closest('[data-assign]');
+    if (s) { const key = s.dataset.assign; if (s.value) HOST.assign.map[key] = s.value; else delete HOST.assign.map[key]; delete HOST.assign.sent[key]; await saveAssign(); return; }
+    const bk = e.target.closest('[data-addbackup]');
+    if (bk && bk.value) { const key = bk.dataset.addbackup; HOST.assign.chain = HOST.assign.chain || {}; (HOST.assign.chain[key] = HOST.assign.chain[key] || []).push(bk.value); await saveAssign(); toast('BACKUP ROLE ADDED', `${rname(bk.value)} is next if their character dies.`, 'ok'); }
   });
   $('#rsvpList').addEventListener('click', async e => {
+    const rb = e.target.closest('[data-rmbackup]');
+    if (rb) { const [key, idx] = rb.dataset.rmbackup.split('|'); (HOST.assign.chain[key] || []).splice(+idx, 1); await saveAssign(); return; }
     const cp = e.target.closest('[data-rolemsg]');
     if (cp) {
       const key = cp.dataset.rolemsg, name = cp.dataset.name, c = HOST.chars[HOST.assign.map[key]];
       if (!c) { toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
-      await copyText(roleMessage(name, c)); HOST.assign.sent[key] = Date.now(); await saveAssign();
+      await copyText(roleMessage(name, c, (HOST.assign.chain || {})[key])); HOST.assign.sent[key] = Date.now(); await saveAssign();
       toast('ROLE TEXT COPIED', `Paste it into a private message to ${name}.`, 'ok'); return;
     }
     const aq = e.target.closest('[data-accessqr]'); if (aq) { const cid = HOST.assign.map[aq.dataset.accessqr]; if (cid) accessQR(cid); else toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
@@ -1263,7 +1541,7 @@ function bindAdmin() {
     if (del) {
       const id = del.dataset.delrsvp;
       confirmModal('Delete this RSVP?', `Removes ${esc((S.rsvps[id] || {}).name || 'this guest')} and any roles assigned to them.`, 'DELETE', async () => {
-        delete HOST.assign.map[id]; delete HOST.assign.map[id + '#p']; await backend.set('rsvps/' + id, null); await saveAssign();
+        delete HOST.assign.map[id]; delete HOST.assign.map[id + '#p']; delete (HOST.assign.chain || {})[id]; await backend.set('rsvps/' + id, null); await saveAssign();
       });
     }
   });
@@ -1313,7 +1591,7 @@ function bindAdmin() {
   };
   $('#resetBtn').addEventListener('click', () => {
     openModal(`<div class="ph"><h2 style="color:var(--red2)">Hard Reset</h2></div>
-      <p style="line-height:1.6">Starts a brand-new game: wipes phases, rooms, evidence finds, deaths, votes, alerts, messages and logins. Every player is signed out. RSVPs, role assignments and page edits are kept.</p>
+      <p style="line-height:1.6">Starts a brand-new game: wipes phases, rooms, evidence finds, deaths, votes, hints, alerts, messages and logins. Every player is signed out. RSVPs, role assignments and page edits are kept.</p>
       <label class="lbl" for="resetConfirm">Type RESET to confirm</label>
       <input class="input mono" id="resetConfirm" autocomplete="off" autocapitalize="characters">
       <div class="row-gap" style="margin-top:14px"><button class="btn danger" id="resetYes" disabled>START A NEW GAME</button><button class="btn ghost" data-close>CANCEL</button></div>`);
@@ -1324,9 +1602,9 @@ function bindAdmin() {
   $('#emRsvps').onclick = () => confirmModal('Delete every RSVP?', 'All RSVPs and all role assignments are permanently removed.', 'DELETE ALL', async () => { await backend.update({ rsvps: null, assign: null }); log('All RSVPs deleted'); });
 }
 const linkUrl = k => ({ invite: siteBase(), db: siteBase() + 'database.html', display: siteBase() + 'display.html' })[k];
-function roleMessage(name, c) {
+function roleMessage(name, c, backups) {
   const P = party();
-  return `Hi ${name}! Your role for ${(P.title || 'The Last Toast').toUpperCase()}:\n\n${c.name}\n${c.occ || ''}\n\nYour secret code word: ${c.code}\n\nOpen ${siteBase()}database.html and enter it to read your dossier. Keep your code word to yourself, and don't show your dossier to anyone!`;
+  return `Hi ${name}! Your role for ${(P.title || 'The Last Toast').toUpperCase()}:\n\n${c.name}\n${c.occ || ''}\n\nYour secret code word: ${c.code}\n\nOpen ${siteBase()}database.html and enter it to read your dossier. Keep your code word to yourself, and don't show your dossier to anyone!${backups && backups.length ? `\n\nIf your character doesn't survive the night, stay logged in: your phone will give you a new role.` : ''}`;
 }
 
 /* ---------------- host: render ---------------- */
@@ -1336,6 +1614,7 @@ function guestFor() {
     const [rid, plus] = key.split('#'); const r = S.rsvps[rid]; if (!r) continue;
     m[cid] = plus ? (r.plusOneName || (r.name + "'s guest")) : r.name;
   }
+  for (const [dead, s] of Object.entries(S.succession)) if (s && s.to && m[dead] && !m[s.to]) m[s.to] = m[dead];
   return m;
 }
 function renderAdmin(force) {
@@ -1345,18 +1624,15 @@ function renderAdmin(force) {
     ? `<div class="panel" style="border-color:rgba(217,178,91,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> only syncs between tabs on this device. Add your Firebase config to <span class="mono">config.js</span> for the real game.</p></div>` : '');
   const L = HOST.list, who = guestFor();
   const badge = (k, n) => { const b = $('#badge-' + k); if (b) { b.textContent = n; b.classList.toggle('hidden', !n); } };
-  badge('guests', Object.entries(S.rsvps).filter(([, r]) => r && r.name && r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]).filter(key => !HOST.assign.map[key]).length);
+  badge('guests', L.filter(c => c.mustCast && !who[c.id]).length || Object.entries(S.rsvps).filter(([, r]) => r && r.name && r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]).filter(key => !HOST.assign.map[key]).length);
   badge('players', Object.keys(S.revoked).length);
-
   Object.keys(FLAGS).forEach(f => {
-    const t = $(`[data-flag="${f}"]`); if (!t) return; const on = !!S.flags[f];
-    t.setAttribute('aria-pressed', on);
-    const st = $('#st-' + f); st.textContent = on ? 'ON' : 'OFF'; st.className = 'state' + (on ? ' on' + (f !== 'voting' ? ' r' : '') : '');
+    $$(`[data-flag="${f}"]`).forEach(t => t.setAttribute('aria-pressed', !!S.flags[f]));
+    const st = $('#st-' + f); if (st) { const on = !!S.flags[f]; st.textContent = on ? 'ON' : 'OFF'; st.className = 'state' + (on ? ' on' + (['killer', 'killerKnows', 'sealed', 'lockdown'].includes(f) ? ' r' : '') : ''); }
   });
   animateNum($('#n-online'), L.filter(c => isOnline(c.id)).length);
   animateNum($('#n-ev'), releasedEvidence(S).length);
   animateNum($('#n-votes'), tallyRows().reduce((n, r) => n + r[1], 0));
-
   renderGame(); renderCast(who); renderGuests(who); renderTools();
 }
 function renderCast(who) {
@@ -1368,7 +1644,7 @@ function renderCast(who) {
     const p = playerRec(c.id), on = isOnline(c.id), isD = c.id in dd, mem = c.memories || [], due = mem.filter(m => memoryDue(S, m.when)).length;
     return `<div class="crow ${isD ? 'dead' : ''} ${S.revoked[c.id] ? 'revoked' : ''}">
       <div class="l1"><span class="dot ${on ? 'on' : ''}"></span><span class="cn">${esc(c.name)}</span><span class="occ">${esc(c.occ || '')}</span>
-        ${c.inspector ? '<span class="pill blue" style="border-color:var(--cyan);color:var(--cyan)">INSPECTOR</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${isD ? '<span class="pill red">DECEASED</span>' : ''}${S.revoked[c.id] ? '<span class="pill red">REVOKED</span>' : ''}<span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'OPENED' : 'NOT OPENED'}</span></div>
+        ${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${c.inspector ? '<span class="pill" style="border-color:var(--cyan);color:var(--cyan)">INSPECTOR</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${isD ? '<span class="pill red">DECEASED</span>' : ''}${S.revoked[c.id] ? '<span class="pill red">REVOKED</span>' : ''}<span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'OPENED' : 'NOT OPENED'}</span></div>
       <div class="l2"><span>Code: <span class="code">${showCodes ? esc(c.code) : '••••••'}</span></span><span>Player: <b style="color:var(--cyan)">${esc(who[c.id] || 'unassigned')}</b></span>${mem.length ? `<span>Memories: ${due}/${mem.length}</span>` : ''}${p && p.vote ? `<span>Accuses: <b style="color:var(--gold2)">${esc(rname(p.vote.suspect))}</b></span>` : ''}</div>
       <div class="acts">${castActions(c)}</div></div>`;
   }).join('') || `<div class="empty">NO MATCHES</div>`);
@@ -1378,23 +1654,32 @@ function renderGuests(who) {
   const yes = rs.filter(([, r]) => r.attending === 'yes'), maybe = rs.filter(([, r]) => r.attending === 'maybe'), no = rs.filter(([, r]) => r.attending === 'no');
   $('#rsvpSub').textContent = `${yes.length + yes.filter(([, r]) => r.plusOne).length} COMING · ${maybe.length} MAYBE · ${no.length} NO`;
   const taken = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) taken[cid] = key;
-  const openCore = HOST.list.filter(c => c.tier !== 'ext' && !who[c.id]);
-  patch($('#openRoles'), openCore.map(c => c.id).join(), openCore.length ? `<p class="note" style="margin:0 0 12px"><b style="color:var(--gold2)">Principal roles still open (${openCore.length}):</b> ${openCore.map(c => esc(c.name)).join(', ')}</p>` : `<p class="note" style="margin:0 0 12px;color:var(--green)">✓ Every principal role is assigned.</p>`);
+  const inChains = new Set(Object.values(HOST.assign.chain || {}).flat());
+  const mustOpen = HOST.list.filter(c => c.mustCast && !who[c.id]), openCore = HOST.list.filter(c => c.tier !== 'ext' && !c.mustCast && !who[c.id]);
+  patch($('#openRoles'), mustOpen.map(c => c.id).join() + '|' + openCore.map(c => c.id).join(),
+    (mustOpen.length ? `<div class="warnbar" style="cursor:default"><span class="pill must">★ MUST CAST</span><span><b>Still needed (${mustOpen.length}):</b> ${mustOpen.map(c => esc(c.name)).join(', ')}</span></div>` : `<p class="note" style="margin:0 0 8px;color:var(--green)">✓ Every must-cast role is assigned.</p>`) +
+    (openCore.length ? `<p class="note" style="margin:0 0 12px"><b style="color:var(--gold2)">Other principal roles open (${openCore.length}):</b> ${openCore.map(c => esc(c.name)).join(', ')}</p>` : ''));
+  const opt = (c, cur, key) => `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${c.mustCast ? '★ ' : ''}${esc(c.name)}${c.inspector ? ' · INSPECTOR' : ''}${c.mustCast ? ' · MUST CAST' : ''}${taken[c.id] && taken[c.id] !== key ? ' (taken)' : ''}</option>`;
   const select = key => {
     const cur = HOST.assign.map[key] || '';
-    const opt = c => `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${esc(c.name)}${c.inspector ? ' ★ INSPECTOR' : ''}${taken[c.id] && taken[c.id] !== key ? ' (taken)' : ''}</option>`;
-    return `<select class="input sm" data-assign="${esc(key)}"><option value="">— Unassigned —</option><optgroup label="Principal">${HOST.list.filter(c => c.tier !== 'ext').map(opt).join('')}</optgroup><optgroup label="Extended cast">${HOST.list.filter(c => c.tier === 'ext').map(opt).join('')}</optgroup></select>`;
+    return `<select class="input sm" data-assign="${esc(key)}"><option value="">— Unassigned —</option><optgroup label="★ Must cast">${HOST.list.filter(c => c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup><optgroup label="Principal">${HOST.list.filter(c => c.tier !== 'ext' && !c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup><optgroup label="Extended cast">${HOST.list.filter(c => c.tier === 'ext' && !c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup></select>`;
+  };
+  const backupsRow = key => {
+    const chain = (HOST.assign.chain || {})[key] || [], primary = HOST.assign.map[key]; if (!primary) return '';
+    const free = HOST.list.filter(c => c.id !== primary && !taken[c.id] && !chain.includes(c.id) && !c.killer && !c.inspector);
+    return `<div class="backups"><span>If they die, they become:</span>${chain.map((id, i) => { const used = Object.values(S.succession).some(s => s && s.to === id), gone = id in dead(); return `<span class="chip2 ${used ? 'used' : ''} ${gone ? 'gone' : ''}">${i + 1}. ${esc(rname(id))}<button data-rmbackup="${esc(key)}|${i}" aria-label="Remove">×</button></span>`; }).join('') || '<span style="color:var(--dim)">no backup</span>'}
+      <select class="input sm" data-addbackup="${esc(key)}" style="width:auto;min-width:150px"><option value="">+ add backup role…</option>${free.map(c => `<option value="${esc(c.id)}">${esc(c.name)}${inChains.has(c.id) ? ' (backup for someone else)' : ''}</option>`).join('')}</select></div>`;
   };
   const prefs = { big: 'Big dramatic role', medium: 'Medium role', small: 'Small, low-pressure role', surprise: 'Surprise me' };
   const card = ([id, r]) => {
     const st = r.attending === 'yes' ? ['green', 'COMING'] : r.attending === 'maybe' ? ['gold', 'MAYBE'] : ['', "CAN'T MAKE IT"];
     const meta = [r.plusOne ? `Plus-one: ${esc(r.plusOneName || 'yes')}` : '', r.pref ? esc(prefs[r.pref] || r.pref) : '', r.diet ? 'Diet: ' + esc(r.diet) : '', r.note ? '“' + esc(r.note) + '”' : ''].filter(Boolean).join(' · ');
-    const assignRow = (key, name) => { const s = HOST.assign.sent[key]; return `<div class="assign">${select(key)}<button class="btn sm" data-rolemsg="${esc(key)}" data-name="${esc(name)}">COPY ROLE TEXT</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><span class="who">${esc(name)} ${HOST.assign.map[key] ? (s ? `<span class="pill green">ROLE SENT ${fmtTime(s)}</span>` : '<span class="pill gold">NOT SENT YET</span>') : ''}</span></div>`; };
+    const assignRow = (key, name) => { const s = HOST.assign.sent[key]; return `<div class="assign">${select(key)}<button class="btn sm" data-rolemsg="${esc(key)}" data-name="${esc(name)}">COPY ROLE TEXT</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><span class="who">${esc(name)} ${HOST.assign.map[key] ? (s ? `<span class="pill green">ROLE SENT ${fmtTime(s)}</span>` : '<span class="pill gold">NOT SENT YET</span>') : ''}</span>${backupsRow(key)}</div>`; };
     return `<div class="guest"><div class="top"><span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
       ${meta ? `<div class="meta">${meta}</div>` : ''}
       ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") : '') : ''}</div>`;
   };
-  patch($('#rsvpList'), JSON.stringify([rs, HOST.assign]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
+  patch($('#rsvpList'), JSON.stringify([rs, HOST.assign, Object.keys(S.succession), Object.keys(dead())]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
 }
 function renderTools() {
   const ps = projectorState(S);
@@ -1408,6 +1693,7 @@ function renderTools() {
 }
 
 /* ---------------- overlays (players) ---------------- */
+const OV_SOUND = { dead: 'death', reveal: 'killer', verdict: 'reveal', scanfound: 'chime', scan: 'error', off: 'radio', lines: 'radio', mem: 'memory', msg: 'radio', succ: 'memory' };
 function renderOverlays() {
   const isHost = ME && ME.type === 'host', c = ME && ME.type === 'player' ? ME.c : null;
   const blocked = c && (S.revoked[c.id] ? 'revoked' : S.flags.sealed ? 'sealed' : null);
@@ -1441,20 +1727,32 @@ function renderOverlays() {
     sig = 'dead'; html = `<div class="overlay fullmsg dead"><div class="box"><div class="k">KANE-OS · PERSONNEL STATUS UPDATE</div><h1>YOU HAVE BEEN<br>TERMINATED</h1>
       <p>You've been murdered. Play it out, then stay in character as the body until the host tells you otherwise.</p><p style="color:var(--red2)">Don't reveal what your screen says to anyone.</p><button class="btn danger" id="termAck" style="margin-top:8px">ACKNOWLEDGE</button></div></div>`;
     bind = () => $('#termAck').onclick = () => { store.set('termAck', deathKey); renderOverlays(); };
+  } else if (c && deathKey && ui.succ) {
+    const n = ui.succ;
+    sig = 'succ' + n.id; html = `<div class="overlay fullmsg succ"><div class="box"><div class="antenna green"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2fe39b" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div>
+      <div class="k">YOUR STORY ISN'T OVER</div><h1 style="font-size:clamp(24px,6vw,34px)">You return as<br><span style="color:var(--green)">${esc(n.name)}</span></h1>
+      <p>When the host gives you the nod, slip away from your body and come back as someone new. Your new dossier is ready.</p><button class="btn gold" id="succGo">BECOME ${esc(n.name.toUpperCase())}</button></div></div>`;
+    bind = () => $('#succGo').onclick = becomeNext;
   } else if (c && v && v.stage === 'reveal' && !newLines && store.get('verdictAck') !== String(v.ts)) {
     sig = 'verdict' + v.ts; html = `<div class="overlay fullmsg verdict"><div class="box panel gold" style="text-align:left">${verdictHTML(v, c)}<div style="text-align:center;margin-top:10px"><button class="btn gold" id="verdictAck">CLOSE THE FILE</button></div></div></div>`;
     bind = () => $('#verdictAck').onclick = () => { store.set('verdictAck', String(v.ts)); renderOverlays(); };
+  } else if (c && c.killer && S.flags.killerKnows && store.get('revealSeen') !== S.epoch) {
+    // the killer's big moment comes before any of their memories
+    sig = 'reveal'; html = `<div class="overlay fullmsg reveal"><div class="box"><div class="k">CLEARANCE ELEVATED · FILE UNSEALED</div><h1>YOU ARE THE KILLER</h1>
+      <div class="typed">${(c.killer.reveal || []).map((l, i) => `<span style="animation-delay:${0.5 + i * 0.45}s">&gt; ${esc(l)}</span>`).join('')}</div>
+      <p>Your full file is now unsealed and your plan is in your memories. Keep your screen hidden. Stay warm. Stay calm.</p><button class="btn danger" id="revealAck">CONTINUE</button></div></div>`;
+    bind = () => $('#revealAck').onclick = () => { store.set('revealSeen', S.epoch); renderOverlays(); };
   } else if (sc) {
-    sig = 'scan' + sc.kind + (sc.e ? sc.e.id : '') + (sc.e && S.evidence[sc.e.id] ? 'r' : '');
+    sig = (sc.kind === 'found' ? 'scanfound' : 'scan') + sc.kind + (sc.e ? sc.e.id : '') + (sc.e && S.evidence[sc.e.id] ? 'r' : '');
     const close = `<button class="btn ghost" id="scanClose">CLOSE</button>`;
     if (sc.kind === 'found') {
       const e = sc.e, rel = S.evidence[e.id];
       html = `<div class="overlay fullmsg found"><div class="box"><div class="antenna gold"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f5dc93" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></div>
         <div class="k">EVIDENCE FOUND · ${esc(roomName(e.room).toUpperCase())}</div>
         <div class="evbody"><h2>${esc(e.title)}</h2><div class="src">SOURCE · ${esc(e.src)}</div><div class="txt">${esc(e.body)}</div></div>
-        ${rel ? `<p class="note">${rel.by ? 'Already revealed to everyone by ' + esc(rname(rel.by)) + '.' : 'Already revealed to everyone.'}</p>${close}`
+        ${rel ? `<p class="note">${rel.by && rel.by !== 'host' ? 'Already revealed to everyone by ' + esc(rname(rel.by)) + '.' : 'Already revealed to everyone.'}</p>${close}`
           : `<p class="note">Only you have seen this. Reveal it to everyone, or keep it to yourself for now (it's saved under "Evidence You Found").</p><div class="row-gap" style="justify-content:center"><button class="btn gold" id="scanReveal">REVEAL TO EVERYONE</button><button class="btn ghost" id="scanClose">KEEP IT FOR NOW</button></div>`}</div></div>`;
-      bind = () => { const r = $('#scanReveal'); if (r) r.onclick = () => { revealEvidence(e, c.id, roomName(e.room), 'found'); log(`${c.name} revealed "${e.title}"`, 'player'); ui.scan = null; toast('REVEALED', 'Everyone can now see it.', 'ok'); render(); }; $('#scanClose').onclick = () => { ui.scan = null; render(); }; };
+      bind = () => { const r = $('#scanReveal'); if (r) r.onclick = () => { revealEvidence(e, c.id, roomName(e.room), 'found'); log(`${c.name} revealed "${e.title}"`, 'player'); ui.scan = null; Sound.play('chime'); toast('REVEALED', 'Everyone can now see it.', 'ok'); render(); }; $('#scanClose').onclick = () => { ui.scan = null; render(); }; };
     } else {
       const msg = { nothing: ['NOTHING OF INTEREST', "This tag isn't part of the investigation."], dead: ['THE DEAD DON\'T INVESTIGATE', 'You can watch and listen, but you can\'t collect evidence.'],
         sealed: ['SEALED AREA', `${sc.e ? esc(roomName(sc.e.room)) : 'This room'} is sealed. Leave it as you found it until your phone says it's open.`], locked: ['LOCKED', 'This item can\'t be examined yet. Try again later in the night.'] }[sc.kind];
@@ -1464,23 +1762,23 @@ function renderOverlays() {
   } else if (newOfficial) {
     sig = 'off' + newOfficial.id; html = `<div class="overlay fullmsg incoming"><div class="box"><div class="antenna"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5ad6ff" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>
       <div class="k">OFFICIAL REPORT RECEIVED</div><h1 style="font-size:clamp(22px,6vw,32px)">${esc(newOfficial.title)}</h1><p>It's in your Case File. Read it aloud to the room, then press <b>RELEASE TO ALL</b>.</p><button class="btn gold" id="offAck">OPEN CASE FILE</button></div></div>`;
-    bind = () => $('#offAck').onclick = () => { store.set(offKey(newOfficial.id), '1'); renderOverlays(); scrollToId('casePanel'); };
+    bind = () => $('#offAck').onclick = () => { store.set(offKey(newOfficial.id), '1'); renderOverlays(); goView('now', 'casePanel'); };
   } else if (newLines) {
-    sig = 'lines' + newLines.id; html = `<div class="overlay fullmsg memory"><div class="box"><div class="k">YOUR LINES · ${esc(newLines.title.toUpperCase())}</div><div class="msg">${esc(fillLines(newLines.text))}</div><button class="btn gold" id="lineAck">GOT IT</button></div></div>`;
-    bind = () => $('#lineAck').onclick = () => { store.set(lineKey(newLines.id), '1'); renderOverlays(); scrollToId('casePanel'); };
+    sig = 'lines' + newLines.id; html = `<div class="overlay fullmsg memory"><div class="box"><div class="k">YOUR LINES · ${esc(newLines.title.toUpperCase())}</div><div class="msg wipe">${esc(fillLines(newLines.text))}</div><button class="btn gold" id="lineAck">GOT IT</button></div></div>`;
+    bind = () => $('#lineAck').onclick = () => { store.set(lineKey(newLines.id), '1'); renderOverlays(); goView('now', 'casePanel'); };
   } else if (mem) {
-    sig = 'mem' + mem.j; html = `<div class="overlay fullmsg memory"><div class="box"><div class="k">${mem.cue ? 'INSTRUCTION FROM THE HOST' : 'A MEMORY SURFACES'}</div><div class="msg">${esc(mem.text)}</div><button class="btn gold" id="memAck">${mem.cue ? 'UNDERSTOOD' : 'REMEMBER THIS'}</button></div></div>`;
+    sig = 'mem' + mem.j; html = `<div class="overlay fullmsg memory"><div class="box"><div class="k">${mem.cue ? 'INSTRUCTION FROM THE HOST' : 'A MEMORY SURFACES'}</div><div class="msg wipe">${esc(mem.text)}</div><button class="btn gold" id="memAck">${mem.cue ? 'UNDERSTOOD' : 'REMEMBER THIS'}</button></div></div>`;
     bind = () => $('#memAck').onclick = () => { store.set(memKey(mem.j), '1'); renderOverlays(); };
   } else if (unread) {
-    sig = 'msg' + unread.mid; html = `<div class="overlay fullmsg incoming"><div class="box"><div class="k">MESSAGE FROM THE COMMAND CENTER</div><div class="msg">${esc(unread.text)}</div><button class="btn gold" id="msgAck">ACKNOWLEDGE</button></div></div>`;
+    sig = 'msg' + unread.mid; html = `<div class="overlay fullmsg incoming"><div class="box"><div class="k">MESSAGE FROM THE COMMAND CENTER</div><div class="msg wipe">${esc(unread.text)}</div><button class="btn gold" id="msgAck">ACKNOWLEDGE</button></div></div>`;
     bind = () => $('#msgAck').onclick = () => ackMsg(unread.mid);
-  } else if (c && c.killer && S.flags.killer && store.get('revealSeen') !== S.epoch) {
-    sig = 'reveal'; html = `<div class="overlay fullmsg reveal"><div class="box"><div class="k">CLEARANCE ELEVATED · FILE UNSEALED</div><h1>YOU ARE THE KILLER</h1>
-      <div class="typed">${(c.killer.reveal || []).map(l => '&gt; ' + esc(l)).join('<br>')}</div>
-      <p>Your full file is now unsealed. A Termination Directive is waiting for you. Keep your screen hidden. Stay warm. Stay calm.</p><button class="btn danger" id="revealAck">OPEN MY FILE</button></div></div>`;
-    bind = () => $('#revealAck').onclick = () => { store.set('revealSeen', S.epoch); renderOverlays(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   }
-  if (patch(fm, sig, html) && sig !== 'none') buzz(sig.startsWith('mem') || sig.startsWith('lines') || sig.startsWith('off') ? [120, 80, 120] : []);
+  if (patch(fm, sig, html) && sig !== 'none') {
+    const key = Object.keys(OV_SOUND).find(k => sig.startsWith(k));
+    if (key) Sound.play(OV_SOUND[key]);
+    if (/^(mem|lines|off|succ|scanfound)/.test(sig)) buzz([120, 80, 120]);
+    if (sig.startsWith('verdict') && c && v && ((playerRec(c.id) && playerRec(c.id).vote && playerRec(c.id).vote.suspect === v.killer) || (c.inspector && v.accused === v.killer))) confetti();
+  }
   if (bind && fm.innerHTML) bind();
   document.body.style.overflow = (lockOn || sig !== 'none') ? 'hidden' : '';
 }

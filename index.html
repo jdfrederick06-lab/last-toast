@@ -127,7 +127,7 @@ function renderStatic() {
   $('#inWorld').textContent = P.inWorld || '';
   $('#title').textContent = P.title || 'The Last Toast';
   $('#subtitle').textContent = P.subtitle || '';
-  $('#hostBy').textContent = P.host ? 'Hosted by ' + P.host : '';
+  $('#hostBy').textContent = [P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ');
   document.title = (P.title || 'The Last Toast') + ' · Invitation';
   $('#notice').classList.toggle('hidden', !P.notice);
   $('#noticeText').textContent = P.notice || '';

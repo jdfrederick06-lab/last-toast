@@ -137,7 +137,7 @@ function normRoot(r) {
   r = r || {}; const s = r.live || {};
   return {
     epoch: s.epoch || '0',
-    flags: Object.assign({ lockdown: false, killer: false, voting: false }, s.flags || {}),
+    flags: Object.assign({ lockdown: false, killer: false, killerKnows: false, voting: false, sealed: false, hints: false }, s.flags || {}),
     evidence: s.evidence || {},     // id -> {ts,title,src,body,tier}
     kill: s.kill || null,           // killer's directive: {victim, ts}
     deaths: s.deaths || {},         // host-announced deaths: id -> ts
@@ -149,6 +149,11 @@ function normRoot(r) {
     msgs: s.msgs || {},             // id -> {msgId: {iv,ct,ts}}  encrypted private messages
     msgread: s.msgread || {},       // id -> {msgId: ts}
     verdict: s.verdict || null,     // {stage:'accuse'|'reveal', accused, killer, killerName, alias, summary, solvers, ts}
+    hintVotes: s.hintVotes || {},   // round -> {charId: ts}  players asking for the next hint
+    hintsOpen: s.hintsOpen || {},   // index -> {text, ts}  hints unlocked so far
+    hintTotal: s.hintTotal || 0,    // how many hints exist (set when hint voting is switched on)
+    succession: s.succession || {}, // deadCharId -> {iv,ct,ts}  encrypted hand-over to a backup role
+    unmasked: s.unmasked || {},     // charId -> ts  public identity revealed (the undercover Inspector)
     phase: s.phase || { i: -1 },    // current game phase: {i, id, ts}
     phaseLog: s.phaseLog || {},     // phaseId -> ts, for every phase that has started
     rooms: s.rooms || {},           // roomId -> ts when opened
@@ -170,6 +175,70 @@ function mergeParty(P, site) {
   out.display = Object.assign({}, (P && P.display) || {}, slides && slides.length ? { slides } : {}, site && site.welcome ? { welcome: site.welcome } : {});
   return out;
 }
+/** The Who's Who directory: locked in story.locked.js, opened with the key inside a code word's bundle. */
+async function openDirectory(keyB64) {
+  const L = window.STORY_LOCKED; if (!L || !L.dir || !keyB64) return [];
+  const key = await crypto.subtle.importKey('raw', unb64(keyB64), 'AES-GCM', false, ['decrypt']);
+  return (await decryptJSON(key, L.dir)).directory || [];
+}
+/** Hint voting: who may vote right now, and how many yes votes unlock the next hint. */
+function hintStatus(S, isOnlineFn) {
+  const round = Object.keys(S.hintsOpen).length, dd = deathsOf(S);
+  const eligible = Object.keys(S.players).filter(id => { const p = S.players[id]; return p && p.epoch === S.epoch && !(id in dd) && isOnlineFn(id); });
+  const votes = Object.keys(S.hintVotes[round] || {}).filter(id => !(id in dd));
+  const needed = Math.max(1, Math.floor(eligible.length / 2) + 1);
+  return { round, votes: votes.length, needed, eligible: eligible.length, left: Math.max(0, (S.hintTotal || 0) - round) };
+}
+
+/* ---------- sound (synthesized, no files to download) ---------- */
+const Sound = (() => {
+  let ctx = null, muted = store.get('muted') === '1';
+  const ac = () => {
+    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, ac, { passive: true }));
+  function tone(freq, dur, o = {}) {
+    const c = ac(); if (!c || muted) return;
+    const t = c.currentTime + (o.delay || 0), osc = c.createOscillator(), g = c.createGain();
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(freq, t);
+    if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq + o.slide), t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(o.vol || 0.12, t + (o.attack || 0.01)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g).connect(c.destination); osc.start(t); osc.stop(t + dur + 0.05);
+  }
+  function noise(dur, o = {}) {
+    const c = ac(); if (!c || muted) return;
+    const t = c.currentTime + (o.delay || 0), buf = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    src.buffer = buf; f.type = 'lowpass'; f.frequency.value = o.filter || 1000;
+    g.gain.setValueAtTime(o.vol || 0.1, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(c.destination); src.start(t);
+  }
+  const FX = {
+    tap() { tone(1200, 0.05, { type: 'triangle', vol: 0.03 }); },
+    ok() { tone(660, 0.14, { vol: 0.07 }); tone(990, 0.22, { vol: 0.07, delay: 0.08 }); },
+    error() { tone(196, 0.3, { type: 'square', vol: 0.04 }); tone(147, 0.35, { type: 'square', vol: 0.04, delay: 0.12 }); },
+    chime() { [880, 1175, 1568, 2093].forEach((f, i) => tone(f, 0.7, { vol: 0.06, delay: i * 0.08 })); },
+    memory() { [392, 494, 587, 740].forEach((f, i) => tone(f, 1.6, { vol: 0.045, delay: i * 0.14, attack: 0.2 })); },
+    radio() { noise(0.14, { vol: 0.06, filter: 3500 }); tone(1500, 0.07, { type: 'square', vol: 0.03, delay: 0.16 }); tone(1500, 0.07, { type: 'square', vol: 0.03, delay: 0.28 }); },
+    door() { tone(90, 0.7, { type: 'sawtooth', vol: 0.04, slide: 50, attack: 0.1 }); noise(0.5, { vol: 0.04, filter: 400, delay: 0.1 }); tone(523, 0.5, { vol: 0.04, delay: 0.35 }); },
+    alarm() { for (let i = 0; i < 3; i++) { tone(620, 0.34, { type: 'square', vol: 0.06, delay: i * 0.7, slide: 260 }); tone(880, 0.34, { type: 'square', vol: 0.06, delay: i * 0.7 + 0.35, slide: -260 }); } },
+    death() { tone(55, 2.2, { vol: 0.3, slide: -18 }); noise(1.4, { vol: 0.2, filter: 260 }); tone(233, 1.6, { type: 'sawtooth', vol: 0.035, delay: 0.1, slide: -120 }); },
+    killer() { tone(41, 3.4, { type: 'sawtooth', vol: 0.09, attack: 0.4 }); tone(62, 3.2, { vol: 0.09, delay: 0.3, attack: 0.4 }); tone(311, 2.4, { type: 'triangle', vol: 0.03, delay: 0.9, slide: -40 }); },
+    reveal() { for (let i = 0; i < 18; i++) noise(0.05, { vol: 0.03 + i * 0.006, filter: 1400, delay: i * 0.075 }); [98, 147, 196, 294].forEach(f => tone(f, 2.8, { type: 'sawtooth', vol: 0.05, delay: 1.4 })); noise(0.9, { vol: 0.25, filter: 2200, delay: 1.4 }); },
+    vote() { tone(740, 0.1, { type: 'triangle', vol: 0.05 }); tone(1109, 0.16, { type: 'triangle', vol: 0.05, delay: 0.07 }); },
+    phase() { tone(523, 0.18, { vol: 0.06 }); tone(784, 0.3, { vol: 0.06, delay: 0.1 }); }
+  };
+  return {
+    play(name) { try { FX[name] && FX[name](); } catch (e) { } },
+    get muted() { return muted; },
+    toggle() { muted = !muted; store.set('muted', muted ? '1' : '0'); if (!muted) FX.tap(); return muted; },
+    context: ac
+  };
+})();
+
 /** Smoothly count a number up/down inside an element. */
 function animateNum(el, to) {
   if (!el) return; const from = +el.dataset.n || 0; el.dataset.n = to;
@@ -198,7 +267,7 @@ function memoryDue(S, when) {
   if (when.phase) return !!S.phaseLog[when.phase];
   if (when.evidence) return !!(S.evidence[when.evidence] && S.evidence[when.evidence].title);
   if (when.death) return when.death in deathsOf(S);
-  if (when.killer) return !!S.flags.killer;
+  if (when.killer) return !!S.flags.killerKnows;
   return false;
 }
 function releasedEvidence(S) { return Object.entries(S.evidence).filter(([, e]) => e && e.title).map(([id, e]) => Object.assign({ id }, e)).sort((a, b) => (b.ts || 0) - (a.ts || 0)); }
