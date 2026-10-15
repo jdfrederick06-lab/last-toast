@@ -494,7 +494,16 @@ async function restore() {
   if (!b || b.type === 'evidence') saveSession(null); else await adopt(b);
   ui.built = null; render();
 }
+/* tell the database's security rules who this device is (the host, or the player of one character) */
+async function registerAuth(b) {
+  if (!backend || !backend.uid || !session || !session.code) return;
+  try {
+    if (b.type === 'host') await backend.register('hosts', '', await authToken('host', session.code));
+    else if (b.type === 'player') await backend.register('claims', b.c.id, await authToken('claim', session.code));
+  } catch (e) { console.warn('registerAuth', e); }
+}
 async function adopt(b) {
+  await registerAuth(b);
   ME = b; ui.msgCache = {}; ui.msgKey = null; ui.finds = {}; ui.succ = null;
   try { ui.directory = await openDirectory(b.dirKey); } catch (e) { ui.directory = []; }
   ui.photos = {}; ui.photoIv = {}; ui.photoVer = 0;

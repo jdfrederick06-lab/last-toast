@@ -466,7 +466,8 @@ $('#rsvpForm').addEventListener('submit', async e => {
       name, attending: att, ts: backend.TS(),
       plusOne: going && $('#rPlus').checked, plusOneName: going && $('#rPlus').checked ? $('#rPlusName').value.trim() : '',
       pref: going ? $('#rPref').value : '',
-      sec: await sealForHost(priv)
+      sec: await sealForHost(priv),
+      ...(backend.uid ? { uid: backend.uid } : {})
     };
     await backend.set('rsvps/' + id, rec);
     store.set('myRsvp', id); store.set('myRsvpData', JSON.stringify(priv));
