@@ -234,6 +234,16 @@
 .guest .meta{font-size:12.5px;color:var(--muted);margin:6px 0 8px;line-height:1.5}
 .assign{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .assign .who{font-size:12px;color:var(--dim);font-family:var(--mono);grid-column:1 / -1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.invsteps{grid-column:1 / -1;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.invnote{grid-column:1 / -1;font-size:13px;color:var(--gold2);font-style:italic;line-height:1.4}
+.assign .hp{grid-column:1 / -1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.pstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;margin:0 0 14px}
+.pstats button{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:14px;padding:9px 11px;background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:2px}
+.pstats button:hover{border-color:var(--line2)}
+.pstats button.on{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,162,76,.35) inset}
+.pstats b{font-size:20px;color:var(--gold2);font-weight:700}
+.pstats span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.checkedin{display:flex;align-items:center;gap:10px;border:1px solid rgba(95,227,168,.4);background:rgba(95,227,168,.07);color:var(--green);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:14px}
 .backups{grid-column:1 / -1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
 .chip2{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(201,184,255,.4);color:var(--cyan);border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;background:rgba(201,184,255,.06)}
 .chip2 button{border:0;background:rgba(255,255,255,.08);color:inherit;border-radius:50%;width:20px;height:20px;cursor:pointer;line-height:1}
@@ -474,7 +484,8 @@ async function boot() {
   setInterval(heartbeat, CONFIG.HEARTBEAT_MS);
   setInterval(() => { if (HOST) { renderAdmin(); hostJobs(); } }, 2000);
   setInterval(tickTimer, 1000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) heartbeat(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { heartbeat(); keepAwake(); } });
+  addEventListener('pointerdown', keepAwake, { passive: true });
 }
 const offline = msg => `<div class="panel red" style="margin-top:40px"><div class="ph"><h2>System offline</h2></div><p class="note">${esc(msg)}</p></div>`;
 
@@ -494,8 +505,8 @@ async function adopt(b) {
       evidence: b.evidence, ev: Object.fromEntries(b.evidence.map(e => [e.id, e])),
       notes: b.hostNotes, killerId: b.killerId, inspectorId: b.inspectorId, built: b.built,
       rooms: b.rooms || [], show: b.show || [], solution: b.solution || {}, hints: b.hints || [], puzzles: b.puzzles || [], directory: b.directory || ui.directory,
-      assign: { map: {}, sent: {}, chain: {}, nophoto: {} }, assignCt: null, assignKey: await deriveAssignKey(session.code), msgKeys: {}, threadCache: {},
-      rsvpKey: null, rsvpSec: {}
+      assign: { map: {}, sent: {}, chain: {}, nophoto: {}, invites: {} }, assignCt: null, assignKey: await deriveAssignKey(session.code), msgKeys: {}, threadCache: {},
+      rsvpKey: null, rsvpSec: {}, hostPhotoCache: {}
     };
     try { HOST.rsvpKey = await importHostRsvpKey(b.rsvpKey); } catch (e) { console.warn('RSVP key', e); }
     await syncAssign(); await syncRsvpSecrets();
@@ -511,9 +522,10 @@ async function syncAssign() {
   const blob = S.assign, ct = blob ? blob.ct : '';
   if (ct === HOST.assignCt) return;
   HOST.assignCt = ct;
-  if (!blob) { HOST.assign = { map: {}, sent: {}, chain: {}, nophoto: {} }; return; }
-  try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? { map: d.map || {}, sent: d.sent || {}, chain: d.chain || {}, nophoto: d.nophoto || {} } : { map: d || {}, sent: {}, chain: {}, nophoto: {} }; }
-  catch (e) { HOST.assign = { map: {}, sent: {}, chain: {}, nophoto: {} }; }
+  const blank = () => ({ map: {}, sent: {}, chain: {}, nophoto: {}, invites: {} });
+  if (!blob) { HOST.assign = blank(); return; }
+  try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? Object.assign(blank(), d) : Object.assign(blank(), { map: d || {} }); }
+  catch (e) { HOST.assign = blank(); }
 }
 /** Host only: open each guest's locked RSVP details (email, phone, note, photo). */
 async function syncRsvpSecrets() {
@@ -575,6 +587,7 @@ function onState(prev, was) {
   if (ME && ME.type === 'player' && !playerRec(ME.c.id)) heartbeat();
   if (HOST && (S.assign ? S.assign.ct : '') !== HOST.assignCt) syncAssign().then(renderAdmin);
   if (HOST) syncRsvpSecrets().then(c => { if (c) renderAdmin(); });
+  if (HOST) syncHostPhotos().then(c => { if (c) renderAdmin(); });
   if (ME) syncPhotos();
   render();
   if (HOST) hostJobs();
@@ -821,6 +834,7 @@ function playerShellHTML() {
     <nav class="pnav" id="pnav">${views.map(([k, l, ic]) => `<button data-view="${k}">${ic}<span>${l}</span><span class="nb hidden" id="nb-${k}"></span></button>`).join('')}</nav>
     <div class="view" data-v="now">
       <div id="deadStrip"></div>
+      <div id="checkinBox"></div>
       <section class="panel gold hidden" id="verdictPanel"></section>
       <section class="panel hidden" id="casePanel" style="border-color:rgba(201,184,255,.45)"></section>
       <section class="panel red hidden" id="directivePanel"></section>
@@ -865,6 +879,7 @@ function bindPlayer() {
   bindLogout();
   ui.selTarget = null; ui.seenEvidence = null;
   $('#pnav').onclick = e => { const b = e.target.closest('[data-view]'); if (b) goView(b.dataset.view); };
+  $('#checkinBox').addEventListener('click', e => { if (e.target.closest('#checkinBtn')) checkIn(); });
   goView(['now', 'brief', 'evidence', 'people', 'file'].includes(ui.view) ? ui.view : 'now');
   $('#briefBody').addEventListener('change', e => { const cb = e.target.closest('[data-shared]'); if (cb) { store.set(sharedKey(cb.dataset.shared), cb.checked ? '1' : '0'); renderPlayer(); } });
   $('#dirFilter').addEventListener('input', e => { ui.dirFilter = e.target.value.toLowerCase(); renderPlayer(); });
@@ -929,8 +944,30 @@ function currentLines() {
   return pid && scripts[pid] ? Object.assign({ id: pid }, scripts[pid]) : null;
 }
 
+/* arrival check-in: open from three hours before the party (or once the host starts the night) */
+function checkinOpen() {
+  if (S.phase && S.phase.i >= 0) return true;
+  const P = party(), a = Date.parse(P.calStart || ''), b = Date.parse(P.calEnd || '') || a + 4 * 3600e3;
+  return !!a && Date.now() > a - 3 * 3600e3 && Date.now() < b + 3 * 3600e3;
+}
+function checkinHTML(c) {
+  const at = S.checkins[c.id];
+  if (at) return `<div class="checkedin">✓ <span>Checked in at ${esc(fmtTime(at))}. Welcome to the gala.</span></div>`;
+  if (!checkinOpen()) return '';
+  return `<section class="panel gold"><div class="ph"><h2>Have you arrived?</h2><span class="sub">CHECK IN</span></div><p class="note" style="margin:0 0 12px">Tap when you're at the party so your hosts know you're here.</p><button class="btn gold block" id="checkinBtn">I'VE ARRIVED</button></section>`;
+}
+function checkIn() {
+  if (!ME || !ME.c || S.checkins[ME.c.id]) return;
+  backend.update({ ['live/checkins/' + ME.c.id]: backend.TS() }); log(`${ME.c.name} checked in`, 'player');
+  toast('CHECKED IN', 'Welcome to the gala.', 'ok'); buzz(60);
+}
+function keepAwake() {
+  if (!ME || ME.type !== 'player' || !(S.phase && S.phase.i >= 0) || document.hidden || ui.wake || !('wakeLock' in navigator)) return;
+  navigator.wakeLock.request('screen').then(l => { ui.wake = l; l.addEventListener('release', () => { ui.wake = null; }); }).catch(() => { });
+}
 function renderPlayer() {
   const c = ME.c, dd = dead(), iAmDead = c.id in dd;
+  patch($('#checkinBox'), [S.checkins[c.id] || 0, checkinOpen()].join('|'), checkinHTML(c));
   const setNB = (k, n) => { const b = $('#nb-' + k); if (b) { b.textContent = n > 9 ? '9+' : n; b.classList.toggle('hidden', !n); } };
   patch($('#deadStrip'), String(iAmDead), iAmDead ? `<div class="deadstrip">STATUS: DECEASED · STAY IN CHARACTER · AWAIT HOST INSTRUCTIONS</div>` : '');
   patch($('#dossierBody'), [S.flags.killerKnows, JSON.stringify(dd), Object.keys(S.phaseLog).length, ui.photoVer].join('|'), dossierHTML(c));
@@ -1077,9 +1114,9 @@ function confirmKill() {
 }
 
 /* =========================================================================
-   HOST · MASTER CONTROL TERMINAL  —  Game · Players · Guests · Tools
+   HOST · MASTER CONTROL TERMINAL  —  Game · Characters · Players · Tools
    ========================================================================= */
-const TABS = [['game', 'Game'], ['players', 'Players'], ['guests', 'Guests'], ['tools', 'Tools']];
+const TABS = [['game', 'Game'], ['characters', 'Characters'], ['players', 'Players'], ['tools', 'Tools']];
 function adminShellHTML() {
   return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="printBtn">PRINT</button><button class="iconbtn" id="notesBtn">NOTES</button>`)}
   <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${l}<span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
@@ -1090,7 +1127,7 @@ function adminShellHTML() {
     <div id="mustWarn"></div>
     <div class="stats">
       <div class="stat"><b><span id="n-phase">0</span><em> / ${HOST.show.length}</em></b><span>Phase</span></div>
-      <div class="stat"><b><span id="n-online">0</span><em> online</em></b><span>Players connected</span></div>
+      <div class="stat"><b><span id="n-in">0</span><em> / <span id="n-cast">0</span></em></b><span>Checked in · <span id="n-online">0</span> online</span></div>
       <div class="stat"><b><span id="n-ev">0</span><em> / ${HOST.evidence.length}</em></b><span>Evidence revealed</span></div>
       <div class="stat"><b><span id="n-votes">0</span></b><span>Accusations</span></div>
     </div>
@@ -1116,17 +1153,17 @@ function adminShellHTML() {
     </div></div>
   </div>
 
-  <!-- PLAYERS -->
-  <div data-pane="players">
-    <section class="panel gold"><div class="ph"><h2>Players, Codes &amp; Access</h2><span class="sub" id="castSub"></span></div>
+  <!-- CHARACTERS -->
+  <div data-pane="characters">
+    <section class="panel gold"><div class="ph"><h2>Characters, Codes &amp; Access</h2><span class="sub" id="castSub"></span></div>
       <p class="note" style="margin:0 0 12px"><b>Access QR</b> logs a phone straight into a dossier. <b>Revoke</b> blocks it instantly; <b>Restore</b> gives it back. <b>Sign out</b> kicks the current phone. <b>Message</b> is for emergencies only: memories arrive on their own.</p>
       <div class="cast-tools"><input class="input" id="castFilter" placeholder="Search characters or guests…"><label class="check"><input type="checkbox" id="showCodes"> Show code words</label></div>
       <div id="castList"></div>
     </section>
   </div>
 
-  <!-- GUESTS -->
-  <div data-pane="guests">
+  <!-- PLAYERS -->
+  <div data-pane="players">
     <section class="panel gold"><div class="ph"><h2>Invite Kit</h2></div>
       <div id="links"></div>
       <div style="height:16px"></div>
@@ -1134,9 +1171,11 @@ function adminShellHTML() {
       <textarea class="input" id="inviteMsg" style="min-height:130px"></textarea>
       <div class="row-gap" style="margin-top:10px"><button class="btn gold" id="copyInvite">COPY MESSAGE</button></div>
     </section>
-    <section class="panel"><div class="ph"><h2>RSVPs &amp; Roles</h2><span class="sub" id="rsvpSub"></span></div>
-      <p class="note" style="margin:0 0 12px">Give each guest a character, then tap <b>Copy role text</b> to send them their character and code word privately. Characters marked <span class="pill must">★ MUST CAST</span> carry the solution: fill them first. Under each guest you can add <b>backup roles</b>: if their character dies, their phone switches to the first backup that's still free, using the same code word.</p>
-      <div class="row-gap" style="margin:0 0 12px"><button class="btn sm" id="copyContacts">COPY CONTACT LIST</button><button class="btn sm" id="emailReminder">EMAIL REMINDER TO ALL</button><button class="btn sm ghost" id="copyReminder">COPY REMINDER</button><span class="note">Names, Dickinson emails, phone numbers and roles, ready to paste into a spreadsheet. Only this host terminal can read them.</span></div>
+    <section class="panel"><div class="ph"><h2>Players</h2><span class="sub" id="rsvpSub"></span></div>
+      <div class="pstats" id="pstats"></div>
+      <p class="note" style="margin:0 0 12px">Give each guest a character, then send their <b>personal invitation</b> (EMAIL INVITE or COPY INVITE). Their link opens a sealed-letter reveal of their role: they accept it, decline, or ask for a different character, and their code word appears once they accept. Everything they do shows up here. Characters marked <span class="pill must">★ MUST CAST</span> carry the solution: fill them first. <b>Backup roles</b> take over if their character dies. Tap a number above to filter the list.</p>
+      <div class="cast-tools"><input class="input" id="guestQ" placeholder="Search guests or characters…"></div>
+      <div class="row-gap" style="margin:0 0 12px"><button class="btn sm" id="copyAllInvites">COPY ALL INVITE LINKS</button><button class="btn sm" id="copyContacts">COPY CONTACT LIST</button><button class="btn sm" id="emailReminder">EMAIL REMINDER TO ALL</button><button class="btn sm ghost" id="copyReminder">COPY REMINDER</button><span class="note">Spreadsheet-ready lists. Only this host terminal can read them.</span></div>
       <div id="openRoles"></div>
       <div id="rsvpList"></div>
     </section>
@@ -1251,7 +1290,7 @@ function verdictReveal() {
    if that character dies). Locked with the Who's Who key, so only people with a code word can see them. */
 async function syncPhotoLinks() {
   if (!ui.dirKey || !HOST.rsvpKey) return;
-  await syncRsvpSecrets();
+  await syncRsvpSecrets(); await syncHostPhotos();
   const want = {}, vetoed = new Set(), np = HOST.assign.nophoto || {};
   // 1. the photo sent with the RSVP (the guest's own, or the one they sent for their plus-one)
   for (const [key, cid] of Object.entries(HOST.assign.map || {})) {
@@ -1259,6 +1298,8 @@ async function syncPhotoLinks() {
     const [rid, plus] = key.split('#'), r = S.rsvps[rid], sec = HOST.rsvpSec[rid];
     const photo = sec && sec.d ? (plus ? sec.d.plusPhoto : sec.d.photo) : null;
     if (r && r.sec && photo) want[cid] = { src: 'rsvp:' + key + ':' + r.sec.iv, photo, ts: +r.ts || 0 };
+    const hp = hostPhotoFor(key);
+    if (hp && (!want[cid] || hp.ts >= want[cid].ts)) want[cid] = { src: 'host:' + key + ':' + hp.iv, photo: hp.p, ts: hp.ts };
   }
   // 2. a photo the player set themselves from their dossier wins if it's newer (and made with this build's key)
   for (const [cid, p] of Object.entries(S.photos)) {
@@ -1436,7 +1477,7 @@ function renderGame() {
 
   // must-cast warning
   const who = guestFor(), missing = HOST.list.filter(c => c.mustCast && !who[c.id]);
-  patch($('#mustWarn'), missing.map(c => c.id).join(), missing.length ? `<div class="warnbar" data-gotab="guests"><span class="pill must">★ MUST CAST</span><span><b>${missing.length} essential role${missing.length > 1 ? 's have' : ' has'} no player:</b> ${missing.map(c => esc(c.name)).join(', ')}. Tap to assign.</span></div>` : '');
+  patch($('#mustWarn'), missing.map(c => c.id).join(), missing.length ? `<div class="warnbar" data-gotab="players"><span class="pill must">★ MUST CAST</span><span><b>${missing.length} essential role${missing.length > 1 ? 's have' : ' has'} no player:</b> ${missing.map(c => esc(c.name)).join(', ')}. Tap to assign.</span></div>` : '');
 
   // hints
   const hs = hintStatus(S, isOnline), opened = Object.keys(S.hintsOpen).length;
@@ -1589,6 +1630,7 @@ function printModal() {
     ['badges', 'Name Badges', 'A badge for every character (with the guest\'s name if assigned), sized for 3×4 in badge holders', false],
     ['signs', 'Signs', 'Welcome sign, room door signs, SEALED crime-scene signs, direction arrows, coat check, charging, how-to-scan', false],
     ['inspector', "Inspector's Lines", 'Every line the Inspector reads, to rehearse (the ending is left out)', true],
+    ['awards', 'Award Certificates', 'Best Performance, Best Dressed, Best Detective and Best Liar. Names are filled in from Tools → Case Files if you have typed them, otherwise left blank to write by hand', false],
     ['toast', "Alex's Toast Card", 'Her toast in large print, with stage directions, for Alex\'s player to hold', true],
     ['notebook', "Detective's Notebook", 'A two-page handout for every guest: suspect grid, timeline and evidence log. Print one per player', false],
     ['dossiers', 'Character Dossiers', `All ${HOST.list.length} personnel files with their briefs, one per page`, true],
@@ -1608,7 +1650,8 @@ async function openPrint(which) {
   if (['tags', 'props', 'all'].includes(which)) { try { await loadQR(); } catch (e) { } }
   const qr = window.qrcode ? (text => { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createImgTag(5, 0); }) : null;
   const story = { characters: HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId, hints: HOST.hints, directory: HOST.directory, puzzles: HOST.puzzles };
-  const r = PrintKit.render(story, party(), which, { qr, base: siteBase(), players: guestFor() });
+  const awards = {}; ['best', 'dressed', 'detective', 'liar'].forEach(k => { const el = $('#rc-' + k), v = el ? el.value.trim() : ((S.site.recap || {}).awards || {})[k]; if (v) awards[k] = v; });
+  const r = PrintKit.render(story, party(), which, { qr, base: siteBase(), players: guestFor(), awards });
   w.document.open();
   w.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>The Last Toast · ${esc(r.label)}</title>${PrintKit.FONTS}<style>${r.pageCSS}</style><style>${PrintKit.CSS}</style></head>
     <body><nav class="toolbar"><b>${esc(r.label)}</b><span class="sp"></span><button onclick="print()">🖨 Print / Save as PDF</button><button onclick="close()">Close</button></nav><main class="sheet">${r.html}</main></body></html>`);
@@ -1671,9 +1714,29 @@ function bindAdmin() {
   $('#copyInvite').onclick = async () => { await copyText($('#inviteMsg').value); toast('COPIED', 'Invitation message copied.', 'ok'); };
   $('#rsvpList').addEventListener('change', async e => {
     const s = e.target.closest('[data-assign]');
-    if (s) { const key = s.dataset.assign; if (s.value) HOST.assign.map[key] = s.value; else delete HOST.assign.map[key]; delete HOST.assign.sent[key]; await saveAssign(); return; }
+    if (s) {
+      const key = s.dataset.assign, prev = HOST.assign.map[key] || '';
+      if (s.value) HOST.assign.map[key] = s.value; else delete HOST.assign.map[key];
+      if (prev !== s.value) { delete HOST.assign.sent[key]; if ((HOST.assign.invites || {})[key]) await revokeInvite(key, true); }
+      await saveAssign(); return;
+    }
     const bk = e.target.closest('[data-addbackup]');
     if (bk && bk.value) { const key = bk.dataset.addbackup; HOST.assign.chain = HOST.assign.chain || {}; (HOST.assign.chain[key] = HOST.assign.chain[key] || []).push(bk.value); await saveAssign(); toast('BACKUP ROLE ADDED', `${rname(bk.value)} is next if their character dies.`, 'ok'); }
+  });
+  $('#guestQ').addEventListener('input', e => { ui.guestQ = e.target.value; renderAdmin(true); });
+  $('#pstats').addEventListener('click', e => { const b = e.target.closest('[data-gstat]'); if (b) { ui.guestStatus = b.dataset.gstat === ui.guestStatus ? 'all' : b.dataset.gstat; renderAdmin(true); } });
+  $('#copyAllInvites').addEventListener('click', async () => {
+    const keys = Object.keys(HOST.assign.map).filter(k => S.rsvps[k.split('#')[0]]);
+    if (!keys.length) { toast('NO ROLES YET', 'Assign characters first.', 'err'); return; }
+    toast('PREPARING LINKS', `Creating ${keys.length} personal invitations…`);
+    const rows = [['Guest', 'Email', 'Character', 'Invitation link', 'Status']];
+    for (const key of keys) {
+      const inv = await ensureInvite(key); if (!inv) continue;
+      const k = keyStatus(key), d = (HOST.rsvpSec[key.split('#')[0]] || {}).d || {};
+      rows.push([guestName(key), d.email || '', rname(k.cid), inviteLink(inv), k.resp || (k.opened ? 'opened' : k.sent ? 'sent' : 'not sent')]);
+    }
+    const ok = await copyText(rows.map(r => r.join('\t')).join('\n'));
+    toast(ok ? 'COPIED' : 'COPY FAILED', ok ? `${rows.length - 1} invitation links. Paste into Google Sheets or Excel.` : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err');
   });
   $('#copyReminder').addEventListener('click', async () => { const ok = await copyText(reminderMessage()); toast(ok ? 'COPIED' : 'COPY FAILED', ok ? 'Reminder text copied.' : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err'); });
   $('#emailReminder').addEventListener('click', async () => {
@@ -1696,21 +1759,47 @@ function bindAdmin() {
   $('#rsvpList').addEventListener('click', async e => {
     const rb = e.target.closest('[data-rmbackup]');
     if (rb) { const [key, idx] = rb.dataset.rmbackup.split('|'); (HOST.assign.chain[key] || []).splice(+idx, 1); await saveAssign(); return; }
-    const er = e.target.closest('[data-emailrole]');
-    if (er) {
-      const key = er.dataset.emailrole, name = er.dataset.name, c = HOST.chars[HOST.assign.map[key]]; if (!c) return;
-      const plus = key.includes('#'), P = party();
-      const body = (plus ? `(This is your plus-one's role. Please pass it on to them privately.)\n\n` : '') + roleMessage(name, c, (HOST.assign.chain || {})[key]);
-      location.href = 'mailto:' + encodeURIComponent(er.dataset.email) + '?subject=' + encodeURIComponent('Your role for ' + (P.title || 'The Last Toast') + (plus ? ' (for ' + name + ')' : '')) + '&body=' + encodeURIComponent(body);
+    const ie = e.target.closest('[data-invemail]');
+    if (ie) {
+      const key = ie.dataset.invemail, inv = await ensureInvite(key); if (!inv) { toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
+      const P = party(), name = guestName(key), plus = key.includes('#');
+      location.href = 'mailto:' + encodeURIComponent(ie.dataset.email) + '?subject=' + encodeURIComponent('Your role for ' + (P.title || 'The Last Toast') + (plus ? ' (for ' + firstName(name) + ')' : '')) + '&body=' + encodeURIComponent(inviteMessage(key, inviteLink(inv)));
       HOST.assign.sent[key] = Date.now(); await saveAssign(); return;
     }
-    const cp = e.target.closest('[data-rolemsg]');
-    if (cp) {
-      const key = cp.dataset.rolemsg, name = cp.dataset.name, c = HOST.chars[HOST.assign.map[key]];
-      if (!c) { toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
-      await copyText(roleMessage(name, c, (HOST.assign.chain || {})[key])); HOST.assign.sent[key] = Date.now(); await saveAssign();
-      toast('ROLE TEXT COPIED', `Paste it into a private message to ${name}.`, 'ok'); return;
+    const im = e.target.closest('[data-invmsg]');
+    if (im) {
+      const key = im.dataset.invmsg, inv = await ensureInvite(key); if (!inv) { toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
+      const ok = await copyText(inviteMessage(key, inviteLink(inv))); if (ok) { HOST.assign.sent[key] = Date.now(); await saveAssign(); }
+      toast(ok ? 'INVITATION COPIED' : 'COPY FAILED', ok ? `Paste it into a private message to ${firstName(guestName(key))}.` : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err'); return;
     }
+    const il = e.target.closest('[data-invlink]');
+    if (il) {
+      const key = il.dataset.invlink, inv = await ensureInvite(key); if (!inv) return;
+      const ok = await copyText(inviteLink(inv)); if (ok && !HOST.assign.sent[key]) { HOST.assign.sent[key] = Date.now(); await saveAssign(); }
+      toast(ok ? 'LINK COPIED' : 'COPY FAILED', ok ? `${firstName(guestName(key))}'s private invitation link. Only send it to them.` : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err'); return;
+    }
+    const ck = e.target.closest('[data-checkin]');
+    if (ck) {
+      const cid = HOST.assign.map[ck.dataset.checkin]; if (!cid) return;
+      const on = !S.checkins[cid]; await backend.update({ ['live/checkins/' + cid]: on ? backend.TS() : null });
+      log(on ? `${rname(cid)} checked in by the host` : `Check-in undone: ${rname(cid)}`); return;
+    }
+    const hp = e.target.closest('[data-hostphoto]');
+    if (hp) {
+      const key = hp.dataset.hostphoto, inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+      inp.onchange = async () => {
+        const file = inp.files[0]; if (!file) return;
+        try {
+          const p = await shrinkPhoto(file);
+          await backend.set('hostPhotos/' + hpKey(key), await encryptJSON(HOST.assignKey, { p, ts: Date.now() }));
+          if ((HOST.assign.nophoto || {})[key]) { delete HOST.assign.nophoto[key]; await saveAssign(); }
+          toast('PHOTO ADDED', `It now shows on ${firstName(guestName(key))}'s character profile.`, 'ok'); setTimeout(hostJobs, 300);
+        } catch (err) { toast('PHOTO NOT SAVED', err.message, 'err'); }
+      };
+      inp.click(); return;
+    }
+    const rhp = e.target.closest('[data-rmhostphoto]');
+    if (rhp) { await backend.set('hostPhotos/' + hpKey(rhp.dataset.rmhostphoto), null); toast('PHOTO REMOVED', 'Their RSVP photo (if any) is used again.', 'ok'); setTimeout(hostJobs, 300); return; }
     const aq = e.target.closest('[data-accessqr]'); if (aq) { const cid = HOST.assign.map[aq.dataset.accessqr]; if (cid) accessQR(cid); else toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
     const nph = e.target.closest('[data-nophoto]');
     if (nph) { const id = nph.dataset.nophoto; HOST.assign.nophoto = HOST.assign.nophoto || {}; if (HOST.assign.nophoto[id]) delete HOST.assign.nophoto[id]; else HOST.assign.nophoto[id] = true; await saveAssign(); hostJobs(); return; }
@@ -1718,7 +1807,9 @@ function bindAdmin() {
     if (del) {
       const id = del.dataset.delrsvp;
       confirmModal('Delete this RSVP?', `Removes ${esc((S.rsvps[id] || {}).name || 'this guest')} and any roles assigned to them.`, 'DELETE', async () => {
-        delete HOST.assign.map[id]; delete HOST.assign.map[id + '#p']; delete (HOST.assign.chain || {})[id]; await backend.set('rsvps/' + id, null); await saveAssign();
+        await revokeInvite(id, true); await revokeInvite(id + '#p', true);
+        delete HOST.assign.map[id]; delete HOST.assign.map[id + '#p']; delete (HOST.assign.chain || {})[id];
+        await backend.update({ ['rsvps/' + id]: null, ['hostPhotos/' + hpKey(id)]: null, ['hostPhotos/' + hpKey(id + '#p')]: null }); await saveAssign();
       });
     }
   });
@@ -1790,9 +1881,9 @@ function bindAdmin() {
       <div class="row-gap" style="margin-top:14px"><button class="btn danger" id="resetYes" disabled>START A NEW GAME</button><button class="btn ghost" data-close>CANCEL</button></div>`);
     const inp = $('#resetConfirm'), yes = $('#resetYes');
     inp.focus(); inp.oninput = () => { yes.disabled = inp.value.trim().toUpperCase() !== 'RESET'; };
-    yes.onclick = async () => { yes.disabled = true; yes.textContent = 'WIPING…'; await backend.set('live', freshLive()); await backend.set('site/recap', null); log('HARD RESET: new game started'); toast('SYSTEM RESET', 'Ready for a new game.', 'ok'); closeModal(); };
+    yes.onclick = async () => { yes.disabled = true; yes.textContent = 'WIPING…'; await backend.set('live', Object.assign(freshLive(), RAW.live && RAW.live.photos ? { photos: RAW.live.photos } : {})); await backend.set('site/recap', null); log('HARD RESET: new game started'); toast('SYSTEM RESET', 'Ready for a new game.', 'ok'); closeModal(); };
   });
-  $('#emRsvps').onclick = () => confirmModal('Delete every RSVP?', 'All RSVPs and all role assignments are permanently removed.', 'DELETE ALL', async () => { await backend.update({ rsvps: null, assign: null }); log('All RSVPs deleted'); });
+  $('#emRsvps').onclick = () => confirmModal('Delete every RSVP?', 'All RSVPs and all role assignments are permanently removed.', 'DELETE ALL', async () => { await backend.update({ rsvps: null, assign: null, invites: null, inviteStatus: null, hostPhotos: null }); log('All RSVPs deleted'); });
 }
 const linkUrl = k => ({ invite: siteBase(), db: siteBase() + 'database.html', display: siteBase() + 'display.html' })[k];
 function roleMessage(name, c, backups) {
@@ -1804,6 +1895,82 @@ function reminderMessage() {
   const P = party();
   return `You're invited to ${P.title || 'The Last Toast'}, and it's almost here!\n\n${[P.date, P.time].filter(Boolean).join(' · ')}\n${[P.venue, P.address].filter(Boolean).join(', ')}\n${P.dress ? 'Dress: ' + P.dress + '\n' : ''}\nBefore you come:\n• Log in at ${siteBase()}database.html with your code word and read your dossier (My File) and your Brief.\n• Plan your costume. The costume idea in your role email is only a suggestion.\n• Charge your phone. You'll use it all night.\n\nArrive on time: the story starts the moment the doors open.\n\n${[P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ')}`;
 }
+
+/* ---------------- host: personal role invitations ----------------
+   Each assigned guest gets a link (role.html#<id>.<key>). The key exists only in the link and in the host's
+   locked assignments, so only that guest can open their character and code word. */
+const hostSign = () => String(party().host || 'Your hosts').replace(/^RAs?\s+/i, '');
+const effortOf = c => c.tier === 'ext' ? 'light' : c.mustCast ? 'big' : 'medium';
+const hostDirOf = id => (HOST.directory || []).find(d => d.id === id) || {};
+const guestName = key => { const [rid, plus] = key.split('#'), r = S.rsvps[rid] || {}; return ((plus ? r.plusOneName || (r.name ? r.name + "'s guest" : '') : r.name) || '').trim(); };
+const firstName = n => String(n || '').trim().split(/\s+/)[0] || 'friend';
+const inviteLink = inv => siteBase() + 'role.html#' + inv.id + '.' + inv.s;
+async function ensureInvite(key) {
+  const cid = HOST.assign.map[key]; if (!cid) return null;
+  HOST.assign.invites = HOST.assign.invites || {};
+  let inv = HOST.assign.invites[key];
+  if (inv && inv.cid === cid && S.invites[inv.id]) return inv;
+  if (inv) await revokeInvite(key, true);
+  const c = HOST.chars[cid], d = hostDirOf(cid), raw = crypto.getRandomValues(new Uint8Array(32)), s = b64url(raw);
+  const payload = { v: 1, g: firstName(guestName(key)), cid, n: c.name, t: c.occ || d.title || '', b: d.blurb || '', e: effortOf(c), code: c.code, from: hostSign() };
+  const id = uid('i'), blob = await encryptJSON(await importInviteKey(s), payload);
+  await backend.set('invites/' + id, Object.assign(blob, { ts: backend.TS() }));
+  inv = { id, s, cid, ts: Date.now() };
+  HOST.assign.invites[key] = inv; await saveAssign();
+  return inv;
+}
+async function revokeInvite(key, quiet) {
+  const inv = (HOST.assign.invites || {})[key]; if (!inv) return;
+  await backend.update({ ['invites/' + inv.id]: null, ['inviteStatus/' + inv.id]: null });
+  delete HOST.assign.invites[key]; if (!quiet) await saveAssign();
+}
+function inviteMessage(key, link) {
+  const P = party(), name = guestName(key), plus = key.includes('#');
+  return `${plus ? "(This is your plus-one's personal invitation. Please forward it to them privately.)\n\n" : ''}Hi ${firstName(name)}!\n\nThank you so much for joining us for ${(P.title || 'The Last Toast').toUpperCase()}${P.date ? ' on ' + P.date : ''}.\n\nYour role is ready, and it's sealed just for you. Open your private invitation to find out who you'll be:\n${link}\n\nYou can accept the role there or ask for a different one. Once you accept, you'll get your secret code word and can step into the Kane Oil Database to read your dossier and brief.\n\nThis link is only for you, so please don't share it.\n\n${hostSign()}`;
+}
+/* status of one guest spot (key = rsvpId, or rsvpId#p for a plus-one) */
+function keyStatus(key) {
+  const cid = HOST.assign.map[key] || null, inv = (HOST.assign.invites || {})[key] || null, st = inv && inv.cid === cid ? (S.inviteStatus[inv.id] || {}) : {};
+  return { cid, inv, sent: HOST.assign.sent[key] || st.opened || 0, opened: st.opened || 0, resp: st.resp || '', note: st.note || '', at: st.at || 0, inAt: cid ? S.checkins[cid] || 0 : 0, photo: cid ? !!S.photos[cid] : false };
+}
+const whenStr = ts => { if (!ts) return ''; const d = new Date(ts); return d.toDateString() === new Date().toDateString() ? fmtTime(ts) : d.toLocaleDateString([], { month: 'short', day: 'numeric' }); };
+function statusPills(k) {
+  const pill = (cls, txt) => `<span class="pill ${cls}">${txt}</span>`;
+  if (!k.cid) return pill('gold', 'NO ROLE YET');
+  return [
+    k.sent ? pill('green', 'INVITE SENT ' + whenStr(k.sent)) : pill('gold', 'INVITE NOT SENT'),
+    k.opened ? pill('green', 'OPENED ' + whenStr(k.opened)) : k.sent ? pill('', 'NOT OPENED YET') : '',
+    k.resp === 'accepted' ? pill('green', '✓ ACCEPTED') : k.resp === 'declined' ? pill('red', 'DECLINED') : k.resp === 'swap' ? pill('gold', 'WANTS A DIFFERENT ROLE') : k.opened ? pill('', 'NO REPLY YET') : '',
+    k.inAt ? pill('green', 'CHECKED IN ' + fmtTime(k.inAt)) : ''
+  ].join('');
+}
+const STATUS_FILTERS = [['all', 'Guest spots'], ['needs', 'Need a role'], ['unsent', 'Invite not sent'], ['unopened', 'Not opened'], ['waiting', 'No reply'], ['accepted', 'Accepted'], ['declined', 'Declined'], ['swap', 'Want a new role'], ['in', 'Checked in'], ['nophoto', 'No photo']];
+function keyMatches(k, f) {
+  switch (f) {
+    case 'needs': return !k.cid;
+    case 'unsent': return !!k.cid && !k.sent;
+    case 'unopened': return !!k.cid && !!k.sent && !k.opened;
+    case 'waiting': return !!k.opened && !k.resp;
+    case 'accepted': case 'declined': case 'swap': return k.resp === f;
+    case 'in': return !!k.inAt;
+    case 'nophoto': return !!k.cid && !k.photo;
+    default: return true;
+  }
+}
+/* photos the host adds for a guest: locked with the host's key, outside the game state, so a reset or rebuild keeps them */
+const hpKey = key => key.replace('#', '-');
+async function syncHostPhotos() {
+  if (!HOST) return false;
+  const cache = HOST.hostPhotoCache = HOST.hostPhotoCache || {}; let changed = false;
+  for (const [k, blob] of Object.entries(S.hostPhotos)) {
+    if (!blob || !blob.iv || (cache[k] && cache[k].iv === blob.iv)) continue;
+    try { const d = await decryptJSON(HOST.assignKey, blob); cache[k] = { iv: blob.iv, p: /^data:image\//.test(d.p || '') ? d.p : null, ts: d.ts || 0 }; } catch (e) { cache[k] = { iv: blob.iv, p: null, ts: 0 }; }
+    changed = true;
+  }
+  for (const k of Object.keys(cache)) if (!S.hostPhotos[k]) { delete cache[k]; changed = true; }
+  return changed;
+}
+const hostPhotoFor = key => { const c = HOST && (HOST.hostPhotoCache || {})[hpKey(key)]; return c && c.p ? c : null; };
 
 /* ---------------- host: render ---------------- */
 function guestFor() {
@@ -1822,8 +1989,11 @@ function renderAdmin(force) {
     ? `<div class="panel" style="border-color:rgba(212,162,76,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> only syncs between tabs on this device. Add your Firebase config to <span class="mono">config.js</span> for the real game.</p></div>` : '');
   const L = HOST.list, who = guestFor();
   const badge = (k, n) => { const b = $('#badge-' + k); if (b) { b.textContent = n; b.classList.toggle('hidden', !n); } };
-  badge('guests', L.filter(c => c.mustCast && !who[c.id]).length || Object.entries(S.rsvps).filter(([, r]) => r && r.name && r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]).filter(key => !HOST.assign.map[key]).length);
-  badge('players', Object.keys(S.revoked).length);
+  const spots = Object.entries(S.rsvps).filter(([, r]) => r && r.name && r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]);
+  badge('players', (L.filter(c => c.mustCast && !who[c.id]).length || spots.filter(key => !HOST.assign.map[key]).length) + spots.filter(key => keyStatus(key).resp === 'swap').length);
+  badge('characters', Object.keys(S.revoked).length);
+  const cast = Object.values(HOST.assign.map);
+  animateNum($('#n-in'), cast.filter(cid => S.checkins[cid]).length); animateNum($('#n-cast'), cast.length);
   Object.keys(FLAGS).forEach(f => {
     $$(`[data-flag="${f}"]`).forEach(t => t.setAttribute('aria-pressed', !!S.flags[f]));
     const st = $('#st-' + f); if (st) { const on = !!S.flags[f]; st.textContent = on ? 'ON' : 'OFF'; st.className = 'state' + (on ? ' on' + (['killer', 'killerKnows', 'sealed', 'lockdown'].includes(f) ? ' r' : '') : ''); }
@@ -1837,12 +2007,14 @@ function renderCast(who) {
   const showCodes = store.get('showCodes') !== '0', dd = dead(), f = ui.castFilter;
   const list = HOST.list.filter(c => !f || (c.name + ' ' + (c.occ || '') + ' ' + (who[c.id] || '') + ' ' + c.code).toLowerCase().includes(f));
   $('#castSub').textContent = `${HOST.list.filter(c => isOnline(c.id)).length} ONLINE · ${Object.keys(S.revoked).length} REVOKED`;
-  const sig = JSON.stringify([list.map(c => { const p = playerRec(c.id); return [c.id, isOnline(c.id), p && p.unlocked, p && p.vote && p.vote.suspect, c.id in dd, !!S.revoked[c.id], (c.memories || []).filter(m => memoryDue(S, m.when)).length, c.id in S.deaths, S.kill && S.kill.victim]; }), who, showCodes]);
+  const keyOf = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) keyOf[cid] = key;
+  const invPill = id => { if (!keyOf[id]) return ''; const k = keyStatus(keyOf[id]); return k.resp === 'accepted' ? '<span class="pill green">ROLE ACCEPTED</span>' : k.resp === 'declined' ? '<span class="pill red">ROLE DECLINED</span>' : k.resp === 'swap' ? '<span class="pill gold">WANTS ANOTHER ROLE</span>' : k.sent ? '<span class="pill">INVITE SENT</span>' : '<span class="pill gold">INVITE NOT SENT</span>'; };
+  const sig = JSON.stringify([list.map(c => { const p = playerRec(c.id); return [c.id, isOnline(c.id), p && p.unlocked, p && p.vote && p.vote.suspect, c.id in dd, !!S.revoked[c.id], (c.memories || []).filter(m => memoryDue(S, m.when)).length, c.id in S.deaths, S.kill && S.kill.victim, S.checkins[c.id], keyOf[c.id] && JSON.stringify(keyStatus(keyOf[c.id]))]; }), who, showCodes]);
   patch($('#castList'), sig, list.map(c => {
     const p = playerRec(c.id), on = isOnline(c.id), isD = c.id in dd, mem = c.memories || [], due = mem.filter(m => memoryDue(S, m.when)).length;
     return `<div class="crow ${isD ? 'dead' : ''} ${S.revoked[c.id] ? 'revoked' : ''}">
       <div class="l1"><span class="dot ${on ? 'on' : ''}"></span><span class="cn">${esc(c.name)}</span><span class="occ">${esc(c.occ || '')}</span>
-        ${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${c.inspector ? '<span class="pill" style="border-color:var(--cyan);color:var(--cyan)">INSPECTOR</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${isD ? '<span class="pill red">DECEASED</span>' : ''}${S.revoked[c.id] ? '<span class="pill red">REVOKED</span>' : ''}<span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'OPENED' : 'NOT OPENED'}</span></div>
+        ${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${c.inspector ? '<span class="pill" style="border-color:var(--cyan);color:var(--cyan)">INSPECTOR</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${isD ? '<span class="pill red">DECEASED</span>' : ''}${S.revoked[c.id] ? '<span class="pill red">REVOKED</span>' : ''}<span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'DOSSIER OPENED' : 'DOSSIER NOT OPENED'}</span>${invPill(c.id)}${S.checkins[c.id] ? `<span class="pill green">CHECKED IN ${esc(fmtTime(S.checkins[c.id]))}</span>` : ''}</div>
       <div class="l2"><span>Code: <span class="code">${showCodes ? esc(c.code) : '••••••'}</span></span><span>Player: <b style="color:var(--cyan)">${esc(who[c.id] || 'unassigned')}</b></span>${mem.length ? `<span>Memories: ${due}/${mem.length}</span>` : ''}${p && p.vote ? `<span>Accuses: <b style="color:var(--gold2)">${esc(rname(p.vote.suspect))}</b></span>` : ''}</div>
       <div class="acts">${castActions(c)}</div></div>`;
   }).join('') || `<div class="empty">NO MATCHES</div>`);
@@ -1851,6 +2023,10 @@ function renderGuests(who) {
   const rs = Object.entries(S.rsvps).filter(([, r]) => r && r.name).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0));
   const yes = rs.filter(([, r]) => r.attending === 'yes'), maybe = rs.filter(([, r]) => r.attending === 'maybe'), no = rs.filter(([, r]) => r.attending === 'no');
   $('#rsvpSub').textContent = `${yes.length + yes.filter(([, r]) => r.plusOne).length} COMING · ${maybe.length} MAYBE · ${no.length} NO`;
+  const spotsOf = ([id, r]) => r.attending === 'no' ? [] : r.plusOne ? [id, id + '#p'] : [id];
+  const allSpots = rs.flatMap(spotsOf), K = Object.fromEntries(allSpots.map(k => [k, keyStatus(k)]));
+  const f = ui.guestStatus || 'all', q = (ui.guestQ || '').toLowerCase();
+  patch($('#pstats'), JSON.stringify([K, f]), STATUS_FILTERS.map(([k, l]) => `<button data-gstat="${k}" class="${f === k ? 'on' : ''}"><b>${k === 'all' ? allSpots.length : allSpots.filter(s => keyMatches(K[s], k)).length}</b><span>${l}</span></button>`).join(''));
   const taken = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) taken[cid] = key;
   const inChains = new Set(Object.values(HOST.assign.chain || {}).flat());
   const mustOpen = HOST.list.filter(c => c.mustCast && !who[c.id]), openCore = HOST.list.filter(c => c.tier !== 'ext' && !c.mustCast && !who[c.id]);
@@ -1868,27 +2044,40 @@ function renderGuests(who) {
     return `<div class="backups"><span>If they die, they become:</span>${chain.map((id, i) => { const used = Object.values(S.succession).some(s => s && s.to === id), gone = id in dead(); return `<span class="chip2 ${used ? 'used' : ''} ${gone ? 'gone' : ''}">${i + 1}. ${esc(rname(id))}<button data-rmbackup="${esc(key)}|${i}" aria-label="Remove">×</button></span>`; }).join('') || '<span style="color:var(--dim)">no backup</span>'}
       <select class="input sm" data-addbackup="${esc(key)}" style="width:auto;min-width:150px"><option value="">+ add backup role…</option>${free.map(c => `<option value="${esc(c.id)}">${esc(c.name)}${inChains.has(c.id) ? ' (backup for someone else)' : ''}</option>`).join('')}</select></div>`;
   };
-  const prefs = { big: 'Big dramatic role', medium: 'Medium role', small: 'Small, low-pressure role', surprise: 'Surprise me' };
+  const prefs = { big: 'Asked for a big dramatic role', medium: 'Asked for a medium role', small: 'Asked for a small, low-pressure role', surprise: 'Surprise me' };
   const card = ([id, r]) => {
     const st = r.attending === 'yes' ? ['green', 'COMING'] : r.attending === 'maybe' ? ['gold', 'MAYBE'] : ['', "CAN'T MAKE IT"];
     const sec = HOST.rsvpSec[id], d = (sec && sec.d) || {};
-    const photoLine = (key, ph, who) => {
+    const photoLine = (key, ph, whose) => {
       if (!ph) return '';
-      const off = !!(HOST.assign.nophoto || {})[key], cid = HOST.assign.map[key], cur = cid && S.photos[cid], own = cur && /^self:/.test(cur.src || '');
-      const st = off ? `${who} photo is not used on a profile` : !cid ? `${who} photo will show on their profile once you assign a role` : own ? `Showing the photo they set themselves on <b style="color:var(--gold2)">${esc(rname(cid))}</b>` : `${who} photo shows on <b style="color:var(--gold2)">${esc(rname(cid))}</b>'s profile`;
-      return `<div class="contact" style="align-items:center"><img class="gphoto sm" src="${ph}" alt=""><span style="color:var(--muted)">${st}</span><button class="btn sm ghost" data-nophoto="${esc(key)}">${off ? 'USE PHOTO' : "DON'T USE PHOTO"}</button></div>`;
+      const off = !!(HOST.assign.nophoto || {})[key], cid = HOST.assign.map[key], cur = cid && S.photos[cid], src = cur ? String(cur.src || '') : '';
+      const txt = off ? `${whose} RSVP photo is not used on a profile` : !cid ? `${whose} RSVP photo will show on their profile once you assign a role` : /^self:/.test(src) ? `Showing the photo they set themselves on <b style="color:var(--gold2)">${esc(rname(cid))}</b>` : /^host:/.test(src) ? `Showing the photo you added on <b style="color:var(--gold2)">${esc(rname(cid))}</b>` : `${whose} RSVP photo shows on <b style="color:var(--gold2)">${esc(rname(cid))}</b>'s profile`;
+      return `<div class="contact" style="align-items:center"><img class="gphoto sm" src="${ph}" alt=""><span style="color:var(--muted)">${txt}</span><button class="btn sm ghost" data-nophoto="${esc(key)}">${off ? 'USE PHOTOS' : "DON'T USE PHOTOS"}</button></div>`;
     };
     const meta = [r.plusOne ? `Plus-one: ${esc(r.plusOneName || 'yes')}` : '', r.pref ? esc(prefs[r.pref] || r.pref) : '', r.diet ? 'Diet: ' + esc(r.diet) : '', (d.note || r.note) ? '“' + esc(d.note || r.note) + '”' : ''].filter(Boolean).join(' · ');
-    const linked = HOST.assign.map[id];
     const contact = r.sec ? (sec && sec.err ? `<div class="contact" style="color:var(--red2)">Locked details couldn't be opened (sent with a different key).</div>`
       : `<div class="contact">${d.email ? `<a href="mailto:${esc(d.email)}">✉ ${esc(d.email)}</a>` : ''}${d.phone ? `<a href="tel:${esc(d.phone.replace(/[^\d+]/g, ''))}">☏ ${esc(d.phone)}</a>` : ''}</div>`
       + photoLine(id, d.photo, 'Their')) : '';
-    const assignRow = (key, name) => { const s = HOST.assign.sent[key]; return `<div class="assign">${select(key)}<button class="btn sm" data-rolemsg="${esc(key)}" data-name="${esc(name)}">COPY ROLE TEXT</button>${d.email && HOST.assign.map[key] ? `<button class="btn sm" data-emailrole="${esc(key)}" data-name="${esc(name)}" data-email="${esc(d.email)}">EMAIL ROLE</button>` : ''}<button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><span class="who">${esc(name)} ${HOST.assign.map[key] ? (s ? `<span class="pill green">ROLE SENT ${fmtTime(s)}</span>` : '<span class="pill gold">NOT SENT YET</span>') : ''}</span>${backupsRow(key)}</div>`; };
+    const assignRow = (key, name) => {
+      const k = K[key], hp = hostPhotoFor(key), first = esc(firstName(name));
+      const acts = k.cid ? `<button class="btn sm" data-invemail="${esc(key)}" ${d.email ? `data-email="${esc(d.email)}"` : 'disabled title="No email on file"'}>EMAIL INVITE</button><button class="btn sm" data-invmsg="${esc(key)}">COPY INVITE</button><button class="btn sm ghost" data-invlink="${esc(key)}">LINK</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><button class="btn sm ghost" data-checkin="${esc(key)}">${k.inAt ? 'UNDO CHECK-IN' : 'CHECK IN'}</button>` : '';
+      return `<div class="assign">${select(key)}<span class="who">${esc(name)}</span>${acts ? `<div class="row-gap" style="grid-column:1 / -1">${acts}</div>` : ''}
+        <div class="invsteps">${statusPills(k)}</div>${k.note ? `<div class="invnote">${k.resp === 'swap' ? 'Wants instead: ' : 'Note: '}“${esc(k.note)}”</div>` : ''}
+        <div class="hp">${hp ? `<img class="gphoto sm" src="${hp.p}" alt=""><span>Photo you added for ${first}</span><button class="btn sm ghost" data-hostphoto="${esc(key)}">REPLACE</button><button class="btn sm ghost" data-rmhostphoto="${esc(key)}">REMOVE</button>` : `<button class="btn sm ghost" data-hostphoto="${esc(key)}">+ ADD A PHOTO FOR ${first.toUpperCase()}</button>`}</div>
+        ${backupsRow(key)}</div>`;
+    };
     return `<div class="guest"><div class="top">${d.photo ? `<img class="gphoto" src="${d.photo}" alt="">` : ''}<span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
       ${contact}${meta ? `<div class="meta">${meta}</div>` : ''}
-      ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") + (r.sec ? photoLine(id + '#p', d.plusPhoto, 'Plus-one\'s') : '') : '') : ''}</div>`;
+      ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") + (r.sec ? photoLine(id + '#p', d.plusPhoto, "Plus-one's") : '') : '') : ''}</div>`;
   };
-  patch($('#rsvpList'), JSON.stringify([rs.map(([id, r]) => [id, r.ts, r.name, r.attending, r.plusOne, r.plusOneName, r.pref, r.note, r.sec && r.sec.iv]), Object.entries(HOST.rsvpSec).map(([k, v]) => k + v.iv + !!v.d), Object.entries(S.photos).map(([k, v]) => k + (v && v.src)), HOST.assign, Object.keys(S.succession), Object.keys(dead())]), rs.length ? rs.map(card).join('') : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
+  const shown = rs.filter(entry => {
+    const [id, r] = entry, spots = spotsOf(entry);
+    if (f !== 'all' && !spots.some(s => keyMatches(K[s], f))) return false;
+    if (!q) return true;
+    return [r.name, r.plusOneName, ...spots.map(s => K[s].cid ? rname(K[s].cid) : '')].join(' ').toLowerCase().includes(q);
+  });
+  patch($('#rsvpList'), JSON.stringify([rs.map(([id, r]) => [id, r.ts, r.name, r.attending, r.plusOne, r.plusOneName, r.pref, r.note, r.sec && r.sec.iv]), Object.entries(HOST.rsvpSec).map(([k, v]) => k + v.iv + !!v.d), Object.entries(S.photos).map(([k, v]) => k + (v && v.src)), Object.entries(HOST.hostPhotoCache || {}).map(([k, v]) => k + v.iv), HOST.assign, K, f, q, Object.keys(S.succession), Object.keys(dead())]),
+    shown.length ? shown.map(card).join('') : rs.length ? `<div class="empty">NOBODY MATCHES THIS FILTER.</div>` : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
 }
 function renderTools() {
   const ps = projectorState(S);

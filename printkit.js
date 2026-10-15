@@ -193,6 +193,22 @@ tr{break-inside:avoid}
 .nb .acc{border:2pt solid var(--ink);border-radius:6pt;padding:8pt 12pt;margin-top:8pt;font:10pt 'Segoe UI',Arial,sans-serif}
 .nb .al{display:flex;gap:8pt;align-items:flex-end;height:22pt;color:var(--muted)}
 .nb .al i{flex:1;border-bottom:1px solid #9aa0ab;height:16pt}
+/* award certificates: one landscape page each */
+@page cert{size:Letter landscape;margin:.4in;@bottom-left{content:none}@bottom-right{content:none}}
+.cert{page:cert;break-after:page;height:7.6in;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:.55in .9in;background:#fffdf7;border:3pt solid #94701f}
+.cert::before{content:"";position:absolute;inset:9pt;border:1pt solid #c9a75c;pointer-events:none}
+.cert .lg{width:.75in;height:.75in;margin-bottom:6pt}
+.cert .k{font:600 10pt 'Segoe UI',Arial,sans-serif;letter-spacing:.34em;color:#94701f;text-transform:uppercase}
+.cert .ttl{font:italic 600 20pt 'Cormorant Garamond',Georgia,serif;color:#5b6170;margin-top:10pt}
+.cert .award{font:700 50pt/1.05 'Cormorant Garamond',Georgia,serif;color:#154236;margin:2pt 0 10pt}
+.cert .to{font:italic 16pt 'Cormorant Garamond',Georgia,serif;color:#3a3f4b}
+.cert .nm{font:700 34pt 'Cormorant Garamond',Georgia,serif;color:#1b1d22;min-width:5.2in;border-bottom:1pt solid #94701f;padding:0 12pt 2pt;margin:6pt 0 12pt;min-height:46pt}
+.cert .why{font:italic 15pt/1.45 'Cormorant Garamond',Georgia,serif;color:#3a3f4b;max-width:6.6in}
+.cert .sigs{display:flex;gap:1.1in;margin-top:26pt;align-items:flex-end}
+.cert .sig{width:2.1in;border-top:1pt solid #1b1d22;padding-top:4pt;font:600 9pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#5b6170;text-transform:uppercase}
+.cert .seal{position:absolute;right:.75in;bottom:.62in;width:1.05in;height:1.05in;border-radius:50%;background:radial-gradient(circle at 38% 34%,#d9b866,#94701f 72%);display:grid;place-items:center;box-shadow:0 0 0 3pt #fffdf7,0 0 0 4pt #c9a75c}
+.cert .seal svg{width:58%;height:58%}
+.cert .dt{position:absolute;left:.75in;bottom:.68in;font:italic 12pt 'Cormorant Garamond',Georgia,serif;color:#5b6170;text-align:left}
 .err{background:#fde8e8;border:1px solid var(--red);color:var(--red);padding:12pt;border-radius:6pt;font:11pt 'Segoe UI',Arial,sans-serif}
 `;
 
@@ -497,15 +513,33 @@ tr{break-inside:avoid}
       </section>`;
     };
 
-    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast, notebook };
+    /* ---------------- AWARD CERTIFICATES ---------------- */
+    const awardsDoc = () => {
+      const aw = opts.awards || {}, hosts = String(P.host || '').replace(/^RAs?\s+/i, '').split(/\s*&\s*|\s*,\s*|\s+and\s+/i).filter(Boolean);
+      const list = [
+        ['best', 'Best Performance', 'For a performance so convincing that half the room still isn’t sure it was acting.'],
+        ['dressed', 'Best Dressed', 'For arriving dressed to kill, and looking the part all night long.'],
+        ['detective', 'Best Detective', 'For the sharpest eyes in the house, and for seeing through every alibi.'],
+        ['liar', 'Best Liar', 'For lying beautifully, convincingly and entirely without remorse.'],
+        ['', '', 'For distinguished service to Kane Oil &amp; Energy on the night of the Annual Gala.']
+      ];
+      const seal = `<svg viewBox="0 0 96 96" fill="none" stroke="#fffdf7" stroke-linecap="round"><circle cx="48" cy="48" r="42" stroke-width="2.5"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="5"/></svg>`;
+      return list.map(([k, title, why]) => `<section class="cert"><div class="lg">${LOGOSM()}</div><div class="k">Kane Oil &amp; Energy · ${esc(P.title || 'The Last Toast')}</div>
+        <div class="ttl">Certificate of Distinction</div>${title ? `<div class="award">${esc(title)}</div>` : '<div class="award" style="min-width:4.6in;height:52pt;border-bottom:1pt solid #c9a75c"></div>'}
+        <div class="to">is hereby presented to</div><div class="nm">${esc(aw[k] || '')}</div><div class="why">${why}</div>
+        <div class="sigs">${(hosts.length ? hosts : ['Host', 'Host']).slice(0, 2).map(h => `<div class="sig">${esc(h)} · Host</div>`).join('')}</div>
+        <div class="dt">${esc(P.date || '')}</div><div class="seal">${seal}</div></section>`).join('');
+    };
+
+    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {
     const d = build(S, P, opts);
-    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'toast', 'notebook', 'dossiers', 'invite'];
+    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'toast', 'notebook', 'awards', 'dossiers', 'invite'];
     const html = which === 'all' ? order.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + d[k]()).join('') : (d[which] || d.host)();
     const label = LABELS[which] || LABELS.host;
     const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST · ${label}";font:7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;

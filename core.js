@@ -46,6 +46,11 @@ const _te = new TextEncoder(), _td = new TextDecoder();
 const normCode = s => String(s || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
 function b64(u8) { u8 = u8 instanceof Uint8Array ? u8 : new Uint8Array(u8); let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
 function unb64(s) { return Uint8Array.from(atob(s), c => c.charCodeAt(0)); }
+/* URL-safe base64, for secrets carried in a link's #fragment (never sent to any server) */
+const b64url = u8 => b64(u8).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64url = s => unb64(String(s).replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((String(s).length + 3) % 4));
+/** A personal role invitation is locked with a random key that only exists inside the guest's link. */
+const importInviteKey = s => crypto.subtle.importKey('raw', unb64url(s), 'AES-GCM', false, ['encrypt', 'decrypt']);
 const hex = u8 => Array.from(u8, b => b.toString(16).padStart(2, '0')).join('');
 async function deriveFromCode(code, saltB64, iter) {
   const base = await crypto.subtle.importKey('raw', _te.encode(normCode(code)), 'PBKDF2', false, ['deriveBits']);
@@ -198,9 +203,13 @@ function normRoot(r) {
     found: s.found || {},           // evidenceId -> {by, ts}  (scanned, maybe not revealed yet)
     delivered: s.delivered || {},   // evidenceId -> ts   (official report sent to the Inspector)
     photos: s.photos || {},         // charId -> {iv,ct,src,b}  guest's RSVP photo, locked with the Who's Who key
+    checkins: s.checkins || {},     // charId -> ts  the player tapped "I've arrived" (or the host checked them in)
     log: s.log || {},               // activity log
     rsvps: r.rsvps || {},
     assign: r.assign || null,       // encrypted role assignments (host only)
+    invites: r.invites || {},       // inviteId -> {iv,ct,ts}  personal role invitations, locked with the key in each guest's link
+    inviteStatus: r.inviteStatus || {}, // inviteId -> {opened, last, resp:'accepted'|'declined'|'swap', note, at}
+    hostPhotos: r.hostPhotos || {}, // guestKey -> {iv,ct}  photos the host added for a guest (host-locked)
     site: r.site || {},             // live edits to the public pages
     ctl: r.ctl || {}
   };

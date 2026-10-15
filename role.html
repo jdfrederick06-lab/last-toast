@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06110e">
+<meta name="robots" content="noindex">
+<title>Your Invitation · The Last Toast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;1,400;1,500&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="theme.css?v=' + Date.now() + '">');</script>
+<style>
+/* A personal role invitation: a sealed letter in candlelight. This page only. */
+:root{
+  --gold:#d8b878;--gold2:#f1dfb4;--gold-grad:linear-gradient(135deg,#fff3d6 0%,#e8cf9a 50%,#b8924a 100%);
+  --text:#f3ead6;--muted:#bdb49e;--dim:#7f8c82;--ink:#1d2a25;--ink2:#4f5249;--emerald:#154236;--paper:#fbf7ec;
+  --red:#b8404c;
+  --sans:'Cormorant Garamond',Georgia,serif;--serif:'Playfair Display',Georgia,serif;--caps:'Josefin Sans',system-ui,sans-serif;
+}
+html,body{background:#06110e;min-height:100%}
+body{margin:0;background:radial-gradient(120% 70% at 50% -8%,#1f4d40 0%,#0e2821 42%,#06110e 100%) fixed;color:var(--text);font-family:var(--sans);font-size:18px;overflow-x:hidden}
+body::before{width:90vmin;height:90vmin;left:50%;top:-30vmin;margin-left:-45vmin;background:radial-gradient(circle,rgba(255,214,150,.18),rgba(232,207,154,.05) 40%,transparent 66%)}
+body::after{display:none}
+#embers{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#embers i{position:absolute;bottom:-12px;border-radius:50%;background:radial-gradient(circle,#ffe7b3,rgba(232,190,110,0) 70%);opacity:0;animation:ember linear infinite}
+@keyframes ember{0%{opacity:0;transform:translate(0,0)}12%{opacity:.9}70%{opacity:.5}100%{opacity:0;transform:translate(var(--dx),-105vh)}}
+#stage{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:28px 16px 40px;box-sizing:border-box}
+.caps{font-family:var(--caps);font-weight:300;letter-spacing:.32em;text-transform:uppercase}
+.fade{animation:fadeIn .9s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.msg{max-width:440px;text-align:center}
+.msg h1{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(30px,8vw,42px);color:var(--gold2);margin:14px 0 8px}
+.msg p{color:var(--muted);font-style:italic;font-size:19px;line-height:1.5;margin:0}
+.spin{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(232,207,154,.2);border-top-color:var(--gold);margin:0 auto;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- the envelope ---------- */
+.env-wrap{text-align:center;width:100%;max-width:440px}
+.env-to{font-family:var(--serif);font-style:italic;font-size:clamp(22px,6vw,28px);color:var(--gold2);margin-bottom:6px}
+.env-sub{margin-bottom:26px;font-size:11px;color:var(--gold)}
+.envelope{position:relative;width:min(88vw,400px);aspect-ratio:7/5;margin:0 auto;perspective:1200px;cursor:pointer;border:0;padding:0;background:none}
+.envelope .body{position:absolute;inset:0;border-radius:6px;background:linear-gradient(160deg,#1c4a3d,#0d2620 70%);box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 0 0 1px rgba(232,207,154,.35)}
+.envelope .body::after{content:"";position:absolute;inset:8px;border:1px solid rgba(232,207,154,.25);border-radius:3px}
+.envelope .pocket{position:absolute;inset:0;border-radius:6px;background:linear-gradient(165deg,#1d4b3e,#0e2822 75%);box-shadow:inset 0 0 0 1px rgba(232,207,154,.35);z-index:3;overflow:hidden}
+.envelope .flap{position:absolute;left:0;right:0;top:0;height:62%;transform-origin:top;z-index:4;transition:transform 1s cubic-bezier(.6,0,.3,1),z-index 0s .5s}
+.envelope .flap::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#235747,#123a30);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.envelope .flap::after{content:"";position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(180deg,rgba(232,207,154,.35),transparent 30%);opacity:.6}
+.envelope .letter{position:absolute;left:7%;right:7%;top:10%;bottom:8%;background:var(--paper);border-radius:3px;z-index:2;transition:transform 1s cubic-bezier(.3,.7,.2,1) .9s;box-shadow:0 6px 18px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.envelope .letter i{font-family:var(--serif);color:var(--emerald);font-size:clamp(18px,5vw,22px)}
+.seal{position:absolute;left:50%;top:62%;width:clamp(64px,18vw,82px);aspect-ratio:1;margin:-41px 0 0 -41px;margin:calc(clamp(64px,18vw,82px) / -2) 0 0 calc(clamp(64px,18vw,82px) / -2);z-index:5;transition:opacity .5s ease .2s}
+.seal .half{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 38% 34%,#c9505c,#6e1420 72%);box-shadow:0 8px 20px rgba(60,5,12,.55),inset 0 -4px 10px rgba(0,0,0,.35);transition:transform .7s cubic-bezier(.5,0,.4,1)}
+.seal .half.l{clip-path:polygon(0 0,52% 0,46% 38%,55% 60%,47% 100%,0 100%)}
+.seal .half.r{clip-path:polygon(52% 0,100% 0,100% 100%,47% 100%,55% 60%,46% 38%)}
+.seal svg{position:absolute;inset:22%;width:56%;height:56%}
+.seal::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(241,223,180,.45);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(.9);opacity:0}50%{transform:scale(1.06);opacity:1}}
+.env-hint{margin-top:28px;font-style:italic;color:var(--muted);font-size:18px;animation:fadeIn 1s 1.2s both}
+.envelope.open .seal::after{display:none}
+.env-wrap.opened .env-to,.env-wrap.opened .env-sub,.env-wrap.opened .env-hint{opacity:0;transition:opacity .4s ease}
+.envelope.open .seal .half.l{transform:translate(-26px,14px) rotate(-28deg)}
+.envelope.open .seal .half.r{transform:translate(26px,18px) rotate(24deg)}
+.envelope.open .seal{opacity:0}
+.envelope.open .flap{transform:rotateX(180deg);z-index:1}
+.envelope.open .letter{transform:translateY(-58%)}
+
+/* ---------- the letter ---------- */
+.paper{position:relative;width:100%;max-width:580px;background:var(--paper);color:var(--ink);border-radius:6px;padding:46px 34px 34px;box-sizing:border-box;box-shadow:0 30px 80px rgba(0,0,0,.5);text-align:center}
+.paper::before,.paper::after{content:"";position:absolute;pointer-events:none;border-radius:4px}
+.paper::before{inset:12px;border:1.5px solid #b8924a}
+.paper::after{inset:18px;border:1px solid rgba(184,146,74,.45)}
+@media(max-width:480px){.paper{padding:42px 30px 30px}}
+.paper .mono{display:block;margin:0 auto 14px;width:44px;height:44px}
+.paper .dear{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--emerald);margin:0 0 10px;text-align:left}
+.paper .thanks{text-align:left;font-size:19px;line-height:1.6;color:#2b302b;margin:0 0 6px}
+.paper .sign{text-align:right;font-family:var(--serif);font-style:italic;font-size:22px;color:var(--emerald);margin:10px 0 0}
+.paper .sign small{display:block;font-family:var(--sans);font-size:15px;color:var(--ink2);font-style:italic}
+.orn{display:flex;align-items:center;gap:10px;width:200px;margin:26px auto}
+.orn i{flex:1;height:1px;background:#c9ad73}.orn b{color:#8a6b2e;font-size:11px;font-weight:400}
+.paper .congrats{font-size:11.5px;color:#7d6128;margin-bottom:10px;letter-spacing:.34em}
+.cname{font-family:var(--serif);font-style:italic;font-size:clamp(34px,9vw,52px);line-height:1.08;color:var(--emerald);margin:4px 0 6px}
+.cname span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(8px);animation:letter .7s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes letter{to{opacity:1;filter:none;transform:none}}
+.ctitle{font-style:italic;font-size:19px;color:var(--ink2);margin-bottom:14px}
+.cblurb{font-size:19px;line-height:1.55;color:#2b302b;max-width:440px;margin:0 auto}
+.effort{display:flex;flex-direction:column;align-items:center;gap:6px;margin:22px auto 0;border:1px solid rgba(138,107,46,.4);border-radius:16px;padding:14px 18px;max-width:420px}
+.effort .lbl{font-size:11px;color:#7d6128;letter-spacing:.3em}
+.effort .pips{display:flex;gap:6px}
+.effort .pips i{width:28px;height:6px;border-radius:999px;background:rgba(138,107,46,.2)}
+.effort .pips i.on{background:linear-gradient(90deg,#b8924a,#e8cf9a)}
+.effort b{font-family:var(--serif);font-style:italic;font-weight:400;font-size:22px;color:var(--emerald)}
+.effort p{margin:0;font-size:17px;line-height:1.45;color:#2b302b}
+.effort small{font-size:15px;color:var(--ink2);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:26px}
+.btn-gold{font-family:var(--sans);font-style:italic;font-weight:500;font-size:21px;border:0;border-radius:999px;padding:14px 22px;background:var(--gold-grad);color:#1b140a;cursor:pointer;box-shadow:0 10px 26px rgba(184,146,74,.3),inset 0 1px 0 rgba(255,255,255,.55);text-decoration:none;display:block;text-align:center}
+.btn-gold:disabled{opacity:.45;cursor:not-allowed}
+.btn-line{font-family:var(--sans);font-style:italic;font-size:19px;border:1px solid rgba(21,66,54,.35);border-radius:999px;padding:12px 20px;background:transparent;color:var(--emerald);cursor:pointer}
+.btn-line:hover{background:rgba(21,66,54,.05)}
+.btn-text{font-family:var(--sans);font-style:italic;font-size:17px;border:0;background:none;color:var(--ink2);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(79,82,73,.4);text-underline-offset:4px;padding:6px}
+.status{margin-top:22px;border-radius:14px;padding:12px 16px;font-size:17px;line-height:1.45;background:rgba(21,66,54,.06);border:1px solid rgba(21,66,54,.2);color:var(--emerald)}
+.paper h2{font-family:var(--serif);font-style:italic;font-weight:400;font-size:30px;color:var(--emerald);margin:0 0 6px}
+.paper .lead{font-style:italic;color:var(--ink2);font-size:18px;margin:0 0 18px}
+.terms{list-style:none;margin:0 0 18px;padding:0;text-align:left}
+.terms li{position:relative;padding:10px 0 10px 28px;border-top:1px solid rgba(138,107,46,.25);font-size:18px;line-height:1.45;color:#2b302b}
+.terms li:first-child{border-top:0}
+.terms li::before{content:"✦";position:absolute;left:4px;top:12px;font-size:11px;color:#8a6b2e}
+.agree{display:flex;gap:12px;align-items:flex-start;text-align:left;font-size:18px;color:var(--emerald);margin:4px 0 18px;cursor:pointer}
+.agree input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:#154236}
+textarea.note{width:100%;box-sizing:border-box;min-height:96px;border:1px solid rgba(138,107,46,.45);border-radius:14px;padding:12px 14px;font-family:var(--sans);font-size:18px;background:#fffdf7;color:var(--ink);resize:vertical}
+textarea.note:focus{outline:none;border-color:#154236;box-shadow:0 0 0 3px rgba(21,66,54,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 12px}
+.chips button{font-family:var(--sans);font-style:italic;font-size:16px;border:1px solid rgba(138,107,46,.45);border-radius:999px;padding:7px 14px;background:transparent;color:var(--emerald);cursor:pointer}
+.chips button.on{background:var(--emerald);color:var(--paper);border-color:var(--emerald)}
+
+/* ---------- the code word ---------- */
+.vault{position:relative;width:100%;max-width:520px;text-align:center;border-radius:20px;padding:40px 26px 30px;box-sizing:border-box;background:linear-gradient(180deg,rgba(14,40,33,.92),rgba(6,17,14,.96));border:1px solid rgba(232,207,154,.4);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(232,207,154,.12) inset}
+.vault .k{font-size:11px;color:var(--gold)}
+.vault .stamp{display:inline-block;margin:18px 0 6px;font-family:var(--caps);font-size:12px;letter-spacing:.32em;color:#9fd8b4;border:1.5px solid rgba(159,216,180,.6);border-radius:6px;padding:6px 12px;transform:rotate(-3deg) scale(1.6);opacity:0;animation:stamp .5s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes stamp{to{transform:rotate(-3deg) scale(1);opacity:1}}
+.vault .who{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--gold2);margin:10px 0 18px}
+.codebox{border:1px solid rgba(232,207,154,.35);border-radius:16px;padding:20px 10px;background:rgba(0,0,0,.25);margin:0 auto 10px}
+.code{font-family:var(--caps);font-weight:400;font-size:clamp(22px,6.6vw,34px);letter-spacing:.14em;color:transparent;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;word-break:break-word;min-height:1.2em}
+.code .sc{color:rgba(232,207,154,.45);-webkit-text-fill-color:rgba(232,207,154,.45)}
+.vault .cap{font-size:11px;color:var(--muted);letter-spacing:.24em;margin-bottom:22px}
+.vault .next{list-style:none;padding:0;margin:20px 0 0;text-align:left}
+.vault .next li{position:relative;padding:8px 0 8px 26px;color:#e3d9c0;font-size:17.5px;line-height:1.45;border-top:1px solid rgba(232,207,154,.14)}
+.vault .next li:first-child{border-top:0}
+.vault .next li::before{content:"✦";position:absolute;left:4px;top:10px;font-size:10px;color:var(--gold)}
+.vault .row{display:flex;flex-direction:column;gap:10px}
+.vault .copy{font-family:var(--sans);font-style:italic;font-size:17px;border:1px solid rgba(232,207,154,.4);border-radius:999px;padding:10px 18px;background:transparent;color:var(--gold2);cursor:pointer}
+.foot{position:relative;z-index:1;text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px;letter-spacing:.34em;color:var(--dim);padding:0 0 22px;text-transform:uppercase}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}#embers{display:none}}
+</style>
+</head>
+<body>
+<div id="embers" aria-hidden="true"></div>
+<main id="stage"><div class="msg fade"><div class="spin"></div><p style="margin-top:16px">Unsealing your invitation…</p></div></main>
+<div class="foot">Kane Oil &amp; Energy · A private invitation</div>
+<script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
+['config.js', 'party.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
+<script>
+const MONO = c => `<svg class="mono" viewBox="0 0 96 96" fill="none" stroke="${c}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="48" cy="48" r="44" stroke-width="2"/><circle cx="48" cy="48" r="38" stroke-width="1"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="3.4"/></svg>`;
+const EFFORT = {
+  big: { pips: 3, label: 'A leading role', text: "You're at the heart of the mystery: big secrets, people hunting you down, and a moment or two in the spotlight.", prep: 'Plan on about 20 minutes with your dossier before the party.' },
+  medium: { pips: 2, label: 'A featured role', text: 'Real secrets to trade and people to find, at your own pace.', prep: 'About 10 to 15 minutes of reading beforehand.' },
+  light: { pips: 1, label: 'A supporting role', text: "A few juicy secrets and a fun goal. Perfect if you'd rather watch the drama unfold than lead it.", prep: 'About 5 minutes of reading beforehand.' }
+};
+const stage = document.getElementById('stage');
+const show = html => { stage.innerHTML = html; window.scrollTo(0, 0); };
+let backend = null, S = null, INV = null, ID = '', ST = {}, swapPick = '';
+const P = () => mergeParty(window.PARTY, S ? S.site : {});
+
+/* candlelight embers */
+(function () { const box = document.getElementById('embers'), n = innerWidth < 600 ? 12 : 20; for (let i = 0; i < n; i++) { const e = document.createElement('i'), s = 2 + Math.random() * 4; e.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;--dx:${(Math.random() * 80 - 40).toFixed(0)}px;animation-duration:${14 + Math.random() * 16}s;animation-delay:${(Math.random() * 18).toFixed(1)}s`; box.appendChild(e); } })();
+
+function fail(title, text) { show(`<div class="msg fade">${MONO('#e8cf9a').replace('class="mono"', 'class="mono" style="width:64px;height:64px;display:block;margin:0 auto"')}<h1>${esc(title)}</h1><p>${esc(text)}</p></div>`); }
+const status = data => backend.update(Object.fromEntries(Object.entries(data).map(([k, v]) => ['inviteStatus/' + ID + '/' + k, v])));
+
+/* 1. the sealed envelope */
+function envelope() {
+  show(`<div class="env-wrap fade"><div class="env-to">For ${esc(INV.g)}</div><div class="env-sub caps">Private &amp; Confidential</div>
+    <button class="envelope" id="env" aria-label="Break the seal and open your invitation"><div class="body"></div><div class="letter"><i>${esc(P().title || 'The Last Toast')}</i></div><div class="pocket"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 L50 55 L100 100" fill="none" stroke="rgba(232,207,154,.28)" stroke-width=".6" vector-effect="non-scaling-stroke"/><path d="M0 0 L42 52 M100 0 L58 52" fill="none" stroke="rgba(232,207,154,.14)" stroke-width=".6" vector-effect="non-scaling-stroke"/></svg></div><div class="flap"></div>
+      <div class="seal"><div class="half l"></div><div class="half r"></div><svg viewBox="0 0 96 96" fill="none" stroke="#f1dfb4" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66"/></svg></div></button>
+    <div class="env-hint">Tap the seal to open</div></div>`);
+  document.getElementById('env').addEventListener('click', e => {
+    const env = e.currentTarget; if (env.classList.contains('open')) return;
+    env.classList.add('open'); env.parentNode.classList.add('opened'); try { navigator.vibrate && navigator.vibrate(40); } catch (x) { }
+    setTimeout(letter, 2300);
+  });
+}
+
+/* 2. the letter: thanks, the role, and the choice */
+function letter() {
+  const ef = EFFORT[INV.e] || EFFORT.medium, resp = ST.resp || '';
+  const nameHTML = [...INV.n].map((ch, i) => `<span style="animation-delay:${(0.6 + i * 0.045).toFixed(2)}s">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('');
+  const when = ST.at ? new Date(ST.at).toLocaleDateString([], { month: 'long', day: 'numeric' }) : '';
+  const choices = resp === 'accepted'
+    ? `<div class="status">✓ You accepted this role${when ? ' on ' + esc(when) : ''}.</div><div class="choices"><button class="btn-gold" data-go="vault">Show my code word</button></div>`
+    : resp === 'declined'
+    ? `<div class="status">You declined this invitation. Changed your mind? You can still accept, or ask for a different character.</div><div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button></div>`
+    : `${resp === 'swap' ? `<div class="status">You asked for a different character${ST.note ? `: “${esc(ST.note)}”` : ''}. Your hosts will be in touch. You can still accept this one if you like.</div>` : ''}
+       <div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button><button class="btn-text" data-go="decline">Decline the invitation</button></div>`;
+  show(`<article class="paper fade">${MONO('#8a6b2e')}
+    <p class="dear">Dear ${esc(INV.g)},</p>
+    <p class="thanks">Thank you for being part of <i>${esc(P().title || 'The Last Toast')}</i>. We've spent weeks building this night: the story, the secrets, and every clue hidden in every room. It only comes alive because of people like you who are willing to step into it. We can't wait to see what you do with your role.</p>
+    <p class="sign"><small>With gratitude,</small>${esc(INV.from || 'Your hosts')}</p>
+    <div class="orn"><i></i><b>✦</b><i></i></div>
+    <div class="congrats caps">Congratulations. You have been assigned</div>
+    <div class="cname">${nameHTML}</div>
+    ${INV.t ? `<div class="ctitle">${esc(INV.t)}</div>` : ''}
+    ${INV.b ? `<p class="cblurb">${esc(INV.b)}</p>` : ''}
+    <div class="effort"><span class="lbl caps">Effort for the night</span><div class="pips">${[1, 2, 3].map(n => `<i class="${n <= ef.pips ? 'on' : ''}"></i>`).join('')}</div><b>${esc(ef.label)}</b><p>${esc(ef.text)}</p><small>${esc(ef.prep)}</small></div>
+    ${choices}</article>`);
+}
+
+/* 3a. accepting: what it means */
+function terms() {
+  const p = P();
+  show(`<article class="paper fade">${MONO('#8a6b2e')}<h2>Before you accept</h2><p class="lead">By accepting the role of <b>${esc(INV.n)}</b>, you agree to:</p>
+    <ul class="terms">
+      <li>Be ${p.venue ? 'at ' + esc(p.venue) + ' ' : ''}on <b>${esc(p.date || 'the night')}</b>${p.time ? ', ' + esc(p.time.replace(/^(\d)/, 'from $1')) : ''}, and stay through the final reveal.</li>
+      <li>Read your dossier and your brief before the party.</li>
+      <li>Keep your code word, your character and your secrets to yourself.</li>
+      <li>Stay in character and play fair. It's a game: be kind, and no tampering with the database.</li>
+      <li>Tell your hosts right away if your plans change, so your role can go to someone else.</li>
+    </ul>
+    <label class="agree"><input type="checkbox" id="agree"> <span>I agree, and I'll be there.</span></label>
+    <div class="choices"><button class="btn-gold" id="acceptBtn" disabled>Accept &amp; reveal my code word</button><button class="btn-text" data-go="letter">Go back</button></div></article>`);
+  const box = document.getElementById('agree'), btn = document.getElementById('acceptBtn');
+  box.addEventListener('change', () => { btn.disabled = !box.checked; });
+  btn.addEventListener('click', async () => {
+    btn.disabled = true; btn.textContent = 'Sealing your acceptance…';
+    try { await status({ resp: 'accepted', at: backend.TS(), note: null }); ST.resp = 'accepted'; ST.at = Date.now(); vault(true); }
+    catch (e) { btn.disabled = false; btn.textContent = 'Accept & reveal my code word'; toast("Couldn't save", 'Check your connection and try again.', 'err'); }
+  });
+}
+
+/* 3b. the code word, unscrambled */
+function vault(first) {
+  const p = P(), code = String(INV.code || '');
+  show(`<section class="vault fade"><div class="k caps">Kane Oil &amp; Energy · Personnel Access</div>
+    <div class="stamp">${first ? 'Role accepted' : 'Access granted'}</div>
+    <div class="who">${esc(INV.n)}</div>
+    <div class="codebox"><div class="code" id="code" aria-live="polite"></div></div>
+    <div class="cap caps">Your secret code word</div>
+    <div class="row"><a class="btn-gold" href="database.html#k=${encodeURIComponent(code)}">Enter the Kane Oil Database →</a><button class="copy" id="copyCode">Copy code word</button></div>
+    <ul class="next">
+      <li>It unlocks your dossier. Keep it to yourself: anyone with it can read your secrets.</li>
+      <li><b>My File</b> is who you are. <b>Brief</b> is how to play: your goal, what to share, and your timeline.</li>
+      <li>Plan a costume. The idea in your brief is only a suggestion, so make the character your own.</li>
+      <li>Bring a charged phone${p.date ? ' on ' + esc(p.date) : ''}.</li>
+    </ul></section>`);
+  document.getElementById('copyCode').addEventListener('click', async () => { const ok = await copyText(code); toast(ok ? 'Copied' : "Couldn't copy", ok ? 'Your code word is on your clipboard.' : 'Write it down instead.', ok ? 'ok' : 'err'); });
+  // unscramble, one letter at a time
+  const el = document.getElementById('code'), A = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789', reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { el.textContent = code; return; }
+  let locked = 0, t = 0;
+  const tick = () => {
+    t++; if (t % 3 === 0 && locked < code.length) locked++;
+    el.innerHTML = [...code].map((ch, i) => i < locked || /[^A-Z0-9]/i.test(ch) ? esc(ch) : `<span class="sc">${A[Math.floor(Math.random() * A.length)]}</span>`).join('');
+    if (locked < code.length) setTimeout(tick, 45); else { el.textContent = code; try { navigator.vibrate && navigator.vibrate([30, 40, 60]); } catch (x) { } }
+  };
+  setTimeout(tick, 650);
+}
+
+/* 3c. a different character */
+function swap() {
+  swapPick = '';
+  show(`<article class="paper fade">${MONO('#8a6b2e')}<h2>A different character?</h2><p class="lead">No problem at all. Tell your hosts what would suit you better.</p>
+    <div class="chips" id="chips">${['Something smaller', 'Something bigger', 'A different kind of character'].map(c => `<button type="button" data-pick="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    <textarea class="note" id="swapNote" maxlength="400" placeholder="Anything else? A type of character you'd love, or one you'd rather avoid…"></textarea>
+    <div class="choices"><button class="btn-gold" id="swapBtn">Send my request</button><button class="btn-text" data-go="letter">Go back</button></div></article>`);
+  document.getElementById('chips').addEventListener('click', e => { const b = e.target.closest('[data-pick]'); if (!b) return; swapPick = swapPick === b.dataset.pick ? '' : b.dataset.pick; document.querySelectorAll('#chips button').forEach(x => x.classList.toggle('on', x.dataset.pick === swapPick)); });
+  document.getElementById('swapBtn').addEventListener('click', async e => {
+    const note = [swapPick, document.getElementById('swapNote').value.trim()].filter(Boolean).join('. ');
+    e.target.disabled = true;
+    try { await status({ resp: 'swap', at: backend.TS(), note: note || null }); ST.resp = 'swap'; ST.note = note;
+      show(`<div class="msg fade"><h1>Request received</h1><p>Thank you, ${esc(INV.g)}. Your hosts will find you another role and send you a new invitation.</p></div>`); }
+    catch (x) { e.target.disabled = false; toast("Couldn't send", 'Check your connection and try again.', 'err'); }
+  });
+}
+
+/* 3d. declining */
+function decline() {
+  show(`<article class="paper fade">${MONO('#8a6b2e')}<h2>Decline the invitation?</h2><p class="lead">We'll be sorry not to see you, ${esc(INV.g)}. If you'd like, leave your hosts a note.</p>
+    <textarea class="note" id="decNote" maxlength="400" placeholder="Optional"></textarea>
+    <div class="choices"><button class="btn-line" id="decBtn">Yes, decline the invitation</button><button class="btn-gold" data-go="letter">Go back</button></div></article>`);
+  document.getElementById('decBtn').addEventListener('click', async e => {
+    e.target.disabled = true; const note = document.getElementById('decNote').value.trim();
+    try { await status({ resp: 'declined', at: backend.TS(), note: note || null }); ST.resp = 'declined'; ST.note = note;
+      show(`<div class="msg fade"><h1>Thank you for letting us know</h1><p>We'll miss you, ${esc(INV.g)}. If anything changes, this link still works.</p><p style="margin-top:18px;font-family:var(--serif);color:var(--gold2)">${esc(INV.from || '')}</p></div>`); }
+    catch (x) { e.target.disabled = false; toast("Couldn't send", 'Check your connection and try again.', 'err'); }
+  });
+}
+
+addEventListener('hashchange', () => location.reload());
+stage.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; ({ letter, terms, swap, decline, vault: () => vault(false) })[b.dataset.go](); });
+
+(async () => {
+  const m = location.hash.match(/^#([A-Za-z0-9]+)\.([A-Za-z0-9_-]{20,})$/);
+  if (!m) return fail('This link is incomplete', 'Open the full link from your invitation message, or ask your hosts to send it again.');
+  ID = m[1];
+  if (!window.crypto || !crypto.subtle) return fail('Open this on a secure page', 'This invitation needs an https:// connection.');
+  const timer = setTimeout(() => { if (!INV) fail("Couldn't connect", 'Check your internet connection and reload this page.'); }, 12000);
+  backend = await connectBackend();
+  let first = true;
+  backend.on(async raw => {
+    S = normRoot(raw);
+    if (!first) return; first = false;
+    const blob = S.invites[ID];
+    if (!blob) { clearTimeout(timer); return fail('This invitation is no longer active', 'Your hosts may have sent you a newer link. Check your messages, or ask them for a new one.'); }
+    try { INV = await decryptJSON(await importInviteKey(m[2]), blob); }
+    catch (e) { clearTimeout(timer); return fail('This link is not valid', 'Open the full link from your invitation message, or ask your hosts to send it again.'); }
+    clearTimeout(timer);
+    ST = Object.assign({}, S.inviteStatus[ID] || {});
+    const upd = { last: backend.TS() }; if (!ST.opened) upd.opened = backend.TS(); status(upd);
+    document.title = 'For ' + INV.g + ' · ' + (P().title || 'The Last Toast');
+    if (ST.resp === 'accepted') letter(); else envelope();
+  });
+})();
+</script>
+</body>
+</html>

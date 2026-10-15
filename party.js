@@ -13,16 +13,16 @@ window.PARTY = {
   tagline: `An evening of candlelight, secrets & suspicion`,   // the line above the title on the invitation
   host: `RA Jacob & Alex`,
   sponsor: `Residence Life`,
-  date: `Saturday, [Month Day, Year]`,
+  date: `Friday, November 6, 2026`,
   time: `8:00 PM until about 11:45 PM`,
-  venue: `[Venue name]`,
-  address: `[Street address, City]`,
-  dress: `Black tie optional. Dress for a corporate gala.`,
-  rsvpBy: `[RSVP-by date]`,
+  venue: `Conway Hall`,
+  address: `Dickinson College`,
+  dress: `Dress as your character. Costume ideas come with your role.`,
+  rsvpBy: `October 30, 2026`,
   // "Add to calendar" buttons appear on the invitation once both of these are set.
   // Format: `YYYY-MM-DDTHH:MM` in 24-hour time, e.g. `2026-10-24T20:00`. You can also set them from the host dashboard.
-  calStart: ``,
-  calEnd: ``,
+  calStart: `2026-11-06T20:00`,
+  calEnd: `2026-11-06T23:45`,
   timeZone: `America/New_York`,
   rsvpOpen: true,            // false closes the RSVP form
   showDatabaseLink: true,    // false hides the "Database" buttons on the invitation
@@ -52,7 +52,7 @@ window.PARTY = {
 
   // How the Kane Oil Database works (shown on the invite)
   howItWorks: [
-    { title: `Your code word`, text: `Once roles are assigned, you'll receive a private code word. It unlocks your character's dossier in the Kane Oil Database. Tell no one.` },
+    { title: `Your role`, text: `Once roles are assigned, you'll get a private invitation link. Accept your character and it reveals your secret code word, which unlocks your dossier in the Kane Oil Database. Tell no one.` },
     { title: `Before the party`, text: `Log in, read your dossier closely, and plan your costume and your secrets.` },
     { title: `On the night`, text: `Bring a charged phone. You'll use it to scan evidence tags, see which rooms are open, and cast your final accusation.` }
   ],
@@ -64,7 +64,7 @@ window.PARTY = {
     { title: `Guard your code word`, text: `Never share your code word or show your dossier screen to anyone. What's on it is yours to reveal, trade, or hide.` },
     { title: `Read your brief`, text: `Your phone has two tabs about you. My File is who you are. Your Brief is how to play tonight: your goal, the things to share, the things to keep until someone asks you directly, and your timeline. The costume idea in it is only a suggestion. Make the character your own.` },
     { title: `Only the killer may lie about the murder`, text: `Everyone else can dodge, deflect, and keep their personal secrets, but can't tell an outright lie about the crime itself.` },
-    { title: `Closed doors are sealed rooms`, text: `Some rooms are crime scenes. Don't open a closed door until the Estate Map on your phone says that room is OPEN.` },
+    { title: `Sealed means sealed`, text: `Some rooms are crime scenes. Don't open a closed door, or go through the paper wall, until the Estate Map on your phone says that room is OPEN.` },
     { title: `Locked means puzzle, not crowbar`, text: `Some evidence is locked away. The code is always hidden somewhere in the clues. Never force a lock, pry anything open, or move furniture: nothing in this game is hidden anywhere you'd have to break something to reach.` },
     { title: `Hunt for evidence tags`, text: `Kane Oil evidence tags (QR codes) are hidden on objects in the rooms. Scan one with your phone camera to examine it. Then it's your call: reveal it to everyone, or keep it to yourself for now. Leave the tag where you found it for others.` },
     { title: `Know who's who`, text: `Your phone has a Who's Who directory of everyone at the gala. Wear your name badge all night so people can find you.` },
