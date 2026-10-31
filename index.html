@@ -132,6 +132,14 @@ select.input option{background:#0e2821}
 .casefiles b{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:22px;color:var(--gold2)}
 .casefiles span{color:var(--muted);font-style:italic;font-size:16.5px}
 .casefiles i{margin-left:auto;font-style:normal;color:var(--gold2);font-size:22px}
+.casting{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;text-decoration:none;border:1px solid rgba(232,207,154,.5);background:linear-gradient(90deg,rgba(232,207,154,.06),rgba(232,207,154,.14),rgba(232,207,154,.06));border-radius:999px;padding:9px 18px;margin:4px 0 8px;color:var(--gold2);font-family:var(--caps);font-weight:300;font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.casting b{font-family:var(--serif);font-style:italic;font-weight:400;font-size:17px;letter-spacing:0;text-transform:none;color:#fff3d6}
+.casting .dot{width:7px;height:7px;border-radius:50%;background:#e8cf9a;box-shadow:0 0 10px #e8cf9a;animation:castpulse 1.6s ease-in-out infinite}
+@keyframes castpulse{50%{opacity:.35}}
+.castcta{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translate(-50%,0);z-index:30;display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:13px 22px;font-family:var(--sans);font-style:italic;font-size:18px;color:#1b140a;text-decoration:none;background:var(--gold-grad);box-shadow:0 12px 30px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.35) inset;transition:opacity .3s,transform .3s;white-space:nowrap}
+.castcta.hidden{display:inline-flex!important;opacity:0;pointer-events:none;transform:translate(-50%,20px)}
+@media(min-width:900px){.castcta{display:none!important}}
+.someone{display:block;margin-top:10px;font-size:16px}
 .portal{text-align:center}
 .portal .btn{font-family:var(--sans);font-style:italic;font-size:19px;border-radius:999px;letter-spacing:0;padding:12px 26px}
 footer{text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px;letter-spacing:.34em;color:var(--dim);padding:26px 0 10px;text-transform:uppercase}
@@ -226,6 +234,7 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
     <a class="pillbtn" id="rsvpNav" href="#rsvp">Reply</a>
   </nav>
   <div class="notice hidden" id="notice"><span class="pulse-dot"></span><span id="noticeText"></span></div>
+  <a class="casting hidden" id="castingBar" href="#rsvp"><span class="dot"></span><span>Now casting</span><b id="castingLeft"></b><span>Claim yours →</span></a>
   <a class="casefiles hidden" id="recapBanner" href="recap.html"><span class="wax"><svg width="24" height="24" viewBox="0 0 96 96"><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" fill="none" stroke="#f1dfb4" stroke-width="6" stroke-linecap="round"/></svg></span><span><b>Case closed</b><span>The case files are open: the killer, the confessions, and everyone's secrets.</span></span><i>→</i></a>
   <header class="hero">
     <svg class="mono" viewBox="0 0 96 96"><circle class="m1" cx="48" cy="48" r="44" stroke-width="1.1"/><circle class="m2" cx="48" cy="48" r="38" stroke-width=".55"/><path class="m3" d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
@@ -252,7 +261,7 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
   <section class="panel gold rv rsvp" id="rsvp">
     <div class="rsvp-side">
       <svg class="mono sm" viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" stroke-width="1.1"/><circle cx="48" cy="48" r="38" stroke-width=".55"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
-      <h2 class="sh">Kindly reply</h2>
+      <h2 class="sh" id="rsvpHead">Kindly reply</h2>
       <p class="intro" id="rsvpIntro">We would be delighted to have you.</p>
       <p class="replyby" id="replyBy"></p>
     </div>
@@ -303,6 +312,7 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
     <a class="btn" href="database.html">Enter the database →</a>
   </section>
   <footer>Kane Oil &amp; Energy · Est. 1974 · A private event</footer>
+  <a class="castcta hidden" id="castCta" href="#rsvp">Claim your role <span id="castCtaLeft"></span></a>
 </div>
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
 ['config.js', 'party.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
@@ -342,7 +352,7 @@ const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.
 $$('.rv').forEach(el => io ? io.observe(el) : el.classList.add('in'));
 /* ---------- page content: party.js plus any live edits the host publishes from the dashboard ---------- */
 function renderStatic() {
-  const sig = JSON.stringify(S.site || {}); if (sig === lastSite) return; lastSite = sig;
+  const sig = JSON.stringify(S.site || {}) + '|' + rolesLeft(mergeParty(window.PARTY, S.site)); if (sig === lastSite) return; lastSite = sig;
   const P = mergeParty(window.PARTY, S.site);
   $('#tagline').textContent = P.tagline || 'An evening of candlelight, secrets & suspicion';
   $('#inWorld').textContent = P.inWorld || '';
@@ -352,8 +362,10 @@ function renderStatic() {
   document.title = (P.title || 'The Last Toast') + ' · Invitation';
   $('#notice').classList.toggle('hidden', !P.notice);
   $('#noticeText').textContent = P.notice || '';
+  const left = rolesLeft(P), rolling = P.rsvpRolling !== false;
   $('#details').innerHTML = [
-    ['When', P.date, P.time], ['Where', P.venue, P.address], ['Attire', P.dress, ''], ['Reply by', P.rsvpBy, '']
+    ['When', P.date, P.time], ['Where', P.venue, P.address], ['Attire', P.dress, ''],
+    rolling ? ['Replies', 'Open until roles run out', left > 0 ? `${left} role${left === 1 ? '' : 's'} left` : 'Waitlist open'] : ['Reply by', P.rsvpBy, '']
   ].filter(d => d[1]).map(([k, a, b]) => `<div class="det"><b>${k}</b><span>${esc(a)}</span>${b ? `<small>${esc(b)}</small>` : ''}</div>`).join('');
   const cal = calendarLinks(P);
   $('#calLinks').classList.toggle('hidden', !cal);
@@ -368,8 +380,15 @@ function renderStatic() {
   const showRules = P.showRules && (P.rules || []).length;
   $('#rulesPanel').classList.toggle('hidden', !showRules);
   if (showRules) $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
-  $('#replyBy').innerHTML = [P.rsvpBy ? 'Please reply by<br>' + esc(P.rsvpBy) : '', P.date ? esc(P.date) : ''].filter(Boolean).join('<br><br>');
+  $('#replyBy').innerHTML = rolling
+    ? ['Roles are cast on a<br>rolling basis', left > 0 ? `${left} role${left === 1 ? '' : 's'} left` : 'Waitlist open', P.date ? esc(P.date) : ''].filter(Boolean).join('<br><br>')
+    : [P.rsvpBy ? 'Please reply by<br>' + esc(P.rsvpBy) : '', P.date ? esc(P.date) : ''].filter(Boolean).join('<br><br>');
   const open = P.rsvpOpen !== false;
+  $('#rsvpHead').textContent = rolling ? 'Claim your role' : 'Kindly reply';
+  $('#castingBar').classList.toggle('hidden', !(open && rolling));
+  $('#castingLeft').textContent = left > 0 ? `${left} role${left === 1 ? '' : 's'} left` : 'Waitlist open';
+  $('#castCtaLeft').textContent = rolling && left > 0 ? `· ${left} left` : '';
+  ui.ctaOn = open;
   $('#rsvpForm').classList.toggle('hidden', !open);
   $('#rsvpIntro').classList.toggle('hidden', !open);
   $('#rsvpClosed').classList.toggle('hidden', open);
@@ -395,6 +414,20 @@ function calendarLinks(P) {
   const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Kane Oil//The Last Toast//EN', 'BEGIN:VEVENT', 'UID:last-toast-' + stamp(a) + '@kane-oil', 'DTSTAMP:' + stamp(new Date()), 'DTSTART:' + stamp(a), 'DTEND:' + stamp(b), 'SUMMARY:' + ical(title), 'LOCATION:' + ical(where), 'DESCRIPTION:' + ical(details), 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
   return { google, ics: 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics) };
 }
+/* how many roles are still free: the cast size minus everyone coming (and their plus-ones) */
+function rolesLeft(P) {
+  const cap = +P.capacity || 34;
+  const taken = Object.values(S.rsvps || {}).filter(r => r && r.attending === 'yes').reduce((n, r) => n + 1 + (r.plusOne ? 1 : 0), 0);
+  return Math.max(0, cap - taken);
+}
+const ui = { ctaOn: false };
+/* phones: a floating "Claim your role" button while you scroll, hidden once you're at the form or have replied */
+(function castCta() {
+  const cta = $('#castCta'), form = $('#rsvp'); let formVisible = false;
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { formVisible = es[0].isIntersecting; tick(); }, { threshold: .05 }).observe(form);
+  function tick() { const replied = !!(myId() && S.rsvps[myId()]); cta.classList.toggle('hidden', !ui.ctaOn || replied || formVisible || scrollY < 500); }
+  addEventListener('scroll', tick, { passive: true }); setInterval(tick, 1500);
+})();
 renderStatic();
 /* ---------- RSVP form ---------- */
 const attending = () => document.querySelector('input[name=att]:checked').value !== 'no';
@@ -436,7 +469,8 @@ let prefilled = false;
 function showDone() {
   const r = myId() && S.rsvps[myId()], m = mine();
   const lbl = { yes: "we'll see you there", maybe: "you're a perhaps (let us know!)", no: "you regretfully can't make it" };
-  $('#rsvpDone').innerHTML = r ? `<div class="done">${m.photo ? `<img src="${m.photo}" alt="">` : ''}<span class="t">Thank you, ${esc(r.name.split(' ')[0])}.</span>Your reply has been received: ${lbl[r.attending] || esc(r.attending)}${r.plusOne ? ', with a plus-one' : ''}.<br><span style="color:var(--muted);font-style:italic">You can change your answer below at any time.</span></div>` : '';
+  $('#rsvpDone').innerHTML = r ? `<div class="done">${m.photo ? `<img src="${m.photo}" alt="">` : ''}<span class="t">Thank you, ${esc(r.name.split(' ')[0])}.</span>Your reply has been received: ${lbl[r.attending] || esc(r.attending)}${r.plusOne ? ', with a plus-one' : ''}.<br><span style="color:var(--muted);font-style:italic">You can change your answer below at any time.</span><button type="button" class="linkbtn someone" id="someoneElse">Replying for someone else? Start a new reply</button></div>` : '';
+  const se = $('#someoneElse'); if (se) se.onclick = startNewReply;
   $('#rBtn').textContent = r ? 'Update my reply' : 'Reply with pleasure';
   if (r && !prefilled) {
     prefilled = true;
@@ -449,6 +483,14 @@ function showDone() {
     syncFields();
   }
 }
+/* a different person on the same phone gets their own reply instead of replacing the first one */
+function startNewReply() {
+  store.del('myRsvp'); store.del('myRsvpData'); prefilled = true;
+  $('#rsvpForm').reset(); photos.me = photos.plus = null; showPhoto('me'); showPhoto('plus'); syncFields();
+  $('#rsvpDone').innerHTML = ''; $('#rBtn').textContent = 'Reply with pleasure'; $('#rName').focus();
+}
+const nameTokens = s => String(s || '').toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(Boolean);
+const samePerson = (a, b) => { const x = nameTokens(a), y = nameTokens(b); if (!x.length || !y.length) return false; const [s, l] = x.length <= y.length ? [x, y] : [y, x]; return s.every(t => l.includes(t)); };
 $('#rsvpForm').addEventListener('submit', async e => {
   e.preventDefault();
   if (!backend) { toast('One moment', 'Still connecting. Try again in a second.', 'err'); return; }
@@ -459,9 +501,11 @@ $('#rsvpForm').addEventListener('submit', async e => {
   $('#emailErr').classList.add('hidden'); $('#phoneErr').classList.add('hidden');
   const btn = $('#rBtn'); btn.disabled = true; btn.textContent = 'Sealing your reply…';
   try {
+    if (backend.ensureAuth && !backend.uid) await backend.ensureAuth();
     const plus = going && $('#rPlus').checked;
     const priv = { email: email.toLowerCase(), phone: going ? phone : '', note: $('#rNote').value.trim(), photo: going ? photos.me : null, plusPhoto: plus ? photos.plus : null };
-    const id = myId() || uid('r');
+    const prev = myId() && S.rsvps[myId()];
+    let id = prev && samePerson(prev.name, name) ? myId() : uid('r');
     const rec = {
       name, attending: att, ts: backend.TS(),
       plusOne: going && $('#rPlus').checked, plusOneName: going && $('#rPlus').checked ? $('#rPlusName').value.trim() : '',
@@ -469,12 +513,17 @@ $('#rsvpForm').addEventListener('submit', async e => {
       sec: await sealForHost(priv),
       ...(backend.uid ? { uid: backend.uid } : {})
     };
-    await backend.set('rsvps/' + id, rec);
+    try { await backend.setStrict('rsvps/' + id, rec); }
+    catch (first) {
+      // this browser lost its old sign-in, so it can't change its earlier reply: save this one as a fresh reply instead
+      if (id !== myId()) throw first;
+      id = uid('r'); await backend.setStrict('rsvps/' + id, rec);
+    }
     store.set('myRsvp', id); store.set('myRsvpData', JSON.stringify(priv));
     toast('Reply received', att === 'no' ? "You'll be missed." : 'We look forward to seeing you.', 'ok');
     showDone();
     $('#rsvp').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch (err) { console.error(err); toast("Couldn't send", err.message || 'Please try again.', 'err'); }
+  } catch (err) { console.error(err); toast("Your reply didn't go through", `Check your connection and try again. If it keeps happening, text your hosts. (${err.code || err.message || 'error'})`, 'err'); }
   btn.disabled = false; btn.textContent = myId() && S.rsvps[myId()] ? 'Update my reply' : 'Reply with pleasure';
 });
 syncFields();

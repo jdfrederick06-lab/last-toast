@@ -381,6 +381,100 @@ body.has-nextbar #app{padding-bottom:120px}
 .confetti i{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 @media(max-width:520px){.dhead{gap:12px;padding:14px}.hex{width:66px;height:66px;min-width:66px}.hex span{font-size:20px}.nextbar{padding:8px 8px 8px 12px}.hold{min-width:132px}}
+
+/* ---------- host: control room ---------- */
+.tab svg{width:15px;height:15px;flex:none}
+.hud{display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;margin:0 0 14px;padding:9px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(14,13,18,.6);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.hud b{color:var(--text);font-weight:600;letter-spacing:.04em;font-size:12px}
+.hud .live{color:var(--green)}.hud .warn{color:var(--red2)}
+.hud .sp{flex:1}
+.cr-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:18px 20px;margin-bottom:14px;border:1px solid rgba(212,162,76,.45);border-radius:24px;background:radial-gradient(120% 140% at 0% 0%,rgba(212,162,76,.16),transparent 60%),radial-gradient(120% 140% at 100% 100%,rgba(139,108,255,.14),transparent 60%),var(--panel);box-shadow:0 18px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.08)}
+.cr-hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);pointer-events:none}
+.cr-hero small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--gold)}
+.cr-hero h2{margin:4px 0 2px;font-size:clamp(22px,4.6vw,30px);font-weight:400;line-height:1.15}
+.cr-hero p{margin:0;color:var(--muted);font-size:13.5px}
+.cd{display:flex;gap:8px;position:relative}
+.cd div{min-width:58px;text-align:center;border:1px solid var(--line2);border-radius:14px;padding:8px 6px;background:rgba(0,0,0,.25)}
+.cd b{display:block;font-size:26px;font-weight:400;color:var(--gold2);line-height:1.1}
+.cd span{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--dim)}
+@media(max-width:620px){.cr-hero{grid-template-columns:1fr}.cd div{flex:1;min-width:0}}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:700px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1000px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.kpi{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:18px;padding:12px 14px;background:var(--panel);display:flex;flex-direction:column;gap:4px;transition:.2s;animation:rise .45s ease both}
+.kpi:hover{border-color:rgba(212,162,76,.5);transform:translateY(-1px)}
+.kpi b{font-size:28px;font-weight:400;color:var(--gold2);line-height:1}
+.kpi b em{font-style:normal;font-size:14px;color:var(--dim)}
+.kpi span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.kpi i{display:block;height:4px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:4px}
+.kpi i u{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .6s ease}
+.kpi.bad b{color:var(--red2)}.kpi.good b{color:var(--green)}
+.alerts{display:flex;flex-direction:column;gap:7px}
+.alrt{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;padding:9px 12px;background:rgba(255,255,255,.035);font-size:14px;line-height:1.4;transition:.2s}
+.alrt:hover{background:rgba(255,255,255,.07)}
+.alrt.red{border-left-color:var(--red)}.alrt.blue{border-left-color:var(--cyan)}.alrt.ok{border-left-color:var(--green);cursor:default}
+.alrt .ic{width:20px;text-align:center;flex:none}
+.alrt .t{flex:1;min-width:0}.alrt small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+.alrt .go{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--gold2);white-space:nowrap}
+.board-tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:8px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;position:relative;border:1px solid var(--line);border-radius:14px;padding:10px 11px 9px;background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:3px;min-height:96px;transition:.2s;animation:rise .4s ease both}
+.tile:hover{border-color:rgba(212,162,76,.55);background:rgba(255,255,255,.07)}
+.tile b{font-size:13.5px;line-height:1.25;padding-right:14px}
+.tile .oc{font-size:11.5px;color:var(--dim);line-height:1.3}
+.tile .pl{font-size:12.5px;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .pl.open{color:var(--red2);font-style:italic}
+.tile .tg{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto;padding-top:5px}
+.tile .tg .pill{font-size:8.5px;padding:2px 6px}
+.tile .dot{position:absolute;top:11px;right:10px}
+.tile.must{border-color:rgba(255,77,94,.45)}
+.tile.need{background:repeating-linear-gradient(135deg,rgba(255,77,94,.06) 0 8px,transparent 8px 16px)}
+.tile.ok{border-color:rgba(95,227,168,.35)}
+.tile.dead{opacity:.55}.tile.dead b{text-decoration:line-through;text-decoration-color:rgba(255,77,94,.6)}
+.pill.eff-big{border-color:rgba(247,220,154,.7);color:#1b1206;background:var(--gold-grad)}
+.pill.eff-medium{border-color:rgba(212,162,76,.5);color:var(--gold2);background:var(--gold-dim)}
+.pill.eff-light{border-color:rgba(201,184,255,.45);color:var(--cyan);background:rgba(201,184,255,.07)}
+.effsum{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.feed{max-height:440px;overflow:auto}
+.feed div{display:grid;grid-template-columns:52px 18px 1fr;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45}
+.feed div:first-child{border-top:0}
+.feed .t{font-family:var(--mono);font-size:10.5px;color:var(--dim);padding-top:2px}
+.feed .i{text-align:center;color:var(--gold2)}
+.safety{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid rgba(95,227,168,.35);background:linear-gradient(90deg,rgba(95,227,168,.07),transparent);border-radius:14px;padding:10px 12px;font-size:14px}
+.safety.bad{border-color:rgba(255,77,94,.55);background:linear-gradient(90deg,rgba(255,77,94,.12),transparent)}
+.safety .t{flex:1;min-width:180px}
+.safety small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.pill.fit{border-color:rgba(255,77,94,.5);color:var(--red2)}
+.tplvars{font-family:var(--mono);font-size:11px;color:var(--cyan);margin:4px 0 10px;line-height:1.7}
+/* Jarvis: the host's AI assistant */
+.jv-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:45;display:flex;align-items:center;gap:9px;border:1px solid rgba(201,184,255,.6);border-radius:999px;padding:11px 17px 11px 12px;background:radial-gradient(circle at 30% 30%,rgba(139,108,255,.5),rgba(20,16,34,.94));color:#efe9ff;font-family:var(--mono);font-size:11px;letter-spacing:.22em;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 24px rgba(139,108,255,.35);transition:.25s}
+.jv-fab:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 34px rgba(139,108,255,.55)}
+.orb{width:18px;height:18px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 35%,#fff,#c9b8ff 40%,#5b3fb0);box-shadow:0 0 12px #c9b8ff;animation:pdot 2.4s ease-in-out infinite}
+body.has-nextbar .jv-fab{bottom:calc(98px + env(safe-area-inset-bottom))}
+.jv{position:fixed;top:0;right:0;bottom:0;z-index:90;width:min(480px,100vw);display:flex;flex-direction:column;border-left:1px solid rgba(201,184,255,.35);background:linear-gradient(180deg,#181328,#09080e);box-shadow:-30px 0 80px rgba(0,0,0,.6);transform:translateX(105%);visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.3,1),visibility 0s .35s}
+.jv.open{transform:none;visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.3,1)}
+.jv-h{display:flex;align-items:center;gap:10px;padding:14px 12px 12px 16px;border-bottom:1px solid var(--line)}
+.jv-h b{display:block;font-family:var(--mono);letter-spacing:.26em;font-size:13px;color:#efe9ff}
+.jv-h small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.jv-h .sp{flex:1}
+.jv-body{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.jv-m{border-radius:16px;padding:10px 13px;font-size:14.5px;line-height:1.55;max-width:94%;overflow-wrap:anywhere}
+.jv-m.u{align-self:flex-end;background:var(--gold-dim);border:1px solid rgba(212,162,76,.4);white-space:pre-line}
+.jv-m.a{align-self:flex-start;background:rgba(201,184,255,.07);border:1px solid rgba(201,184,255,.28)}
+.jv-m.a p{margin:0 0 8px}.jv-m.a p:last-child{margin-bottom:0}
+.jv-m.a ul,.jv-m.a ol{margin:0 0 8px;padding-left:20px}.jv-m.a li{margin-bottom:3px}
+.jv-m.a h4{margin:8px 0 4px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.jv-m.a code{font-family:var(--mono);color:var(--gold2)}
+.jv-m.err{border-color:rgba(255,77,94,.5);background:var(--red-dim)}
+.jv-m .cp{display:block;margin-top:8px;background:none;border:0;padding:0;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--cyan);cursor:pointer}
+.jv-chips{display:flex;gap:6px;overflow-x:auto;padding:8px 12px 0;scrollbar-width:none}
+.jv-chips::-webkit-scrollbar{display:none}
+.jv-chips button{flex:none;border:1px solid rgba(201,184,255,.35);background:rgba(201,184,255,.06);color:#e6deff;border-radius:999px;padding:6px 11px;font-size:12px;cursor:pointer;font-family:var(--sans)}
+.jv-chips button:hover{background:rgba(201,184,255,.14)}
+.jv-in{display:flex;gap:8px;align-items:flex-end;padding:10px 12px calc(12px + env(safe-area-inset-bottom))}
+.jv-in textarea{flex:1;min-height:48px;max-height:160px;resize:none;font-size:15px}
+.jv-think{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--cyan)}
+.jv-think i{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pdot 1s ease-in-out infinite}
 </style>
 </head>
 <body>
@@ -397,6 +491,7 @@ body.has-nextbar #app{padding-bottom:120px}
 </div>
 <div id="fullmsg"></div>
 <div id="nextbarRoot"></div>
+<div id="jvRoot"></div>
 
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
 ['config.js', 'party.js', 'story.locked.js', 'core.js', 'printkit.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
@@ -496,11 +591,14 @@ async function restore() {
 }
 /* tell the database's security rules who this device is (the host, or the player of one character) */
 async function registerAuth(b) {
-  if (!backend || !backend.uid || !session || !session.code) return;
+  if (!backend || !session || !session.code || backend.mode === 'local') return;
   try {
-    if (b.type === 'host') await backend.register('hosts', '', await authToken('host', session.code));
-    else if (b.type === 'player') await backend.register('claims', b.c.id, await authToken('claim', session.code));
-  } catch (e) { console.warn('registerAuth', e); }
+    if (backend.ensureAuth && !backend.uid) await backend.ensureAuth();
+    let ok = !!backend.uid;
+    if (ok && b.type === 'host') ok = await backend.register('hosts', '', await authToken('host', session.code));
+    else if (ok && b.type === 'player') ok = await backend.register('claims', b.c.id, await authToken('claim', session.code));
+    ui.authWarn = ok === false;
+  } catch (e) { console.warn('registerAuth', e); ui.authWarn = true; }
 }
 async function adopt(b) {
   await registerAuth(b);
@@ -526,12 +624,14 @@ async function adopt(b) {
   }
   setTimeout(syncPhotos, 0);
 }
+/* the host's locked assignments: roles, invites, backups, photo vetoes, plus deleted RSVPs (trash) and message templates (tpl) */
+const blankAssign = () => ({ map: {}, sent: {}, chain: {}, nophoto: {}, invites: {}, trash: {}, tpl: {} });
 async function syncAssign() {
   if (!HOST) return;
   const blob = S.assign, ct = blob ? blob.ct : '';
   if (ct === HOST.assignCt) return;
   HOST.assignCt = ct;
-  const blank = () => ({ map: {}, sent: {}, chain: {}, nophoto: {}, invites: {} });
+  const blank = blankAssign;
   if (!blob) { HOST.assign = blank(); return; }
   try { const d = await decryptJSON(HOST.assignKey, blob); HOST.assign = d && d.map ? Object.assign(blank(), d) : Object.assign(blank(), { map: d || {} }); }
   catch (e) { HOST.assign = blank(); }
@@ -597,6 +697,7 @@ function onState(prev, was) {
   if (HOST && (S.assign ? S.assign.ct : '') !== HOST.assignCt) syncAssign().then(renderAdmin);
   if (HOST) syncRsvpSecrets().then(c => { if (c) renderAdmin(); });
   if (HOST) syncHostPhotos().then(c => { if (c) renderAdmin(); });
+  if (HOST) vaultSync();
   if (ME) syncPhotos();
   render();
   if (HOST) hostJobs();
@@ -618,6 +719,7 @@ function signOut(silent) {
   if (!silent && ME && ME.type === 'player') backend.update({ [PL(ME.c.id) + '/lastSeen']: 0 });
   saveSession(null); ME = null; HOST = null; ui.built = null; ui.scan = null;
   $('#nextbarRoot').innerHTML = ''; document.body.classList.remove('has-nextbar');
+  if (JV.stream) { try { JV.stream.abort(); } catch (e) { } } JV.msgs = []; $('#jvRoot').innerHTML = '';
   render(); window.scrollTo(0, 0);
 }
 
@@ -836,7 +938,7 @@ function directoryHTML(meId, filter) {
 }
 
 /* ---------------- player view ---------------- */
-const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
+const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}" title="${esc(r.desc || '')}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
 function playerShellHTML() {
   const views = [['now', 'Now', ICON.now], ['brief', 'Brief', ICON.brief], ['evidence', 'Evidence', ICON.ev], ['people', "Who's Who", ICON.people], ['file', 'My File', ICON.file]];
   return `${topbar(ME.c.inspector ? 'INVESTIGATOR ACCESS' : 'SECURE PERSONNEL DOSSIER')}
@@ -981,7 +1083,7 @@ function renderPlayer() {
   patch($('#deadStrip'), String(iAmDead), iAmDead ? `<div class="deadstrip">STATUS: DECEASED · STAY IN CHARACTER · AWAIT HOST INSTRUCTIONS</div>` : '');
   patch($('#dossierBody'), [S.flags.killerKnows, JSON.stringify(dd), Object.keys(S.phaseLog).length, ui.photoVer].join('|'), dossierHTML(c));
   patch($('#briefBody'), [S.flags.killerKnows, (c.brief && c.brief.share || []).map((s, i) => store.get(sharedKey(i))).join()].join('|'), briefHTML(c));
-  patch($('#mapBody'), JSON.stringify(S.rooms) + (ui.freshRooms ? [...ui.freshRooms].join() : ''), mapHTML());
+  patch($('#mapBody'), JSON.stringify(S.rooms) + JSON.stringify(S.site.rooms || '') +(ui.freshRooms ? [...ui.freshRooms].join() : ''), mapHTML());
   patch($('#dirBody'), JSON.stringify([ui.dirFilter, dd, S.unmasked, ui.directory.length, ui.photoVer]), directoryHTML(c.id, ui.dirFilter));
 
   // verdict
@@ -1125,11 +1227,36 @@ function confirmKill() {
 /* =========================================================================
    HOST · MASTER CONTROL TERMINAL  —  Game · Characters · Players · Tools
    ========================================================================= */
-const TABS = [['game', 'Game'], ['characters', 'Characters'], ['players', 'Players'], ['tools', 'Tools']];
+const TAB_ICON = {
+  control: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18 6"/></svg>',
+  game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5z"/></svg>',
+  characters: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5c3 1.3 5 1.3 8 0 3 1.3 5 1.3 8 0v6c0 5-4 8-8 9-4-1-8-4-8-9z"/><path d="M8.5 11h2M13.5 11h2M9.5 15.5c1.5 1 3.5 1 5 0"/></svg>',
+  players: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>'
+};
+const TABS = [['control', 'Control Room'], ['game', 'Game'], ['characters', 'Characters'], ['players', 'Players'], ['tools', 'Tools']];
 function adminShellHTML() {
   return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="printBtn">PRINT</button><button class="iconbtn" id="notesBtn">NOTES</button>`)}
-  <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${l}<span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
+  <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${TAB_ICON[k] || ''}${l}<span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
+  <div class="hud" id="hud"></div>
   <div id="modeNote"></div>
+
+  <!-- CONTROL ROOM: everything at a glance -->
+  <div data-pane="control">
+    <div id="crHero"></div>
+    <div class="kpis" id="crKpis"></div>
+    <div class="grid2"><div>
+      <section class="panel"><div class="ph"><h2>Needs Your Attention</h2><span class="sub" id="crAlertSub"></span></div><div class="alerts" id="crAlerts"></div></section>
+      <section class="panel"><div class="ph"><h2>RSVP Safety Net</h2><span class="sub">NOTHING GETS LOST</span></div><div id="crSafety"></div></section>
+    </div><div>
+      <section class="panel"><div class="ph"><h2>Live Feed</h2><span class="sub">EVERYTHING, AS IT HAPPENS</span></div><div class="feed" id="crFeed"></div></section>
+    </div></div>
+    <section class="panel gold"><div class="ph"><h2>The Big Board</h2><span class="sub" id="crBoardSub"></span></div>
+      <p class="note" style="margin:0 0 12px">Every character in one view: effort level, who plays them, and where their invitation stands. Tap an open role to cast it, or a cast one for its dossier and controls.</p>
+      <div class="board-tools" id="crBoardTools"></div>
+      <div class="board" id="crBoard"></div>
+    </section>
+  </div>
 
   <!-- GAME -->
   <div data-pane="game">
@@ -1165,8 +1292,9 @@ function adminShellHTML() {
   <!-- CHARACTERS -->
   <div data-pane="characters">
     <section class="panel gold"><div class="ph"><h2>Characters, Codes &amp; Access</h2><span class="sub" id="castSub"></span></div>
-      <p class="note" style="margin:0 0 12px"><b>Access QR</b> logs a phone straight into a dossier. <b>Revoke</b> blocks it instantly; <b>Restore</b> gives it back. <b>Sign out</b> kicks the current phone. <b>Message</b> is for emergencies only: memories arrive on their own.</p>
-      <div class="cast-tools"><input class="input" id="castFilter" placeholder="Search characters or guests…"><label class="check"><input type="checkbox" id="showCodes"> Show code words</label></div>
+      <p class="note" style="margin:0 0 12px"><b>Access QR</b> logs a phone straight into a dossier. <b>Revoke</b> blocks it instantly; <b>Restore</b> gives it back. <b>Sign out</b> kicks the current phone. <b>Message</b> is for emergencies only: memories arrive on their own. The effort level is what guests see on their invitation: <span class="pill eff-big">●●● LEADING</span> about 20 minutes of prep, <span class="pill eff-medium">●●○ FEATURED</span> 10 to 15, <span class="pill eff-light">●○○ SUPPORTING</span> about 5.</p>
+      <div class="effsum" id="effSum"></div>
+      <div class="cast-tools"><input class="input" id="castFilter" placeholder="Search characters or guests…"><select class="input" id="castEffort" style="width:auto;flex:none"><option value="">Every effort level</option><option value="big">Leading roles</option><option value="medium">Featured roles</option><option value="light">Supporting roles</option><option value="open">Open roles only</option></select><label class="check"><input type="checkbox" id="showCodes"> Show code words</label></div>
       <div id="castList"></div>
     </section>
   </div>
@@ -1184,7 +1312,7 @@ function adminShellHTML() {
       <div class="pstats" id="pstats"></div>
       <p class="note" style="margin:0 0 12px">Give each guest a character, then send their <b>personal invitation</b> (EMAIL INVITE or COPY INVITE). Their link opens a sealed-letter reveal of their role: they accept it, decline, or ask for a different character, and their code word appears once they accept. Everything they do shows up here. Characters marked <span class="pill must">★ MUST CAST</span> carry the solution: fill them first. <b>Backup roles</b> take over if their character dies. Tap a number above to filter the list.</p>
       <div class="cast-tools"><input class="input" id="guestQ" placeholder="Search guests or characters…"></div>
-      <div class="row-gap" style="margin:0 0 12px"><button class="btn sm gold" id="addRsvp">+ ADD AN RSVP</button><button class="btn sm" id="copyAllInvites">COPY ALL INVITE LINKS</button><button class="btn sm" id="copyContacts">COPY CONTACT LIST</button><button class="btn sm" id="emailReminder">EMAIL REMINDER TO ALL</button><button class="btn sm ghost" id="copyReminder">COPY REMINDER</button><span class="note">Spreadsheet-ready lists. Only this host terminal can read them.</span></div>
+      <div class="row-gap" style="margin:0 0 12px"><button class="btn sm gold" id="addRsvp">+ ADD AN RSVP</button><button class="btn sm" id="copyAllInvites">COPY ALL INVITE LINKS</button><button class="btn sm" id="copyContacts">COPY CONTACT LIST</button><button class="btn sm" id="emailReminder">EMAIL REMINDER TO ALL</button><button class="btn sm ghost" id="copyReminder">COPY REMINDER</button><button class="btn sm ghost" data-cract="backup">⤓ BACKUP RSVPS</button><span class="note">Spreadsheet-ready lists. Only this host terminal can read them.</span></div>
       <div id="openRoles"></div>
       <div id="rsvpList"></div>
     </section>
@@ -1213,9 +1341,11 @@ function adminShellHTML() {
         <div class="fgrid" style="margin-top:12px"><div><label class="lbl" for="pe-calStart">Calendar start</label><input class="input" type="datetime-local" id="pe-calStart" data-pe="calStart"></div><div><label class="lbl" for="pe-calEnd">Calendar end</label><input class="input" type="datetime-local" id="pe-calEnd" data-pe="calEnd"></div></div>
         <p class="note" style="margin:6px 0 0">Set both and the invitation shows "Add to calendar" buttons.</p>
         <div class="field" style="margin-top:12px"><label class="lbl" for="pe-notice">Announcement banner on the invitation</label><input class="input" id="pe-notice" data-pe="notice" placeholder="e.g. Venue change! See the new address below."></div>
+        <div class="fgrid" style="margin-top:4px"><div><label class="lbl" for="pe-capacity">Roles in the game (capacity)</label><input class="input" type="number" min="1" max="200" id="pe-capacity" data-pe="capacity" placeholder="${esc(String((window.PARTY && PARTY.capacity) || 34))}"></div><div style="display:flex;align-items:flex-end"><label class="check" style="margin:0 0 12px"><input type="checkbox" id="pe-rsvpRolling"> Rolling RSVPs (no reply-by date; the page counts down the roles left)</label></div></div>
         <label class="check"><input type="checkbox" id="pe-rsvpOpen"> RSVPs are open</label>
         <label class="check"><input type="checkbox" id="pe-showRules"> Show the rules of the night</label>
         <label class="check"><input type="checkbox" id="pe-showDatabaseLink"> Show the Database button</label>
+        <div class="field" style="margin-top:12px"><label class="lbl" for="pe-thanks">Thank-you note on the personal role invitations</label><textarea class="input" id="pe-thanks" data-pe="thanks" maxlength="900" style="min-height:96px" placeholder="Thank you for being part of The Last Toast. We've spent weeks building this night: the story, the secrets, and every clue hidden in every room. It only comes alive because of people like you who are willing to step into it. We can't wait to see what you do with your role."></textarea></div>
         <div class="row-gap" style="margin-top:12px"><button class="btn gold" id="peSave">PUBLISH CHANGES</button><button class="btn ghost" id="peRevert">REVERT TO party.js</button></div>
         <div class="divider"></div>
         <label class="lbl" for="pe-welcome">Projector welcome headline</label>
@@ -1225,6 +1355,21 @@ function adminShellHTML() {
         <textarea class="input" id="pe-slides" style="min-height:100px" placeholder="${esc(((window.PARTY && PARTY.display && PARTY.display.slides) || []).join('\n'))}"></textarea>
         <div class="row-gap" style="margin-top:10px"><button class="btn" id="slSave">UPDATE PROJECTOR</button></div>
       </section>
+      <section class="panel"><div class="ph"><h2>Rooms &amp; Locations</h2><span class="sub">PHONES UPDATE INSTANTLY</span></div>
+        <p class="note" style="margin:0 0 12px">Rename a room or change where it is. Players see this on their Estate Map, and it's used in every "room is now open" alert. Leave a box empty to keep the story's text (shown faintly).</p>
+        <div id="roomEdit"></div>
+        <div class="row-gap" style="margin-top:4px"><button class="btn gold" id="roomSave">SAVE ROOMS</button><button class="btn ghost" id="roomRevert">BACK TO THE STORY'S ROOMS</button></div>
+      </section>
+      <section class="panel"><div class="ph"><h2>Message Templates</h2><span class="sub">PRIVATE · ONLY YOU CAN READ THESE</span></div>
+        <p class="note" style="margin:0 0 8px">The text behind EMAIL INVITE, COPY INVITE and the reminder buttons. Fill-ins you can use:</p>
+        <div class="tplvars">{first} {name} {link} {title} {date} {time} {venue} {address} {dress} {database} {from} {hosts}</div>
+        <label class="lbl" for="tpl-invite">Personal role invitation</label>
+        <textarea class="input" id="tpl-invite" style="min-height:190px"></textarea>
+        <div style="height:10px"></div>
+        <label class="lbl" for="tpl-reminder">Reminder to everyone coming</label>
+        <textarea class="input" id="tpl-reminder" style="min-height:190px"></textarea>
+        <div class="row-gap" style="margin-top:10px"><button class="btn gold" id="tplSave">SAVE TEMPLATES</button><button class="btn ghost" id="tplReset">RESET TO DEFAULT</button></div>
+      </section>
     </div><div>
       <section class="panel red"><div class="ph"><h2>Emergency Tools</h2><span class="sub">IF ANYTHING GOES WRONG</span></div>
         <div class="relist">
@@ -1233,9 +1378,9 @@ function adminShellHTML() {
           <div class="reitem"><div class="t">Let everyone back in<small>Unseals dossiers and restores every revoked player</small></div><button class="btn sm" id="emAccess">RESTORE ALL ACCESS</button></div>
           <div class="reitem"><div class="t">Start the voting over<small>Clears every accusation and the verdict</small></div><button class="btn sm" id="emVotes">CLEAR VOTES</button></div>
           <div class="reitem"><div class="t">Save a backup<small>Downloads the whole game as a file</small></div><button class="btn sm" id="emExport">EXPORT</button></div>
-          <div class="reitem"><div class="t">Restore a backup<small>Replaces everything with a saved file</small></div><button class="btn sm" id="emImport">IMPORT</button><input type="file" id="emFile" accept=".json,application/json" hidden></div>
+          <div class="reitem"><div class="t">Restore a backup<small>Puts a saved file back. RSVPs that came in after it was saved are kept.</small></div><button class="btn sm" id="emImport">IMPORT</button><input type="file" id="emFile" accept=".json,application/json" hidden></div>
           <div class="reitem"><div class="t"><b>Hard reset</b><small>New game: wipes play data, signs everyone out. Keeps RSVPs, roles and page edits.</small></div><button class="btn sm danger" id="resetBtn">HARD RESET</button></div>
-          <div class="reitem"><div class="t"><b>Delete all RSVPs</b><small>Also clears role assignments</small></div><button class="btn sm danger" id="emRsvps">DELETE</button></div>
+          <div class="reitem"><div class="t"><b>Delete all RSVPs</b><small>Also clears role assignments. Saves a backup file first, and keeps a copy you can restore.</small></div><button class="btn sm danger" id="emRsvps">DELETE</button></div>
         </div>
       </section>
       <section class="panel gold"><div class="ph"><h2>Case Files</h2><span class="sub" id="recapSub">AFTER THE GAME</span></div>
@@ -1434,6 +1579,7 @@ function confirmPhase(i) {
 }
 const parseClock = t => { const m = String(t || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i); if (!m) return null; let h = +m[1]; if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12; if (!m[3] && h < 7) h += 12; return h * 60 + (+m[2]); };
 function tickTimer() {
+  if (HOST) tickCountdown();
   const el = $('#phaseTimer'); if (!el || !HOST || !S.phase || !S.phase.ts) return;
   const secs = Math.max(0, Math.floor((backend.now() - S.phase.ts) / 1000));
   el.textContent = `RUNNING ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
@@ -1495,7 +1641,7 @@ function renderGame() {
     <div class="relist">${HOST.hints.map((h, i) => `<div class="reitem"><span class="pill ${S.hintsOpen[i] ? 'green' : i === opened ? 'gold' : ''}">${S.hintsOpen[i] ? 'UNLOCKED' : i === opened ? 'NEXT' : 'LOCKED'}</span><div class="t">${esc(h)}</div>${i === opened ? '<button class="btn sm" id="hintNow">GIVE NOW</button>' : ''}</div>`).join('')}</div>`);
 
   // rooms
-  patch($('#roomCtl'), JSON.stringify(S.rooms), (HOST.rooms || []).map(r => { const o = roomOpen(S, r.id); return `<div class="reitem"><span class="pill ${o ? 'green' : 'red'}">${o ? 'OPEN' : 'SEALED'}</span><div class="t"><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small></div>${r.alwaysOpen ? '<span class="pill">ALWAYS OPEN</span>' : `<button class="btn sm ${o ? 'ghost' : ''}" data-room="${esc(r.id)}" data-open="${o ? '0' : '1'}">${o ? 'SEAL' : 'OPEN'}</button>`}</div>`; }).join(''));
+  patch($('#roomCtl'), JSON.stringify(S.rooms) + JSON.stringify(S.site.rooms || ''), (HOST.rooms || []).map(r => { const o = roomOpen(S, r.id); return `<div class="reitem"><span class="pill ${o ? 'green' : 'red'}">${o ? 'OPEN' : 'SEALED'}</span><div class="t"><b>${esc(roomName(r.id) || r.name)}</b><small>${esc(roomPlace(r.id) || r.place || '')}</small></div>${r.alwaysOpen ? '<span class="pill">ALWAYS OPEN</span>' : `<button class="btn sm ${o ? 'ghost' : ''}" data-room="${esc(r.id)}" data-open="${o ? '0' : '1'}">${o ? 'SEAL' : 'OPEN'}</button>`}</div>`; }).join(''));
 
   // evidence board
   const evs = releasedEvidence(S);
@@ -1672,14 +1818,16 @@ async function openPrint(which) {
 function bindAdmin() {
   bindLogout();
   const setTab = t => {
-    ui.tab = t; store.set('hostTab', t);
+    ui.tab = t; store.set('hostTab2', t);
     $$('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
     $$('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t));
     renderAdmin(true);
   };
   ui.setTab = setTab;
-  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { setTab(b.dataset.tab); } });
-  setTab(TABS.some(t => t[0] === ui.tab) ? ui.tab : 'game');
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { setTab(b.dataset.tab); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+  ui.tab = store.get('hostTab2') || 'control';
+  setTab(TABS.some(t => t[0] === ui.tab) ? ui.tab : 'control');
+  bindJarvis();
   $('#printBtn').onclick = printModal;
   $('#notesBtn').onclick = () => openModal(`<div class="ph"><h2>Host Notes</h2><span class="sub">DO NOT DISTRIBUTE</span></div><div class="host-notes">${HOST.notes || ''}</div>`);
 
@@ -1690,7 +1838,15 @@ function bindAdmin() {
     const ca = t.closest('[data-ca]'); if (ca) { handleCastAction(ca.dataset.ca, ca.dataset.id); return; }
     const c = t.closest('[data-copy]'); if (c) { const u = linkUrl(c.dataset.copy); await copyText(u); toast('COPIED', u, 'ok'); return; }
     const q = t.closest('[data-qr]'); if (q) { showQR(linkUrl(q.dataset.qr)); return; }
-    const gt = t.closest('[data-gotab]'); if (gt) { setTab(gt.dataset.gotab); return; }
+    const cr = t.closest('[data-cract]'); if (cr) { controlAction(cr.dataset.cract, cr.dataset.id); return; }
+    const tl = t.closest('[data-tile]'); if (tl) { const cid = tl.dataset.tile; if (guestFor()[cid]) openDossierModal(cid); else castModal(cid); return; }
+    const bf = t.closest('[data-boardf]'); if (bf) { ui.boardF = bf.dataset.boardf; renderAdmin(true); return; }
+    const gt = t.closest('[data-gotab]');
+    if (gt) {
+      if (gt.dataset.gfilter) ui.guestStatus = gt.dataset.gfilter;
+      if (gt.dataset.gq !== undefined) { ui.guestQ = gt.dataset.gq; const gq = $('#guestQ'); if (gq) gq.value = gt.dataset.gq; }
+      setTab(gt.dataset.gotab); window.scrollTo({ top: 0, behavior: 'smooth' }); return;
+    }
     const rp = t.closest('[data-runphase]'); if (rp) { confirmPhase(+rp.dataset.runphase); return; }
     const rm = t.closest('[data-room]'); if (rm) { A.room(rm.dataset.room, rm.dataset.open === '1'); return; }
     const dl = t.closest('[data-deliver]'); if (dl) { A.deliver(dl.dataset.deliver); return; }
@@ -1710,6 +1866,7 @@ function bindAdmin() {
   // players
   const sc = $('#showCodes'); sc.checked = store.get('showCodes') !== '0'; sc.onchange = () => { store.set('showCodes', sc.checked ? '1' : '0'); renderAdmin(true); };
   $('#castFilter').addEventListener('input', e => { ui.castFilter = e.target.value.toLowerCase(); renderAdmin(true); });
+  $('#castEffort').addEventListener('change', e => { ui.castEffort = e.target.value; renderAdmin(true); });
 
   // tools: projector
   $('#openDisplay').href = siteBase() + 'display.html';
@@ -1817,10 +1974,13 @@ function bindAdmin() {
     const del = e.target.closest('[data-delrsvp]');
     if (del) {
       const id = del.dataset.delrsvp;
-      confirmModal('Delete this RSVP?', `Removes ${esc((S.rsvps[id] || {}).name || 'this guest')} and any roles assigned to them.`, 'DELETE', async () => {
+      confirmModal('Delete this RSVP?', `Removes ${esc((S.rsvps[id] || {}).name || 'this guest')} and any roles assigned to them. A copy stays in <b>Control Room → RSVP Safety Net</b> so you can bring them back.`, 'DELETE', async () => {
+        const rec = S.rsvps[id];
         await revokeInvite(id, true); await revokeInvite(id + '#p', true);
         delete HOST.assign.map[id]; delete HOST.assign.map[id + '#p']; delete (HOST.assign.chain || {})[id];
+        if (rec) trashRsvp(id, rec);
         await backend.update({ ['rsvps/' + id]: null, ['hostPhotos/' + hpKey(id)]: null, ['hostPhotos/' + hpKey(id + '#p')]: null }); await saveAssign();
+        vaultForget([id]); log(`RSVP deleted by the host: ${rec ? rec.name : id}`);
       });
     }
   });
@@ -1830,6 +1990,7 @@ function bindAdmin() {
     const o = (S.site && S.site.party) || {}, P0 = window.PARTY || {};
     $$('[data-pe]').forEach(i => { i.value = o[i.dataset.pe] || ''; });
     $('#pe-rsvpOpen').checked = o.rsvpOpen !== undefined ? o.rsvpOpen !== false : P0.rsvpOpen !== false;
+    $('#pe-rsvpRolling').checked = o.rsvpRolling !== undefined ? o.rsvpRolling !== false : P0.rsvpRolling !== false;
     $('#pe-showRules').checked = o.showRules !== undefined ? !!o.showRules : !!P0.showRules;
     $('#pe-showDatabaseLink').checked = o.showDatabaseLink !== undefined ? o.showDatabaseLink !== false : P0.showDatabaseLink !== false;
     $('#pe-welcome').value = (S.site && S.site.welcome) || '';
@@ -1840,8 +2001,8 @@ function bindAdmin() {
     $$('[data-rc]').forEach(i => { i.value = i.dataset.rc === 'album' ? (rc && rc.album) || '' : i.dataset.rc === 'note' ? (rc && rc.note) || '' : aw[i.dataset.rc] || ''; });
     $('#rc-names').checked = !!(rc && rc.names);
   };
-  const fillBoth = () => { fillEditor(); fillRecap(); };
-  fillBoth(); ui.fillEditor = fillBoth;
+  const fillBoth = () => { fillEditor(); fillRecap(); fillRooms(); };
+  ui.fillEditor = fillBoth; ui.fillTpl = () => fillTpl();
   $('#rcPublish').onclick = () => {
     const opts = { names: $('#rc-names').checked, awards: {}, album: $('#rc-album').value.trim(), note: $('#rc-note').value.trim() };
     ['best', 'dressed', 'detective', 'liar'].forEach(k => { const v = $('#rc-' + k).value.trim(); if (v) opts.awards[k] = v; });
@@ -1854,7 +2015,8 @@ function bindAdmin() {
   $('#rcUnpublish').onclick = () => confirmModal('Unpublish the case files?', 'The recap page goes back to "sealed" and the link disappears from the invitation.', 'UNPUBLISH', async () => { await backend.set('site/recap', null); log('Case files unpublished'); });
   $('#peSave').onclick = async () => {
     const o = {}; $$('[data-pe]').forEach(i => { if (i.value.trim()) o[i.dataset.pe] = i.value.trim(); });
-    o.rsvpOpen = $('#pe-rsvpOpen').checked; o.showRules = $('#pe-showRules').checked; o.showDatabaseLink = $('#pe-showDatabaseLink').checked;
+    if (o.capacity) { o.capacity = Math.round(+o.capacity); if (!(o.capacity > 0)) delete o.capacity; }
+    o.rsvpOpen = $('#pe-rsvpOpen').checked; o.rsvpRolling = $('#pe-rsvpRolling').checked; o.showRules = $('#pe-showRules').checked; o.showDatabaseLink = $('#pe-showDatabaseLink').checked;
     await backend.set('site/party', o); log('Invitation page updated live'); toast('PUBLISHED', 'The invitation page has been updated.', 'ok');
   };
   $('#peRevert').onclick = () => confirmModal('Revert the invitation?', 'Removes every live edit and goes back to the text in party.js.', 'REVERT', async () => { await backend.set('site/party', null); fillEditor(); log('Invitation page reverted'); }, false);
@@ -1863,6 +2025,26 @@ function bindAdmin() {
     await backend.update({ 'site/slides': slides.length ? slides : null, 'site/welcome': $('#pe-welcome').value.trim() || null });
     log('Projector text updated'); toast('PROJECTOR UPDATED', '', 'ok');
   };
+
+  // tools: rooms & locations (site/rooms, shown on every phone's Estate Map)
+  $('#roomEdit').innerHTML = ROOMS.map(r => { const o = r._orig || r; return `<div class="fgrid" style="margin-bottom:10px"><div><label class="lbl" for="rn-${esc(r.id)}">Room</label><input class="input" id="rn-${esc(r.id)}" data-rn="${esc(r.id)}" maxlength="60" placeholder="${esc(o.name)}"></div><div><label class="lbl" for="rp-${esc(r.id)}">Where it is</label><input class="input" id="rp-${esc(r.id)}" data-rp="${esc(r.id)}" maxlength="90" placeholder="${esc(o.place || '')}"></div></div>`; }).join('');
+  const fillRooms = () => { const o = S.site.rooms || {}; $$('[data-rn]').forEach(i => { i.value = (o[i.dataset.rn] || {}).name || ''; }); $$('[data-rp]').forEach(i => { i.value = (o[i.dataset.rp] || {}).place || ''; }); };
+  $('#roomSave').onclick = async () => {
+    const o = {};
+    ROOMS.forEach(r => { const n = $('#rn-' + r.id).value.trim(), p = $('#rp-' + r.id).value.trim(); if (n || p) o[r.id] = Object.assign(n ? { name: n } : {}, p ? { place: p } : {}); });
+    await backend.set('site/rooms', Object.keys(o).length ? o : null); log('Rooms & locations updated'); toast('ROOMS SAVED', 'Every phone shows the new names and places.', 'ok');
+  };
+  $('#roomRevert').onclick = () => confirmModal("Use the story's rooms?", 'Removes your room names and locations and goes back to the ones in the story.', 'REVERT', async () => { await backend.set('site/rooms', null); log('Rooms reverted to the story'); }, false);
+
+  // tools: message templates (kept inside the host's locked assignments)
+  const fillTpl = () => { const t = HOST.assign.tpl || {}; $('#tpl-invite').value = t.invite || TPL.invite; $('#tpl-reminder').value = t.reminder || TPL.reminder; };
+  $('#tplSave').onclick = async () => {
+    const inv = $('#tpl-invite').value.trim(), rem = $('#tpl-reminder').value.trim();
+    if (inv && !inv.includes('{link}')) { toast('ADD {link}', 'The invitation needs {link} somewhere, or guests will have no way to open their role.', 'err'); return; }
+    HOST.assign.tpl = { invite: inv && inv !== TPL.invite ? inv : '', reminder: rem && rem !== TPL.reminder ? rem : '' };
+    await saveAssign(); log('Message templates updated'); toast('TEMPLATES SAVED', 'EMAIL INVITE, COPY INVITE and the reminders now use them.', 'ok');
+  };
+  $('#tplReset').onclick = () => confirmModal('Reset both templates?', 'Goes back to the original wording.', 'RESET', async () => { HOST.assign.tpl = {}; await saveAssign(); fillTpl(); }, false);
 
   // tools: emergency
   $('#emReload').onclick = () => confirmModal('Force refresh every device?', 'Every open phone, the projector and the invitation page reload. Everyone stays logged in.', 'REFRESH ALL', async () => { log('Forced refresh of all devices'); await backend.set('ctl/reload', Date.now()); }, false);
@@ -1882,7 +2064,13 @@ function bindAdmin() {
   $('#emFile').onchange = async e => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
     let data; try { data = JSON.parse(await f.text()); } catch (err) { toast('NOT A BACKUP', 'That file could not be read.', 'err'); return; }
-    confirmModal('Restore this backup?', `Everything (game, RSVPs, roles, page edits) will be replaced with <b>${esc(f.name)}</b>.`, 'RESTORE', async () => { await backend.setRoot(data); toast('BACKUP RESTORED', '', 'ok'); });
+    if (!data || typeof data !== 'object') { toast('NOT A BACKUP', 'That file could not be read.', 'err'); return; }
+    if (data.kind === 'rsvp-backup') { restoreRsvpFile(data, f.name); return; }
+    confirmModal('Restore this backup?', `The game, roles and page edits are replaced with <b>${esc(f.name)}</b>. RSVPs are merged: anyone who replied after this file was saved is kept.`, 'RESTORE', async () => {
+      downloadRsvpBackup('before-restore');
+      data.rsvps = Object.assign({}, data.rsvps || {}, RAW.rsvps || {});
+      await backend.setRoot(data); toast('BACKUP RESTORED', 'Every current RSVP was kept.', 'ok');
+    });
   };
   $('#resetBtn').addEventListener('click', () => {
     openModal(`<div class="ph"><h2 style="color:var(--red2)">Hard Reset</h2></div>
@@ -1894,7 +2082,25 @@ function bindAdmin() {
     inp.focus(); inp.oninput = () => { yes.disabled = inp.value.trim().toUpperCase() !== 'RESET'; };
     yes.onclick = async () => { yes.disabled = true; yes.textContent = 'WIPING…'; await backend.set('live', Object.assign(freshLive(), RAW.live && RAW.live.photos ? { photos: RAW.live.photos } : {})); await backend.set('site/recap', null); log('HARD RESET: new game started'); toast('SYSTEM RESET', 'Ready for a new game.', 'ok'); closeModal(); };
   });
-  $('#emRsvps').onclick = () => confirmModal('Delete every RSVP?', 'All RSVPs and all role assignments are permanently removed.', 'DELETE ALL', async () => { await backend.update({ rsvps: null, assign: null, invites: null, inviteStatus: null, hostPhotos: null }); log('All RSVPs deleted'); });
+  $('#emRsvps').onclick = () => {
+    const n = Object.keys(S.rsvps).length;
+    openModal(`<div class="ph"><h2 style="color:var(--red2)">Delete all ${n} RSVPs?</h2></div>
+      <p style="line-height:1.6">Every RSVP, role assignment and personal invitation is removed from the site. A backup file downloads first, and a copy stays in <b>Control Room → RSVP Safety Net</b> so you can bring anyone back.</p>
+      <label class="lbl" for="delAllConfirm">Type DELETE to confirm</label>
+      <input class="input mono" id="delAllConfirm" autocomplete="off" autocapitalize="characters">
+      <div class="row-gap" style="margin-top:14px"><button class="btn danger" id="delAllYes" disabled>DELETE ALL RSVPS</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+    const inp = $('#delAllConfirm'), yes = $('#delAllYes');
+    inp.focus(); inp.oninput = () => { yes.disabled = inp.value.trim().toUpperCase() !== 'DELETE'; };
+    yes.onclick = async () => {
+      yes.disabled = true; yes.textContent = 'SAVING A BACKUP…';
+      downloadRsvpBackup('before-delete-all');
+      const ids = Object.keys(S.rsvps); ids.forEach(id => S.rsvps[id] && trashRsvp(id, S.rsvps[id]));
+      HOST.assign = Object.assign(blankAssign(), { trash: HOST.assign.trash, tpl: HOST.assign.tpl });
+      await backend.update({ rsvps: null, invites: null, inviteStatus: null, hostPhotos: null }); await saveAssign();
+      vaultForget(ids); log(`All ${ids.length} RSVPs deleted (backup saved)`); closeModal();
+    };
+  };
+  fillBoth(); fillTpl();
 }
 const linkUrl = k => ({ invite: siteBase(), db: siteBase() + 'database.html', display: siteBase() + 'display.html' })[k];
 function roleMessage(name, c, backups) {
@@ -1902,16 +2108,27 @@ function roleMessage(name, c, backups) {
   const costume = c.brief && c.brief.costume ? `\n\nCostume idea (only a suggestion, make the character your own): ${c.brief.costume}` : '';
   return `Hi ${name}! Your role for ${(P.title || 'The Last Toast').toUpperCase()}:\n\n${c.name}\n${c.occ || ''}\n\nYour secret code word: ${c.code}\n\nOpen ${siteBase()}database.html and enter it. "My File" is your dossier (who you are). "Brief" is how to play tonight: your goal, what to share, what to keep until someone asks, and your timeline. Keep your code word to yourself, and don't show your screen to anyone!${costume}${backups && backups.length ? `\n\nIf your character doesn't survive the night, stay logged in: your phone will give you a new role.` : ''}`;
 }
-function reminderMessage() {
-  const P = party();
-  return `You're invited to ${P.title || 'The Last Toast'}, and it's almost here!\n\n${[P.date, P.time].filter(Boolean).join(' · ')}\n${[P.venue, P.address].filter(Boolean).join(', ')}\n${P.dress ? 'Dress: ' + P.dress + '\n' : ''}\nBefore you come:\n• Log in at ${siteBase()}database.html with your code word and read your dossier (My File) and your Brief.\n• Plan your costume. The costume idea in your role email is only a suggestion.\n• Charge your phone. You'll use it all night.\n\nArrive on time: the story starts the moment the doors open.\n\n${[P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ')}`;
+/* message templates: the host can reword these in Tools → Message Templates (saved in the locked assignments) */
+const TPL = {
+  invite: `Hi {first}!\n\nThank you so much for joining us for {title} on {date}.\n\nYour role is ready, and it's sealed just for you. Open your private invitation to find out who you'll be:\n{link}\n\nYou can accept the role there or ask for a different one. Once you accept, you'll get your secret code word and can step into the Kane Oil Database to read your dossier and brief.\n\nThis link is only for you, so please don't share it.\n\n{from}`,
+  reminder: `You're invited to {title}, and it's almost here!\n\n{date} · {time}\n{venue}, {address}\nDress: {dress}\n\nBefore you come:\n• Log in at {database} with your code word and read your dossier (My File) and your Brief.\n• Plan your costume. The costume idea in your role email is only a suggestion.\n• Charge your phone. You'll use it all night.\n\nArrive on time: the story starts the moment the doors open.\n\n{hosts}`
+};
+function fillTemplate(t, extra) {
+  const P = party(), v = Object.assign({ title: P.title || 'The Last Toast', date: P.date || '', time: P.time || '', venue: P.venue || '', address: P.address || '', dress: P.dress || '', database: siteBase() + 'database.html', from: hostSign(),
+    hosts: [P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ') }, extra || {});
+  return String(t).replace(/\{(\w+)\}/g, (m, k) => k in v ? v[k] : m);
 }
+function reminderMessage() { return fillTemplate((HOST.assign.tpl || {}).reminder || TPL.reminder); }
 
 /* ---------------- host: personal role invitations ----------------
    Each assigned guest gets a link (role.html#<id>.<key>). The key exists only in the link and in the host's
    locked assignments, so only that guest can open their character and code word. */
 const hostSign = () => String(party().host || 'Your hosts').replace(/^RAs?\s+/i, '');
 const effortOf = c => c.tier === 'ext' ? 'light' : c.mustCast ? 'big' : 'medium';
+const EFFORT_L = { big: 'LEADING', medium: 'FEATURED', light: 'SUPPORTING' }, EFFORT_N = { big: 3, medium: 2, light: 1 };
+const effortPill = c => { const e = effortOf(c), n = EFFORT_N[e]; return `<span class="pill eff-${e}" title="Effort for the night (what the guest sees on their invitation)">${'●'.repeat(n)}${'○'.repeat(3 - n)} ${EFFORT_L[e]}</span>`; };
+/* does the role's effort match what the guest asked for on their RSVP? */
+const fitWarn = (pref, c) => !c || !pref ? '' : pref === 'small' && effortOf(c) === 'big' ? 'ASKED FOR A SMALL ROLE' : pref === 'big' && effortOf(c) === 'light' ? 'ASKED FOR A BIG ROLE' : '';
 const hostDirOf = id => (HOST.directory || []).find(d => d.id === id) || {};
 const guestName = key => { const [rid, plus] = key.split('#'), r = S.rsvps[rid] || {}; return ((plus ? r.plusOneName || (r.name ? r.name + "'s guest" : '') : r.name) || '').trim(); };
 const firstName = n => String(n || '').trim().split(/\s+/)[0] || 'friend';
@@ -1936,8 +2153,8 @@ async function revokeInvite(key, quiet) {
   delete HOST.assign.invites[key]; if (!quiet) await saveAssign();
 }
 function inviteMessage(key, link) {
-  const P = party(), name = guestName(key), plus = key.includes('#');
-  return `${plus ? "(This is your plus-one's personal invitation. Please forward it to them privately.)\n\n" : ''}Hi ${firstName(name)}!\n\nThank you so much for joining us for ${(P.title || 'The Last Toast').toUpperCase()}${P.date ? ' on ' + P.date : ''}.\n\nYour role is ready, and it's sealed just for you. Open your private invitation to find out who you'll be:\n${link}\n\nYou can accept the role there or ask for a different one. Once you accept, you'll get your secret code word and can step into the Kane Oil Database to read your dossier and brief.\n\nThis link is only for you, so please don't share it.\n\n${hostSign()}`;
+  const name = guestName(key), plus = key.includes('#');
+  return `${plus ? "(This is your plus-one's personal invitation. Please forward it to them privately.)\n\n" : ''}${fillTemplate((HOST.assign.tpl || {}).invite || TPL.invite, { first: firstName(name), name, link })}`;
 }
 /* status of one guest spot (key = rsvpId, or rsvpId#p for a plus-one) */
 function keyStatus(key) {
@@ -2040,8 +2257,9 @@ function guestFor() {
 function renderAdmin(force) {
   if (!HOST || !$('#tabs')) return;
   if (force) $$('#app [data-pane] *').forEach(el => { if (el._sig !== undefined) el._sig = undefined; });
-  patch($('#modeNote'), backend ? backend.mode : 'x', backend && backend.mode === 'local'
-    ? `<div class="panel" style="border-color:rgba(212,162,76,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> only syncs between tabs on this device. Add your Firebase config to <span class="mono">config.js</span> for the real game.</p></div>` : '');
+  patch($('#modeNote'), (backend ? backend.mode : 'x') + !!ui.authWarn, backend && backend.mode === 'local'
+    ? `<div class="panel" style="border-color:rgba(212,162,76,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> only syncs between tabs on this device. Add your Firebase config to <span class="mono">config.js</span> for the real game.</p></div>`
+    : ui.authWarn ? `<div class="warnbar" data-cract="retryauth"><span class="pill red">NOT VERIFIED</span><span><b>This device couldn't prove to the database that it's the host,</b> so some changes may be refused. Tap to try again. If it keeps happening, reload the page.</span></div>` : '');
   const L = HOST.list, who = guestFor();
   const badge = (k, n) => { const b = $('#badge-' + k); if (b) { b.textContent = n; b.classList.toggle('hidden', !n); } };
   const spots = Object.entries(S.rsvps).filter(([, r]) => r && r.name && r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]);
@@ -2056,11 +2274,12 @@ function renderAdmin(force) {
   animateNum($('#n-online'), L.filter(c => isOnline(c.id)).length);
   animateNum($('#n-ev'), releasedEvidence(S).length);
   animateNum($('#n-votes'), tallyRows().reduce((n, r) => n + r[1], 0));
-  renderGame(); renderCast(who); renderGuests(who); renderTools();
+  renderControl(who); renderGame(); renderCast(who); renderGuests(who); renderTools();
 }
 function renderCast(who) {
-  const showCodes = store.get('showCodes') !== '0', dd = dead(), f = ui.castFilter;
-  const list = HOST.list.filter(c => !f || (c.name + ' ' + (c.occ || '') + ' ' + (who[c.id] || '') + ' ' + c.code).toLowerCase().includes(f));
+  const showCodes = store.get('showCodes') !== '0', dd = dead(), f = ui.castFilter, ef = ui.castEffort || '';
+  const list = HOST.list.filter(c => (!f || (c.name + ' ' + (c.occ || '') + ' ' + (who[c.id] || '') + ' ' + c.code + ' ' + EFFORT_L[effortOf(c)]).toLowerCase().includes(f)) && (!ef || (ef === 'open' ? !who[c.id] : effortOf(c) === ef)));
+  patch($('#effSum'), JSON.stringify(who), ['big', 'medium', 'light'].map(e => { const all = HOST.list.filter(c => effortOf(c) === e), open = all.filter(c => !who[c.id]).length; return `<span class="pill eff-${e}">${EFFORT_L[e]} · ${all.length - open}/${all.length} CAST</span>`; }).join('') + `<span class="pill ${HOST.list.some(c => !who[c.id]) ? 'gold' : 'green'}">${HOST.list.filter(c => !who[c.id]).length} OPEN IN TOTAL</span>`);
   $('#castSub').textContent = `${HOST.list.filter(c => isOnline(c.id)).length} ONLINE · ${Object.keys(S.revoked).length} REVOKED`;
   const keyOf = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) keyOf[cid] = key;
   const invPill = id => { if (!keyOf[id]) return ''; const k = keyStatus(keyOf[id]); return k.resp === 'accepted' ? '<span class="pill green">ROLE ACCEPTED</span>' : k.resp === 'declined' ? '<span class="pill red">ROLE DECLINED</span>' : k.resp === 'swap' ? '<span class="pill gold">WANTS ANOTHER ROLE</span>' : k.sent ? '<span class="pill">INVITE SENT</span>' : '<span class="pill gold">INVITE NOT SENT</span>'; };
@@ -2069,7 +2288,7 @@ function renderCast(who) {
     const p = playerRec(c.id), on = isOnline(c.id), isD = c.id in dd, mem = c.memories || [], due = mem.filter(m => memoryDue(S, m.when)).length;
     return `<div class="crow ${isD ? 'dead' : ''} ${S.revoked[c.id] ? 'revoked' : ''}">
       <div class="l1"><span class="dot ${on ? 'on' : ''}"></span><span class="cn">${esc(c.name)}</span><span class="occ">${esc(c.occ || '')}</span>
-        ${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${c.inspector ? '<span class="pill" style="border-color:var(--cyan);color:var(--cyan)">INSPECTOR</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${isD ? '<span class="pill red">DECEASED</span>' : ''}${S.revoked[c.id] ? '<span class="pill red">REVOKED</span>' : ''}<span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'DOSSIER OPENED' : 'DOSSIER NOT OPENED'}</span>${invPill(c.id)}${S.checkins[c.id] ? `<span class="pill green">CHECKED IN ${esc(fmtTime(S.checkins[c.id]))}</span>` : ''}</div>
+        ${effortPill(c)}${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${c.inspector ? '<span class="pill" style="border-color:var(--cyan);color:var(--cyan)">INSPECTOR</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${isD ? '<span class="pill red">DECEASED</span>' : ''}${S.revoked[c.id] ? '<span class="pill red">REVOKED</span>' : ''}<span class="pill ${p && p.unlocked ? 'green' : ''}">${p && p.unlocked ? 'DOSSIER OPENED' : 'DOSSIER NOT OPENED'}</span>${invPill(c.id)}${S.checkins[c.id] ? `<span class="pill green">CHECKED IN ${esc(fmtTime(S.checkins[c.id]))}</span>` : ''}</div>
       <div class="l2"><span>Code: <span class="code">${showCodes ? esc(c.code) : '••••••'}</span></span><span>Player: <b style="color:var(--cyan)">${esc(who[c.id] || 'unassigned')}</b></span>${mem.length ? `<span>Memories: ${due}/${mem.length}</span>` : ''}${p && p.vote ? `<span>Accuses: <b style="color:var(--gold2)">${esc(rname(p.vote.suspect))}</b></span>` : ''}</div>
       <div class="acts">${castActions(c)}</div></div>`;
   }).join('') || `<div class="empty">NO MATCHES</div>`);
@@ -2088,11 +2307,12 @@ function renderGuests(who) {
   patch($('#openRoles'), mustOpen.map(c => c.id).join() + '|' + openCore.map(c => c.id).join(),
     (mustOpen.length ? `<div class="warnbar" style="cursor:default"><span class="pill must">★ MUST CAST</span><span><b>Still needed (${mustOpen.length}):</b> ${mustOpen.map(c => esc(c.name)).join(', ')}</span></div>` : `<p class="note" style="margin:0 0 8px;color:var(--green)">✓ Every must-cast role is assigned.</p>`) +
     (openCore.length ? `<p class="note" style="margin:0 0 12px"><b style="color:var(--gold2)">Other principal roles open (${openCore.length}):</b> ${openCore.map(c => esc(c.name)).join(', ')}</p>` : ''));
-  const opt = (c, cur, key) => `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${c.mustCast ? '★ ' : ''}${esc(c.name)}${c.inspector ? ' · INSPECTOR' : ''}${c.mustCast ? ' · MUST CAST' : ''}${taken[c.id] && taken[c.id] !== key ? ' (taken)' : ''}</option>`;
+  const opt = (c, cur, key) => `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${c.mustCast ? '★ ' : ''}${esc(c.name)} · ${EFFORT_L[effortOf(c)].toLowerCase()}${c.inspector ? ' · INSPECTOR' : ''}${c.mustCast ? ' · MUST CAST' : ''}${taken[c.id] && taken[c.id] !== key ? ' (taken)' : ''}</option>`;
   const select = key => {
     const cur = HOST.assign.map[key] || '';
-    return `<select class="input sm" data-assign="${esc(key)}"><option value="">— Unassigned —</option><optgroup label="★ Must cast">${HOST.list.filter(c => c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup><optgroup label="Principal">${HOST.list.filter(c => c.tier !== 'ext' && !c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup><optgroup label="Extended cast">${HOST.list.filter(c => c.tier === 'ext' && !c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup></select>`;
+    return `<select class="input sm" data-assign="${esc(key)}"><option value="">— Unassigned —</option><optgroup label="★ Must cast · leading roles">${HOST.list.filter(c => c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup><optgroup label="Principal · featured roles">${HOST.list.filter(c => c.tier !== 'ext' && !c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup><optgroup label="Extended cast · supporting roles">${HOST.list.filter(c => c.tier === 'ext' && !c.mustCast).map(c => opt(c, cur, key)).join('')}</optgroup></select>`;
   };
+  const dupes = dupesOf();
   const backupsRow = key => {
     const chain = (HOST.assign.chain || {})[key] || [], primary = HOST.assign.map[key]; if (!primary) return '';
     const free = HOST.list.filter(c => c.id !== primary && !taken[c.id] && !chain.includes(c.id) && !c.killer && !c.inspector);
@@ -2116,12 +2336,13 @@ function renderGuests(who) {
     const assignRow = (key, name) => {
       const k = K[key], hp = hostPhotoFor(key), first = esc(firstName(name));
       const acts = k.cid ? `<button class="btn sm" data-invemail="${esc(key)}" ${d.email ? `data-email="${esc(d.email)}"` : 'disabled title="No email on file"'}>EMAIL INVITE</button><button class="btn sm" data-invmsg="${esc(key)}">COPY INVITE</button><button class="btn sm ghost" data-invlink="${esc(key)}">LINK</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button><button class="btn sm ghost" data-checkin="${esc(key)}">${k.inAt ? 'UNDO CHECK-IN' : 'CHECK IN'}</button>` : '';
-      return `<div class="assign">${select(key)}<span class="who">${esc(name)}</span>${acts ? `<div class="row-gap" style="grid-column:1 / -1">${acts}</div>` : ''}
+      const ch = k.cid ? HOST.chars[k.cid] : null, fit = key.includes('#') ? '' : fitWarn(r.pref, ch);
+      return `<div class="assign">${select(key)}<span class="who">${esc(name)}${ch ? effortPill(ch) : ''}${fit ? `<span class="pill fit">⚠ ${fit}</span>` : ''}</span>${acts ? `<div class="row-gap" style="grid-column:1 / -1">${acts}</div>` : ''}
         <div class="invsteps">${statusPills(k)}</div>${k.note ? `<div class="invnote">${k.resp === 'swap' ? 'Wants instead: ' : 'Note: '}“${esc(k.note)}”</div>` : ''}
         <div class="hp">${hp ? `<img class="gphoto sm" src="${hp.p}" alt=""><span>Photo you added for ${first}</span><button class="btn sm ghost" data-hostphoto="${esc(key)}">REPLACE</button><button class="btn sm ghost" data-rmhostphoto="${esc(key)}">REMOVE</button>` : `<button class="btn sm ghost" data-hostphoto="${esc(key)}">+ ADD A PHOTO FOR ${first.toUpperCase()}</button>`}</div>
         ${backupsRow(key)}</div>`;
     };
-    return `<div class="guest"><div class="top">${d.photo ? `<img class="gphoto" src="${d.photo}" alt="">` : ''}<span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span>${r.byHost ? '<span class="pill">ADDED BY YOU</span>' : ''}<button class="btn sm ghost" data-editrsvp="${esc(id)}">EDIT</button><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
+    return `<div class="guest"><div class="top">${d.photo ? `<img class="gphoto" src="${d.photo}" alt="">` : ''}<span class="gn">${esc(r.name)}</span><span class="pill ${st[0]}">${st[1]}</span>${r.byHost ? '<span class="pill">ADDED BY YOU</span>' : ''}${dupes[id] ? `<span class="pill red" title="Same name or email as: ${esc(dupes[id].map(x => (S.rsvps[x] || {}).name).join(', '))}">POSSIBLE DUPLICATE</span>` : ''}<button class="btn sm ghost" data-editrsvp="${esc(id)}">EDIT</button><button class="btn sm ghost" data-delrsvp="${esc(id)}" aria-label="Delete RSVP">✕</button></div>
       ${contact}${meta ? `<div class="meta">${meta}</div>` : ''}
       ${r.attending !== 'no' ? assignRow(id, r.name) + (r.plusOne ? assignRow(id + '#p', r.plusOneName || r.name + "'s guest") + (r.sec ? photoLine(id + '#p', d.plusPhoto, "Plus-one's") : '') : '') : ''}</div>`;
   };
@@ -2144,6 +2365,374 @@ function renderTools() {
   $('#recapSub').textContent = S.site && S.site.recap ? 'PUBLISHED ' + fmtTime(S.site.recap.ts) : 'NOT PUBLISHED';
   const siteSig = JSON.stringify(S.site);
   if (ui.siteSig !== siteSig) { ui.siteSig = siteSig; const ae = document.activeElement; if (!(ae && ae.closest && ae.closest('[data-pane="tools"]'))) ui.fillEditor && ui.fillEditor(); }
+}
+
+/* =========================================================================
+   HOST · CONTROL ROOM  —  the whole operation on one screen
+   ========================================================================= */
+function hostStats(who) {
+  const P = party(), cap = Math.max(1, Math.round(+P.capacity) || 34);
+  const rs = Object.entries(S.rsvps).filter(([, r]) => r && r.name).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0));
+  const going = rs.filter(([, r]) => r.attending === 'yes'), maybes = rs.filter(([, r]) => r.attending === 'maybe');
+  const spots = rs.filter(([, r]) => r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]);
+  const K = Object.fromEntries(spots.map(k => [k, keyStatus(k)])), cast = Object.values(HOST.assign.map);
+  return {
+    P, cap, rs, going, maybes, spots, K, people: going.length + going.filter(([, r]) => r.plusOne).length,
+    assigned: spots.filter(k => K[k].cid).length, accepted: spots.filter(k => K[k].resp === 'accepted').length,
+    inCount: cast.filter(cid => S.checkins[cid]).length, castN: cast.length,
+    online: HOST.list.filter(c => isOnline(c.id)).length, openRoles: HOST.list.filter(c => !who[c.id]).length
+  };
+}
+function renderControl(who) {
+  vaultSync();
+  const st = hostStats(who), { P, cap, K } = st, cur = S.phase && typeof S.phase.i === 'number' ? S.phase.i : -1, live = cur >= 0;
+  const link = !backend ? ['warn', 'CONNECTING'] : backend.mode === 'local' ? ['warn', 'LOCAL MODE'] : backend.connected ? ['live', 'LIVE LINK'] : ['warn', 'RECONNECTING'];
+  patch($('#hud'), JSON.stringify([st.people, cap, st.assigned, st.spots.length, st.accepted, st.inCount, st.online, cur, link, !!ui.authWarn]),
+    `<span class="${link[0]}">● ${link[1]}</span><span><b>${st.people}</b> / ${cap} coming</span><span><b>${st.assigned}</b> / ${st.spots.length} cast</span><span><b>${st.accepted}</b> accepted</span><span><b>${st.inCount}</b> checked in</span><span><b>${st.online}</b> online</span><span class="sp"></span><span>${live ? `PHASE <b>${cur + 1}</b> / ${HOST.show.length}` : 'PRE-SHOW'}</span>${ui.authWarn ? '<span class="warn">⚠ NOT VERIFIED</span>' : ''}`);
+
+  // hero: countdown before the party, the current phase during it
+  const start = P.calStart ? new Date(P.calStart) : null, before = !!(start && !isNaN(start) && start > Date.now());
+  patch($('#crHero'), JSON.stringify([cur, P.title, P.date, P.time, P.venue, before]), `<div class="cr-hero"><div>
+      <small>${live ? '● LIVE · THE NIGHT IS RUNNING' : 'MASTER CONTROL · ' + esc((P.title || 'The Last Toast').toUpperCase())}</small>
+      <h2>${live ? `Phase ${cur + 1}: ${esc(HOST.show[cur].title)}` : before ? 'Countdown to doors' : 'Doors are open'}</h2>
+      <p>${esc([P.date, P.time, P.venue].filter(Boolean).join(' · '))}</p></div>
+    ${before && !live ? '<div class="cd" id="crCd"></div>' : `<button class="btn gold" data-gotab="game">${live ? 'RUN THE GAME ▸' : 'START THE GAME ▸'}</button>`}</div>`);
+  tickCountdown();
+
+  // the numbers (each one opens the list behind it)
+  const left = cap - st.people, pct = (a, b) => b ? a / b : 0;
+  const kpi = (n, of, label, tab, f, cls, p) => `<button class="kpi ${cls || ''}" data-gotab="${tab}"${f ? ` data-gfilter="${f}"` : ''}><b>${n}${of !== '' ? `<em> / ${of}</em>` : ''}</b><span>${label}</span>${p !== undefined ? `<i><u style="width:${Math.max(0, Math.min(100, Math.round(p * 100)))}%"></u></i>` : ''}</button>`;
+  patch($('#crKpis'), JSON.stringify([st.people, cap, st.assigned, st.spots.length, st.accepted, st.inCount, st.castN, st.online]), [
+    kpi(st.people, cap, 'Guests coming', 'players', 'all', '', pct(st.people, cap)),
+    kpi(Math.max(0, left), '', left > 0 ? 'Roles left' : left === 0 ? 'Full house' : `Over capacity by ${-left}`, 'tools', '', left < 0 ? 'bad' : left === 0 ? 'good' : ''),
+    kpi(st.assigned, st.spots.length, 'Guests with a role', 'players', 'needs', st.spots.length && st.assigned === st.spots.length ? 'good' : '', pct(st.assigned, st.spots.length)),
+    kpi(st.accepted, st.assigned, 'Accepted their role', 'players', 'accepted', '', pct(st.accepted, st.assigned)),
+    kpi(st.inCount, st.castN, 'Checked in', 'players', 'in', '', pct(st.inCount, st.castN)),
+    kpi(st.online, '', 'Phones online', 'characters', '', st.online ? 'good' : '')
+  ].join(''));
+
+  // what needs the host, most urgent first
+  const al = [], esN = keys => keys.slice(0, 5).map(k => esc(guestName(k))).join(', ') + (keys.length > 5 ? ` +${keys.length - 5} more` : '');
+  const add = (cls, ic, text, sub, attrs) => al.push(`<button class="alrt ${cls}" ${attrs || ''}><span class="ic">${ic}</span><span class="t">${text}${sub ? `<small>${sub}</small>` : ''}</span>${attrs ? '<span class="go">GO ▸</span>' : ''}</button>`);
+  const go = (tab, f, q) => `data-gotab="${tab}"${f ? ` data-gfilter="${f}"` : ''}${q !== undefined ? ` data-gq="${esc(q)}"` : ''}`;
+  const keys = f => st.spots.filter(k => keyMatches(K[k], f)), pl = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+  if (ui.authWarn) add('red', '⚠', "This device isn't verified with the database", 'Changes may be refused. Tap to try again.', 'data-cract="retryauth"');
+  if (backend && backend.mode !== 'local' && !backend.connected) add('red', '⚠', 'Connection lost', 'Anything you change syncs when the link comes back.');
+  const miss = vaultMissing(); if (miss.length) add('red', '⚠', `${pl(miss.length, 'RSVP is', 'RSVPs are')} missing from the database`, 'This device kept a copy. Tap to put them back.', 'data-cract="restorevault"');
+  const must = HOST.list.filter(c => c.mustCast && !who[c.id]); if (must.length) add('red', '★', `${pl(must.length, 'must-cast role has', 'must-cast roles have')} no player`, must.map(c => esc(c.name)).join(', '), go('players', 'needs'));
+  if (st.people > cap) add('red', '▲', `Over capacity: ${st.people} coming for ${cap} roles`, 'Raise the capacity in Tools → Live Page Editor, or close RSVPs.', go('tools'));
+  const dec = keys('declined'); if (dec.length) add('red', '✕', `${pl(dec.length, 'guest', 'guests')} declined their role`, esN(dec), go('players', 'declined'));
+  const sw = keys('swap'); if (sw.length) add('', '↺', `${pl(sw.length, 'guest wants', 'guests want')} a different role`, esN(sw), go('players', 'swap'));
+  const need = keys('needs'); if (need.length) add('', '◇', `${pl(need.length, 'guest needs', 'guests need')} a role`, esN(need), go('players', 'needs'));
+  const uns = keys('unsent'); if (uns.length) add('', '✉', `${pl(uns.length, 'invitation', 'invitations')} not sent yet`, esN(uns), go('players', 'unsent'));
+  const stale = keys('unopened').filter(k => Date.now() - (K[k].sent || 0) > 864e5); if (stale.length) add('blue', '◔', `${pl(stale.length, "guest hasn't", "guests haven't")} opened their invitation`, 'Sent over a day ago: ' + esN(stale), go('players', 'unopened'));
+  const wait = keys('waiting'); if (wait.length) add('blue', '…', `${pl(wait.length, 'guest opened it but hasn\'t', 'guests opened it but haven\'t')} answered`, esN(wait), go('players', 'waiting'));
+  const fits = st.spots.filter(k => !k.includes('#') && K[k].cid && fitWarn((S.rsvps[k] || {}).pref, HOST.chars[K[k].cid])); if (fits.length) add('', '⚖', `${pl(fits.length, "role doesn't", "roles don't")} match what the guest asked for`, esN(fits), go('players'));
+  const dupes = dupesOf(), dk = Object.keys(dupes); if (dk.length) add('', '⧉', `${dk.length} possible duplicate RSVPs`, dk.slice(0, 6).map(id => esc(S.rsvps[id].name)).join(', '), go('players', 'all', firstName(S.rsvps[dk[0]].name)));
+  if (st.maybes.length) add('blue', '?', `${pl(st.maybes.length, 'guest said', 'guests said')} maybe`, st.maybes.slice(0, 5).map(([, r]) => esc(r.name)).join(', '), go('players'));
+  const lockedN = Object.values(HOST.rsvpSec).filter(s => s && s.err).length; if (lockedN) add('red', '⚿', `${pl(lockedN, 'RSVP was', 'RSVPs were')} sent with an old key`, "Their contact details can't be opened. Edit them by hand, or ask them to reply again.", go('players'));
+  const rv = Object.keys(S.revoked); if (rv.length) add('', '⛔', `${pl(rv.length, 'dossier is', 'dossiers are')} revoked`, rv.map(id => esc(rname(id))).join(', '), go('characters'));
+  if (P.rsvpOpen === false) add('blue', '■', 'RSVPs are closed on the invitation page', 'Turn them back on in Tools → Live Page Editor.', go('tools'));
+  const reds = al.filter(h => h.startsWith('<button class="alrt red')).length;
+  if (!al.length) add('ok', '✓', 'All clear', 'Nothing needs you right now.');
+  $('#crAlertSub').textContent = reds ? `${reds} URGENT · ${al.length} IN ALL` : al[0].includes('alrt ok') ? 'ALL CLEAR' : `${al.length} ITEM${al.length > 1 ? 'S' : ''}`;
+  patch($('#crAlerts'), al.join(''), al.join(''));
+  const bdg = $('#badge-control'); if (bdg) { bdg.textContent = reds; bdg.classList.toggle('hidden', !reds); }
+
+  // RSVP safety net
+  const vn = Object.keys(ui.vault || {}).length, lastBk = ui.lastBackup || +store.get('lastBackup') || 0;
+  const trash = Object.entries(HOST.assign.trash || {}).filter(([id, t]) => t && t.r && !S.rsvps[id]).sort((a, b) => (b[1].at || 0) - (a[1].at || 0));
+  patch($('#crSafety'), JSON.stringify([miss, vn, st.rs.length, trash.map(t => t[0]), !!ui.vaultErr, lastBk]), `<div class="safety ${miss.length ? 'bad' : ''}"><span style="font-size:22px">${miss.length ? '⚠' : '🛡'}</span><div class="t"><b>${miss.length ? `${pl(miss.length, 'RSVP', 'RSVPs')} missing from the database` : `All ${st.rs.length} RSVPs are safe`}</b><small>${vn} kept on this device${ui.vaultErr ? " (this browser's storage is full: download a backup)" : ''}${lastBk ? ' · last backup file ' + esc(whenStr(lastBk)) : ' · no backup file yet'}</small></div>${miss.length ? '<button class="btn sm gold" data-cract="restorevault">PUT THEM BACK</button>' : ''}<button class="btn sm" data-cract="backup">⤓ DOWNLOAD BACKUP</button></div>
+    ${trash.length ? `<div class="lbl" style="margin-top:14px">Deleted by you (${trash.length})</div><div class="relist">${trash.slice(0, 12).map(([id, t]) => `<div class="reitem"><div class="t">${esc(t.r.name)}<small>${esc(t.r.attending || '')} · deleted ${esc(whenStr(t.at))}</small></div><button class="btn sm ghost" data-cract="untrash" data-id="${esc(id)}">RESTORE</button></div>`).join('')}</div>` : ''}
+    <p class="note" style="margin:12px 0 0">Uploading new website files never touches RSVPs: they live in the database, not in the files. Deleting one keeps a copy here, DELETE ALL makes you type DELETE and downloads a backup first, and IMPORT keeps everyone who replied after the backup was made.</p>`);
+
+  // live feed
+  const fd = feedItems();
+  patch($('#crFeed'), fd.length + ':' + (fd[0] ? fd[0][0] + fd[0][2] : ''), fd.length ? fd.map(([ts, i, t]) => `<div><span class="t">${esc(whenStr(ts))}</span><span class="i">${i}</span><span>${t}</span></div>`).join('') : '<p class="empty">NOTHING YET</p>');
+
+  // the big board: every character at a glance
+  const bf = ui.boardF || 'all', keyOf = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) keyOf[cid] = key;
+  const rank = { big: 0, medium: 1, light: 2 }, dd = dead(), ks = c => keyOf[c.id] ? keyStatus(keyOf[c.id]) : null;
+  const shown = HOST.list.slice().sort((a, b) => (b.mustCast ? 1 : 0) - (a.mustCast ? 1 : 0) || rank[effortOf(a)] - rank[effortOf(b)] || a.name.localeCompare(b.name))
+    .filter(c => { const k = ks(c); return bf === 'all' || (bf === 'open' ? !who[c.id] : bf === 'pending' ? !!who[c.id] && !(k && k.resp === 'accepted') : effortOf(c) === bf); });
+  $('#crBoardSub').textContent = `${HOST.list.length - st.openRoles} / ${HOST.list.length} CAST · ${st.openRoles} OPEN`;
+  patch($('#crBoardTools'), bf, [['all', 'All'], ['open', 'Open roles'], ['pending', 'Not accepted yet'], ['big', 'Leading'], ['medium', 'Featured'], ['light', 'Supporting']].map(([k, l]) => `<button class="btn sm ${bf === k ? 'on' : 'ghost'}" data-boardf="${k}">${l}</button>`).join(''));
+  patch($('#crBoard'), JSON.stringify([bf, who, shown.map(c => { const k = ks(c); return [c.id, k && [k.sent, k.opened, k.resp], isOnline(c.id), !!S.checkins[c.id], c.id in dd]; })]), shown.map((c, i) => {
+    const k = ks(c), p = who[c.id];
+    const s = !p ? ['red', 'OPEN'] : !k ? ['', 'CAST'] : k.resp === 'accepted' ? ['green', '✓ ACCEPTED'] : k.resp === 'declined' ? ['red', 'DECLINED'] : k.resp === 'swap' ? ['gold', 'WANTS A SWAP'] : k.opened ? ['', 'OPENED'] : k.sent ? ['', 'SENT'] : ['gold', 'NOT SENT'];
+    return `<button class="tile ${c.mustCast ? 'must' : ''} ${!p ? 'need' : k && k.resp === 'accepted' ? 'ok' : ''} ${c.id in dd ? 'dead' : ''}" data-tile="${esc(c.id)}" style="animation-delay:${Math.min(i, 24) * 15}ms"><span class="dot ${isOnline(c.id) ? 'on' : ''}"></span><b>${c.mustCast ? '★ ' : ''}${esc(c.name)}</b><span class="oc">${esc(c.occ || '')}</span><span class="pl ${p ? '' : 'open'}">${esc(p || 'No player yet')}</span><span class="tg">${effortPill(c)}<span class="pill ${s[0]}">${s[1]}</span>${S.checkins[c.id] ? '<span class="pill green">IN</span>' : ''}${c.id === HOST.killerId ? '<span class="pill red">KILLER</span>' : ''}${c.inspector ? '<span class="pill">INSPECTOR</span>' : ''}</span></button>`;
+  }).join('') || '<div class="empty">NOTHING MATCHES</div>');
+}
+function tickCountdown() {
+  const el = $('#crCd'); if (!el) return;
+  const t = new Date(party().calStart) - Date.now(); if (!(t > 0)) { el.innerHTML = ''; return; }
+  el.innerHTML = [[Math.floor(t / 864e5), 'DAYS'], [Math.floor(t / 36e5) % 24, 'HRS'], [Math.floor(t / 6e4) % 60, 'MIN'], [Math.floor(t / 1e3) % 60, 'SEC']].map(([n, l]) => `<div><b>${String(n).padStart(2, '0')}</b><span>${l}</span></div>`).join('');
+}
+/* everything that has happened, newest first: replies, invitations, check-ins, logins and the activity log */
+function feedItems() {
+  const out = [], push = (ts, i, t) => { ts = +ts; if (ts > 0) out.push([ts, i, t]); };
+  for (const r of Object.values(S.rsvps)) if (r && r.name) push(r.ts, r.attending === 'no' ? '✕' : '✉', `<b>${esc(r.name)}</b> ${r.byHost ? 'was added by you' : r.attending === 'yes' ? "RSVP'd yes" + (r.plusOne ? ' (+1)' : '') : r.attending === 'maybe' ? 'replied maybe' : "can't make it"}`);
+  const byInv = {}; for (const [key, inv] of Object.entries(HOST.assign.invites || {})) byInv[inv.id] = key;
+  for (const [iid, s] of Object.entries(S.inviteStatus)) {
+    const key = byInv[iid]; if (!key || !s) continue;
+    const n = `<b>${esc(guestName(key))}</b>`, cn = esc(rname(HOST.assign.invites[key].cid));
+    push(s.opened, '◔', `${n} opened their invitation (${cn})`);
+    if (s.resp) push(s.at, s.resp === 'accepted' ? '✓' : s.resp === 'declined' ? '✕' : '↺', `${n} ${s.resp === 'accepted' ? 'accepted' : s.resp === 'declined' ? 'declined' : 'asked to swap out of'} ${cn}${s.note ? ': “' + esc(s.note) + '”' : ''}`);
+  }
+  for (const [key, ts] of Object.entries(HOST.assign.sent || {})) if (HOST.assign.map[key]) push(ts, '➤', `You sent <b>${esc(guestName(key))}</b> their invitation`);
+  for (const [cid, p] of Object.entries(S.players)) if (p && p.epoch === S.epoch && p.unlockedAt) push(p.unlockedAt, '◆', `<b>${esc(rname(cid))}</b>'s dossier was opened`);
+  for (const [cid, ts] of Object.entries(S.checkins)) push(ts, '⌂', `<b>${esc(rname(cid))}</b> checked in`);
+  for (const e of Object.values(S.log)) if (e) push(e.ts, e.k === 'alert' ? '⚠' : e.k === 'player' ? '◆' : '·', esc(e.t));
+  return out.sort((a, b) => b[0] - a[0]).slice(0, 80);
+}
+/* RSVPs that look like the same person (same first and last name, or the same email) */
+function dupesOf() {
+  const by = {}, out = {}, put = (k, id) => (by[k] = by[k] || []).push(id);
+  for (const [id, r] of Object.entries(S.rsvps)) {
+    if (!r || !r.name) continue;
+    const t = r.name.toLowerCase().normalize('NFD').replace(/[^a-z\s]/g, '').split(/\s+/).filter(Boolean);
+    if (t.length) put('n:' + t[0] + '|' + (t.length > 1 ? t[t.length - 1] : ''), id);
+    const em = ((HOST.rsvpSec[id] || {}).d || {}).email; if (em) put('e:' + em.toLowerCase(), id);
+  }
+  for (const ids of Object.values(by)) if (ids.length > 1) ids.forEach(id => { out[id] = [...new Set([...(out[id] || []), ...ids.filter(x => x !== id)])]; });
+  return out;
+}
+/* tap an open role on the Big Board: pick who plays it */
+function castModal(cid) {
+  const c = HOST.chars[cid]; if (!c) return;
+  const PREF = { big: 'wants a big role', medium: 'wants a medium role', small: 'wants a small role', surprise: 'surprise me' }, d = hostDirOf(cid);
+  const spots = Object.entries(S.rsvps).filter(([, r]) => r && r.name && r.attending !== 'no').sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0)).flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]).filter(k => !HOST.assign.map[k]);
+  openModal(`<div class="ph"><h2>Cast ${esc(c.name)}</h2></div>
+    <div class="row-gap" style="margin:-4px 0 10px">${effortPill(c)}${c.mustCast ? '<span class="pill must">★ MUST CAST</span>' : ''}${c.inspector ? '<span class="pill">INSPECTOR</span>' : ''}</div>
+    <p class="note" style="margin:0 0 14px">${esc(c.occ || d.title || '')}${d.blurb ? ' · ' + esc(d.blurb) : ''}</p>
+    ${spots.length ? `<label class="lbl" for="castSel">Guests without a role (${spots.length})</label><select class="input" id="castSel"><option value="">Pick a guest…</option>${spots.map(k => { const r = S.rsvps[k.split('#')[0]], pref = k.includes('#') ? '' : r.pref; return `<option value="${esc(k)}">${esc(guestName(k))}${r.attending === 'maybe' ? ' (maybe)' : ''}${pref ? ' · ' + (PREF[pref] || pref) : ''}${fitWarn(pref, c) ? ' ⚠' : ''}</option>`; }).join('')}</select>`
+      : '<div class="empty">EVERY GUEST ALREADY HAS A ROLE. ADD AN RSVP, OR FREE UP A ROLE IN PLAYERS.</div>'}
+    <div class="row-gap" style="margin-top:14px">${spots.length ? '<button class="btn gold" id="castGo">ASSIGN ROLE</button>' : ''}<button class="btn ghost" id="castDoss">READ THE DOSSIER</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+  $('#castDoss').onclick = () => openDossierModal(cid);
+  const go = $('#castGo');
+  if (go) go.onclick = async () => {
+    const key = $('#castSel').value; if (!key) { toast('PICK A GUEST', 'Choose who will play this role.', 'err'); return; }
+    go.disabled = true; HOST.assign.map[key] = cid; delete HOST.assign.sent[key];
+    await saveAssign(); closeModal(); log(`${guestName(key)} cast as ${c.name}`);
+    toast('ROLE ASSIGNED', `${guestName(key)} will play ${c.name}. Send their invitation from Players.`, 'ok');
+  };
+}
+async function controlAction(act, id) {
+  switch (act) {
+    case 'backup': return downloadRsvpBackup();
+    case 'retryauth': {
+      ui.authWarn = false; await registerAuth(ME); renderAdmin(true);
+      return toast(ui.authWarn ? 'STILL NOT VERIFIED' : 'VERIFIED', ui.authWarn ? 'Reload the page and sign in again.' : 'This device is recognized as the host.', ui.authWarn ? 'err' : 'ok');
+    }
+    case 'restorevault': {
+      const miss = vaultMissing(); if (!miss.length) return;
+      return confirmModal(`Put ${miss.length} RSVP${miss.length > 1 ? 's' : ''} back?`, `These replies were saved on this device but are no longer in the database: <b>${miss.map(m => esc(ui.vault[m].name)).join(', ')}</b>. Their contact details come back still locked.`, 'PUT THEM BACK', async () => {
+        try { await backend.updateStrict(Object.fromEntries(miss.map(m => ['rsvps/' + m, ui.vault[m]]))); log(`Restored ${miss.length} missing RSVP(s)`); toast('RSVPS RESTORED', `${miss.length} back on the list.`, 'ok'); }
+        catch (e) { toast("COULDN'T RESTORE", e.message || 'Try again.', 'err'); }
+      }, false);
+    }
+    case 'untrash': {
+      const t = (HOST.assign.trash || {})[id]; if (!t) return;
+      try { await backend.updateStrict({ ['rsvps/' + id]: t.r }); } catch (e) { toast("COULDN'T RESTORE", e.message || 'Try again.', 'err'); return; }
+      delete HOST.assign.trash[id]; await saveAssign(); log(`RSVP restored: ${t.r.name}`);
+      return toast('RSVP RESTORED', `${t.r.name} is back on the list. Give them a role again in Players.`, 'ok');
+    }
+  }
+}
+
+/* ---------------- host: the RSVP safety net ----------------
+   Every RSVP this host device has seen is also kept in this browser (names in the clear, contact details still
+   locked). If one ever disappears from the database it can be put back with one tap. RSVPs the host deletes go
+   to a trash inside the locked assignments, so they can be restored from any host device. */
+const vaultRead = () => { try { return JSON.parse(store.get('rsvpVault') || '{}') || {}; } catch (e) { return {}; } };
+function vaultWrite(v) { ui.vault = v; try { localStorage.setItem(store.k('rsvpVault'), JSON.stringify(v)); ui.vaultErr = false; } catch (e) { ui.vaultErr = true; } }
+function vaultSync() {
+  if (!HOST || !ready) return;
+  const sig = JSON.stringify(Object.entries(S.rsvps).map(([id, r]) => [id, r && r.ts, r && r.name, r && r.attending, r && r.plusOne, r && r.sec && r.sec.iv]));
+  if (sig === ui.vaultSig && ui.vault) return; ui.vaultSig = sig;
+  const v = ui.vault || vaultRead(); let changed = false;
+  for (const [id, r] of Object.entries(S.rsvps)) if (r && r.name && JSON.stringify(v[id]) !== JSON.stringify(r)) { v[id] = r; changed = true; }
+  if (changed) vaultWrite(v); else ui.vault = v;
+}
+function vaultForget(ids) { const v = ui.vault || vaultRead(); ids.forEach(id => delete v[id]); vaultWrite(v); }
+const vaultMissing = () => { if (!ready || !HOST || !ui.vault) return []; const tr = HOST.assign.trash || {}; return Object.keys(ui.vault).filter(id => !S.rsvps[id] && !tr[id]); };
+function trashRsvp(id, r) {
+  const t = HOST.assign.trash = HOST.assign.trash || {}; t[id] = { r, at: Date.now() };
+  Object.keys(t).sort((a, b) => t[b].at - t[a].at).slice(30).forEach(x => delete t[x]);
+}
+function downloadRsvpBackup(tag) {
+  const data = { kind: 'rsvp-backup', game: CONFIG.GAME_ID, saved: new Date().toISOString(), note: 'RSVPs for The Last Toast. Contact details stay locked: only the host terminal can open them. To restore: Tools → Emergency Tools → IMPORT.', rsvps: RAW.rsvps || {}, assign: RAW.assign || null, invites: RAW.invites || null, inviteStatus: RAW.inviteStatus || null, hostPhotos: RAW.hostPhotos || null };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
+  a.download = `last-toast-rsvps-${tag ? tag + '-' : ''}${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.json`; document.body.appendChild(a); a.click(); a.remove();
+  ui.lastBackup = Date.now(); store.set('lastBackup', String(ui.lastBackup));
+  toast('RSVP BACKUP SAVED', `${Object.keys(data.rsvps).length} RSVPs downloaded. Keep the file somewhere safe.`, 'ok');
+}
+/* an RSVP backup file only ever adds people who are missing: nobody already on the list is changed */
+function restoreRsvpFile(data, name) {
+  const add = Object.entries(data.rsvps || {}).filter(([id, r]) => r && r.name && !S.rsvps[id]);
+  if (!add.length) { toast('NOTHING TO RESTORE', `Everyone in ${name} is already on the list.`, 'ok'); return; }
+  confirmModal(`Restore ${add.length} RSVP${add.length > 1 ? 's' : ''}?`, `From <b>${esc(name)}</b>: ${add.map(([, r]) => esc(r.name)).join(', ')}. Nobody already on the list is changed.`, 'RESTORE', async () => {
+    try { await backend.updateStrict(Object.fromEntries(add.map(([id, r]) => ['rsvps/' + id, r]))); log(`Restored ${add.length} RSVP(s) from a backup file`); toast('RSVPS RESTORED', '', 'ok'); }
+    catch (e) { toast("COULDN'T RESTORE", e.message || 'Try again.', 'err'); }
+  }, false);
+}
+
+/* =========================================================================
+   JARVIS  —  the host's AI co-host, powered by Claude. Advisory only: it reads the story
+   and the live game and tells the host what to press; it never changes anything itself.
+   The host's own Anthropic API key stays in this browser and is only ever sent to Anthropic.
+   Guests' email addresses, phone numbers and photos are never sent.
+   ========================================================================= */
+const JV = { msgs: [], busy: false, stream: null, SDK: null, raf: 0 };
+const JV_MODEL = 'claude-opus-5-5';
+const JV_SDK_URL = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.135.0/+esm';
+const JV_CHIPS = ['What should I be doing right now?', 'Who still needs a role? Suggest a casting.', 'Who should I nudge about their invitation?', 'Write a short, fun reminder text for everyone coming', 'Someone just cancelled. What do I do?', 'Walk me through the solution in 30 seconds', 'Summarize the night so far'];
+const JV_PROMPT = `You are Jarvis, the private assistant to the host of a live murder mystery party, "The Last Toast". You're talking to the host on their Master Control Terminal, often on a phone in the middle of the party. Everything below is yours to use: the full story and solution, every character, the guest list, role assignments, invitation status, and the live state of the game.
+
+How to help:
+- Be quick and decisive. Lead with the answer or the next action, then only the detail that matters. Short bullet lists beat paragraphs. No preamble.
+- You can't press buttons or change anything. When something needs doing, say exactly where: Control Room (overview, alerts, the Big Board of characters), Game (hold START on the bottom bar for the next phase, open or seal rooms, Evidence Board, Lockdown, announcements, hints, deaths), Characters (dossier, access QR, revoke, sign out, message a player, kill), Players (assign roles, send invitations, check in, add or edit an RSVP, backup roles), Tools (manual switches, projector, Live Page Editor, Rooms & Locations, Message Templates, emergency tools, Case Files).
+- The host is the game master, so spoilers are fine when you talk to them. Anything you draft for guests (texts, announcements, emails) must never reveal the killer, the solution, or anyone's secrets.
+- When casting, fill MUST CAST roles first, match each role's effort level to what the guest asked for (big, medium, small or surprise), and honor notes about who they want to be cast near.
+- Never suggest deleting RSVPs. If one seems to be missing, point the host to the RSVP Safety Net in the Control Room.
+- Only use facts from the material below. If the answer isn't there, say so plainly rather than guessing.`;
+function jarvisContext() {
+  const P = party(), who = guestFor(), dd = dead(), cur = S.phase && typeof S.phase.i === 'number' ? S.phase.i : -1, st = hostStats(who);
+  const plain = h => String(h || '').replace(/<li[^>]*>/g, '\n- ').replace(/<br\s*\/?>|<\/p>/g, '\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim();
+  const cut = (s, n) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n) + '…' : s; };
+  const story = [
+    `# THE PARTY\n${P.title || 'The Last Toast'}${P.subtitle ? ': ' + P.subtitle : ''}\nWhen: ${[P.date, P.time].filter(Boolean).join(', ')}\nWhere: ${[P.venue, P.address].filter(Boolean).join(', ')}\nHosts: ${P.host || ''}\nDress: ${P.dress || ''}`,
+    `# ROOMS\n` + ROOMS.map(r => `- ${r.name} (${r.place || ''})${r.alwaysOpen ? ', always open' : ''}: ${r.desc || ''}`).join('\n'),
+    `# THE SOLUTION (host only)\nKiller: ${rname(HOST.killerId)}${HOST.solution.alias ? ' (alias: ' + HOST.solution.alias + ')' : ''}\nUndercover Inspector: ${rname(HOST.inspectorId)}\n${plain(HOST.solution.summary)}`,
+    `# RUN OF SHOW\n` + HOST.show.map((s, i) => `${i + 1}. [${s.time || ''}] ${s.title}${s.skippable ? ' (skippable)' : ''}${s.cue ? '\n   Host cue: ' + cut(s.cue, 400) : ''}${s.host ? '\n   Host reads: ' + cut(s.host, 400) : ''}${(s.actions || []).length ? '\n   Happens automatically: ' + s.actions.map(actLabel).join('; ') : ''}`).join('\n'),
+    `# CHARACTERS\n` + HOST.list.map(c => { const d = hostDirOf(c.id), key = (c.sections || []).find(x => x.key); return `- ${c.name} (${c.occ || d.title || ''}). Effort: ${EFFORT_L[effortOf(c)].toLowerCase()}${c.mustCast ? '; MUST CAST' : ''}${c.id === HOST.killerId ? '; THE KILLER' : ''}${c.inspector ? '; THE INSPECTOR' : ''}${c.scriptedDeath ? '; dies on script' : ''}${c.suspect === false ? '; not a suspect' : ''}${d.blurb ? '\n  Public: ' + cut(d.blurb, 220) : ''}${c.brief && c.brief.goal ? '\n  Goal: ' + cut(c.brief.goal, 220) : ''}${key ? '\n  Secret: ' + cut(key.t, 260) : ''}`; }).join('\n'),
+    `# EVIDENCE\n` + HOST.evidence.map(e => `- ${e.title} (${e.official ? 'official report to the Inspector' : 'QR tag in ' + roomName(e.room)}${e.after ? ', unlocks later in the night' : ''}): ${cut(e.body, 200)}`).join('\n'),
+    `# HINTS (in order)\n` + HOST.hints.map((h, i) => `${i + 1}. ${h}`).join('\n'),
+    `# HOST NOTES\n${cut(plain(HOST.notes), 4000)}`
+  ].join('\n\n');
+  const keyOf = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) keyOf[cid] = key;
+  const PREF = { big: 'a big role', medium: 'a medium role', small: 'a small role', surprise: 'surprise me' };
+  const mins = cur >= 0 && S.phase.ts ? Math.round((backend.now() - S.phase.ts) / 60000) : 0, nx = HOST.show[cur + 1];
+  const live = [
+    `# LIVE STATE (as of ${new Date().toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })})`,
+    `Phase: ${cur >= 0 ? `${cur + 1} of ${HOST.show.length}, "${HOST.show[cur].title}", running ${mins} min; ${nx ? `next: "${nx.title}" at ${nx.time || '?'}` : 'that was the last phase'}` : 'not started (pre-show)'}`,
+    `Switches on: ${Object.keys(FLAGS).filter(f => S.flags[f]).map(f => FLAGS[f]).join(', ') || 'none'}`,
+    `Alert on every screen: ${S.alert ? S.alert.text : 'none'}`,
+    `Rooms open: ${ROOMS.filter(r => roomOpen(S, r.id)).map(r => r.name).join(', ') || 'none'}`,
+    `Evidence revealed: ${releasedEvidence(S).map(e => e.title).join('; ') || 'none'}`,
+    `Hints unlocked: ${Object.keys(S.hintsOpen).length} of ${HOST.hints.length}`,
+    `Dead: ${Object.keys(dd).map(rname).join(', ') || 'nobody'}${S.kill ? ` (the killer struck ${rname(S.kill.victim)})` : ''}`,
+    `Accusations: ${tallyRows().map(([id, n]) => `${rname(id)} ${n}`).join(', ') || 'none'}${S.verdict ? `; verdict stage: ${S.verdict.stage}, accused: ${rname(S.verdict.accused)}` : ''}`,
+    `RSVPs: ${st.people} coming (with plus-ones) for ${st.cap} roles, ${st.maybes.length} maybe; ${P.rsvpOpen === false ? 'RSVPs are closed' : P.rsvpRolling !== false ? 'rolling RSVPs are open' : 'reply by ' + (P.rsvpBy || '?')}`,
+    `Casting: ${st.assigned} of ${st.spots.length} guest spots have a role, ${st.accepted} accepted, ${st.inCount} checked in, ${st.online} phones online`,
+    `\n# CAST STATUS\n` + HOST.list.map(c => { const k = keyOf[c.id] ? keyStatus(keyOf[c.id]) : null, p = playerRec(c.id); return `- ${c.name}: ${who[c.id] ? 'played by ' + who[c.id] : 'UNCAST'}${k ? '; invitation ' + (k.resp ? k.resp + (k.note ? ` ("${cut(k.note, 120)}")` : '') : k.opened ? 'opened, no answer yet' : k.sent ? 'sent, not opened' : 'not sent') : ''}${p && p.unlocked ? '; dossier opened' : ''}${S.checkins[c.id] ? '; checked in' : ''}${isOnline(c.id) ? '; online' : ''}${c.id in dd ? '; DEAD' : ''}${S.revoked[c.id] ? '; access revoked' : ''}${p && p.vote ? '; accuses ' + rname(p.vote.suspect) : ''}`; }).join('\n'),
+    `\n# GUEST LIST (no contact details)\n` + st.rs.map(([id, r]) => { const note = ((HOST.rsvpSec[id] || {}).d || {}).note || r.note; return `- ${r.name}: ${r.attending}${r.plusOne ? ', bringing ' + (r.plusOneName || 'a plus-one') : ''}${r.pref ? '; asked for ' + (PREF[r.pref] || r.pref) : ''}${note ? `; note: "${cut(note, 200)}"` : ''}; role: ${HOST.assign.map[id] ? rname(HOST.assign.map[id]) : 'none'}${r.plusOne ? '; plus-one role: ' + (HOST.assign.map[id + '#p'] ? rname(HOST.assign.map[id + '#p']) : 'none') : ''}${r.byHost ? ' (added by the host)' : ''}`; }).join('\n'),
+    `\n# RECENT ACTIVITY (newest first)\n` + feedItems().slice(0, 30).map(([ts, , t]) => `- ${whenStr(ts)}: ${plain(t)}`).join('\n')
+  ].join('\n');
+  return { story, live };
+}
+/* a small, safe Markdown subset for Jarvis's answers (everything is escaped first) */
+function mdLite(t) {
+  let html = '', list = '';
+  for (let ln of esc(t).split('\n')) {
+    ln = ln.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g, '$1<i>$2</i>').replace(/`([^`]+)`/g, '<code>$1</code>');
+    const li = ln.match(/^\s*([-*•]|\d+[.)])\s+(.*)/), h = ln.match(/^#{1,4}\s+(.*)/);
+    if (li) { const type = /\d/.test(li[1]) ? 'ol' : 'ul'; if (list !== type) { html += (list ? `</${list}>` : '') + `<${type}>`; list = type; } html += `<li>${li[2]}</li>`; continue; }
+    if (list) { html += `</${list}>`; list = ''; }
+    if (h) html += `<h4>${h[1]}</h4>`; else if (ln.trim()) html += `<p>${ln}</p>`;
+  }
+  return html + (list ? `</${list}>` : '');
+}
+function bindJarvis() {
+  $('#jvRoot').innerHTML = `<button class="jv-fab" id="jvFab" aria-label="Open Jarvis, your AI assistant"><span class="orb"></span>JARVIS</button>
+    <aside class="jv" id="jv" aria-label="Jarvis"><div class="jv-h"><span class="orb"></span><div><b>JARVIS</b><small>Your AI co-host · sees the whole game · can't press buttons</small></div><span class="sp"></span><button class="iconbtn" id="jvKeyBtn">KEY</button><button class="iconbtn" id="jvNew">NEW</button><button class="iconbtn" id="jvClose" aria-label="Close">✕</button></div>
+    <div class="jv-body" id="jvBody"></div>
+    <div class="jv-chips" id="jvChips">${JV_CHIPS.map(c => `<button type="button">${esc(c)}</button>`).join('')}</div>
+    <form class="jv-in" id="jvForm"><textarea class="input" id="jvIn" rows="1" maxlength="4000" placeholder="Ask Jarvis anything about tonight…"></textarea><button class="btn gold" id="jvSend" type="submit">ASK</button></form></aside>`;
+  const inp = $('#jvIn'), open = on => { $('#jv').classList.toggle('open', on); if (on) { renderJarvis(); setTimeout(() => inp.focus(), 320); } };
+  $('#jvFab').onclick = () => open(true); $('#jvClose').onclick = () => open(false);
+  $('#jvKeyBtn').onclick = jarvisKeyModal;
+  $('#jvNew').onclick = () => { if (JV.stream) { try { JV.stream.abort(); } catch (e) { } } JV.msgs = []; renderJarvis(); };
+  $('#jvChips').onclick = e => { const b = e.target.closest('button'); if (b) jarvisAsk(b.textContent); };
+  $('#jvForm').onsubmit = e => {
+    e.preventDefault();
+    if (JV.busy) { if (JV.stream) { try { JV.stream.abort(); } catch (x) { } } return; }
+    const t = inp.value.trim(); if (!t) return; inp.value = ''; inp.style.height = ''; jarvisAsk(t);
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#jvForm').requestSubmit(); } });
+  inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = Math.min(160, inp.scrollHeight) + 'px'; });
+  $('#jvBody').onclick = async e => { const b = e.target.closest('[data-jvcopy]'); if (b) { const ok = await copyText(JV.msgs[+b.dataset.jvcopy].content); toast(ok ? 'COPIED' : 'COPY FAILED', '', ok ? 'ok' : 'err'); } };
+  if (!ui.jvEsc) { ui.jvEsc = true; document.addEventListener('keydown', e => { const jv = $('#jv'); if (e.key === 'Escape' && jv && jv.classList.contains('open') && !$('#modal').classList.contains('open')) jv.classList.remove('open'); }); }
+}
+const jvSoon = () => { if (!JV.raf) JV.raf = requestAnimationFrame(() => { JV.raf = 0; renderJarvis(); }); };
+function renderJarvis() {
+  const body = $('#jvBody'); if (!body || !HOST) return;
+  const st = hostStats(guestFor()), hasKey = !!store.get('jarvisKey');
+  body.innerHTML = `<div class="jv-m a"><p><b>Good evening.</b> I can see the whole operation: ${st.people} guests coming, ${st.assigned} of ${st.spots.length} cast, ${st.accepted} accepted. Ask me what to do next, who to cast, what to say, or how to fix something mid-game.</p>${hasKey ? '' : '<p>First, connect me: tap <b>KEY</b> at the top and paste an Anthropic API key.</p>'}</div>`
+    + JV.msgs.map((m, i) => m.role === 'user' ? `<div class="jv-m u">${esc(m.content)}</div>`
+      : `<div class="jv-m a ${m.err ? 'err' : ''}">${m.content ? mdLite(m.content) : '<span class="jv-think"><i></i>THINKING…</span>'}${m.content && !m.err && !m.pending ? `<button class="cp" data-jvcopy="${i}">COPY</button>` : ''}</div>`).join('');
+  body.scrollTop = body.scrollHeight;
+  const s = $('#jvSend'); if (s) s.textContent = JV.busy ? 'STOP' : 'ASK';
+}
+function jarvisKeyModal() {
+  const has = !!store.get('jarvisKey');
+  openModal(`<div class="ph"><h2>Connect Jarvis</h2><span class="sub">THIS DEVICE ONLY</span></div>
+    <p class="note" style="margin:0 0 10px">Jarvis runs on Claude, Anthropic's AI. Paste an API key from <b>console.anthropic.com</b> → API Keys. The account needs some prepaid credit; each question uses the whole game as context, so expect roughly ten cents a question.</p>
+    <p class="note" style="margin:0 0 10px">The key is saved only in this browser on this device and is only ever sent to Anthropic. Anyone who uses this device while you're signed in could use it, so press <b>REMOVE KEY</b> before you lend it out.</p>
+    <p class="note" style="margin:0 0 14px">What Jarvis sees: the story and the solution, the run of show, guests' names, roles, RSVP notes and everything happening live. It never sees email addresses, phone numbers or photos, and it can't change anything.</p>
+    <label class="lbl" for="jvKeyIn">${has ? 'Replace the saved key' : 'Anthropic API key'}</label><input class="input mono" id="jvKeyIn" type="password" autocomplete="off" spellcheck="false" placeholder="${has ? 'A key is saved. Paste a new one to replace it.' : 'sk-ant-…'}">
+    <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="jvKeySave">SAVE KEY</button>${has ? '<button class="btn danger" id="jvKeyDel">REMOVE KEY</button>' : ''}<button class="btn ghost" data-close>CANCEL</button></div>`);
+  $('#jvKeySave').onclick = () => {
+    const k = $('#jvKeyIn').value.trim();
+    if (!/^sk-ant-[\w-]{20,}$/.test(k)) { toast("THAT DOESN'T LOOK RIGHT", 'Anthropic API keys start with sk-ant-', 'err'); return; }
+    store.set('jarvisKey', k); closeModal(); renderJarvis(); toast('JARVIS CONNECTED', 'Ask away.', 'ok');
+  };
+  const del = $('#jvKeyDel'); if (del) del.onclick = () => { store.del('jarvisKey'); closeModal(); renderJarvis(); toast('KEY REMOVED', 'Jarvis is disconnected on this device.', 'ok'); };
+}
+async function jarvisAsk(text) {
+  if (JV.busy || !HOST) return;
+  const key = store.get('jarvisKey'); if (!key) { jarvisKeyModal(); return; }
+  JV.msgs.push({ role: 'user', content: text });
+  const out = { role: 'assistant', content: '', pending: true }; JV.msgs.push(out);
+  JV.busy = true; renderJarvis();
+  // the conversation so far as plain text (failed turns left out, roles alternating, newest 24 turns)
+  const hist = [];
+  for (const m of JV.msgs) {
+    if (m === out) break;
+    if (m.err) { if (hist.length && hist[hist.length - 1].role === 'user') hist.pop(); continue; }
+    if (!m.content) continue;
+    if (hist.length && hist[hist.length - 1].role === m.role) hist.pop();
+    hist.push({ role: m.role, content: m.content });
+  }
+  while (hist.length > 24 || (hist.length && hist[0].role !== 'user')) hist.shift();
+  try {
+    if (!JV.SDK) JV.SDK = (await import(JV_SDK_URL)).default;
+    const client = new JV.SDK({ apiKey: key, dangerouslyAllowBrowser: true, maxRetries: 2 });
+    const ctx = jarvisContext();
+    // the story rarely changes, so it's cached; the live state comes after it, fresh every time
+    const params = { model: JV_MODEL, max_tokens: 16000, thinking: { type: 'adaptive' }, system: [{ type: 'text', text: JV_PROMPT + '\n\n' + ctx.story, cache_control: { type: 'ephemeral' } }, { type: 'text', text: ctx.live }], messages: hist };
+    const run = withFallback => {
+      const s = JV.stream = withFallback ? client.beta.messages.stream(Object.assign({ betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' }, params)) : client.messages.stream(params);
+      s.on('text', (d, snap) => { out.content = snap; jvSoon(); });
+      return s.finalMessage();
+    };
+    let msg;
+    try { msg = await run(true); }
+    catch (e) { if (e && e.status === 400 && !out.content) msg = await run(false); else throw e; }
+    const txt = (msg.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n\n').trim();
+    if (msg.stop_reason === 'refusal') { out.content = (txt ? txt + '\n\n' : '') + "*Jarvis can't help with that one. Try asking another way.*"; out.err = !txt; }
+    else out.content = (txt || out.content || '*(no answer)*') + (msg.stop_reason === 'max_tokens' ? '\n\n*(cut off: ask me to continue)*' : '');
+  } catch (e) {
+    console.warn('Jarvis', e);
+    const code = e && e.status, aborted = !!e && (e.name === 'APIUserAbortError' || /abort/i.test(e.message || ''));
+    if (aborted && out.content) out.content += '\n\n*(stopped)*';
+    else {
+      out.err = true;
+      out.content = aborted ? '*Stopped.*' : code === 401 ? '**That API key was rejected.** Tap KEY at the top and paste it again.' : code === 403 ? "**This key isn't allowed to use Claude Opus.** Check the key's workspace in the Anthropic console." : code === 429 ? '**Rate limited, or out of credit.** Wait a minute, or add credit in the Anthropic console.' : code === 529 || code === 503 ? '**Claude is busy right now.** Try again in a moment.' : code ? `**Something went wrong (${code}).** ${String(e.message || '').slice(0, 240)}` : "**I couldn't reach Anthropic.** Check the Wi-Fi and try again.";
+    }
+  }
+  out.pending = false; JV.busy = false; JV.stream = null; renderJarvis();
 }
 
 /* ---------------- the case files (public recap, published after the game) ---------------- */

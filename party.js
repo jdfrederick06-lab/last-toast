@@ -25,6 +25,8 @@ window.PARTY = {
   calEnd: `2026-11-06T23:45`,
   timeZone: `America/New_York`,
   rsvpOpen: true,            // false closes the RSVP form
+  rsvpRolling: true,         // true: no reply-by date, the page counts down the roles left instead
+  capacity: 34,              // how many roles there are (guests + plus-ones)
   showDatabaseLink: true,    // false hides the "Database" buttons on the invitation
   notice: ``,                // optional gold announcement banner at the top of the invitation
   // Tip: you can also change the date, venue, banner and these switches live from the

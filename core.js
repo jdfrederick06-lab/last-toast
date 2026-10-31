@@ -136,7 +136,8 @@ function LocalBackend() {
     set(path, val) { const s = read(); setPath(s, path, val); write(s); return Promise.resolve(); },
     setRoot(val) { write(val || {}); return Promise.resolve(); },
     onDisconnect() { },
-    uid: null, register() { return Promise.resolve(); }
+    updateStrict(p) { return this.update(p); }, setStrict(path, val) { return this.set(path, val); },
+    uid: null, register() { return Promise.resolve(true); }, ensureAuth() { return Promise.resolve(null); }
   };
 }
 async function FirebaseBackend(onConn) {
@@ -146,15 +147,7 @@ async function FirebaseBackend(onConn) {
   try { await loadScript(`https://www.gstatic.com/firebasejs/${v}/firebase-auth-compat.js`); } catch (e) { console.warn('auth script', e); }
   if (!firebase.apps.length) firebase.initializeApp(CONFIG.FIREBASE);
   const db = firebase.database();
-  // every page signs in invisibly ("anonymous sign-in") so the security rules can tell devices apart
-  let uid = null;
-  if (firebase.auth) {
-    try {
-      const auth = firebase.auth();
-      const cur = await new Promise(res => { const off = auth.onAuthStateChanged(u => { off(); res(u); }); setTimeout(() => res(auth.currentUser), 4000); });
-      uid = cur ? cur.uid : (await auth.signInAnonymously()).user.uid;
-    } catch (e) { console.warn('Anonymous sign-in unavailable (turn it on in Firebase → Authentication):', e.message || e); }
-  }
+  let auth = null; try { if (firebase.auth) auth = firebase.auth(); } catch (e) { console.warn('auth', e); }
   const root = db.ref('games/' + CONFIG.GAME_ID);
   let offset = 0;
   db.ref('.info/serverTimeOffset').on('value', s => { offset = s.val() || 0; });
@@ -164,12 +157,36 @@ async function FirebaseBackend(onConn) {
     on(fn) { root.on('value', s => fn(s.val() || {}), err => { console.error(err); toast('DATABASE ERROR', 'Permission denied. Check your Firebase rules.', 'err'); }); },
     update(p) { return root.update(p).catch(fail); },
     set(path, val) { return root.child(path).set(val).catch(fail); },
+    /** like update/set, but a refused write throws, so the page can tell the guest it didn't go through */
+    updateStrict(p) { return root.update(p); },
+    setStrict(path, val) { return root.child(path).set(val); },
     setRoot(val) { return root.set(val || null).catch(fail); },
     onDisconnect(path, val) { try { root.child(path).onDisconnect().set(val); } catch (e) { } },
-    uid,
-    /** prove to the rules that this device is the host (kind 'hosts') or plays a character (kind 'claims') */
-    register(kind, id, token) { if (!uid) return Promise.resolve(); return db.ref(kind + '/' + CONFIG.GAME_ID + '/' + uid + (id ? '/' + id : '')).set(token).catch(e => console.warn('register', e)); }
+    uid: null,
+    /** prove to the rules that this device is the host (kind 'hosts') or plays a character (kind 'claims'). Resolves true when it worked. */
+    async register(kind, id, token) {
+      if (!be.uid) await be.ensureAuth();
+      if (!be.uid) return false;
+      return db.ref(kind + '/' + CONFIG.GAME_ID + '/' + be.uid + (id ? '/' + id : '')).set(token).then(() => true).catch(e => { console.warn('register', e); return false; });
+    },
+    /** every page signs in invisibly ("anonymous sign-in") so the security rules can tell devices apart.
+        Some phones are slow to restore it and some in-app browsers refuse it at first, so wait, then retry. */
+    async ensureAuth() {
+      if (!auth) return null;
+      if (auth.currentUser) return (be.uid = auth.currentUser.uid);
+      for (let i = 0; i < 3 && !auth.currentUser; i++) {
+        try { await Promise.race([auth.signInAnonymously(), sleep(10000).then(() => { throw new Error('sign-in timed out'); })]); }
+        catch (e) { console.warn('Anonymous sign-in attempt ' + (i + 1) + ' failed:', e.code || e.message || e); await sleep(700 * (i + 1)); }
+      }
+      return (be.uid = auth.currentUser ? auth.currentUser.uid : null);
+    }
   };
+  if (auth) {
+    const first = await new Promise(res => { let done = false; const finish = u => { if (!done) { done = true; res(u); } }; auth.onAuthStateChanged(finish); setTimeout(() => finish(auth.currentUser), 6000); });
+    be.uid = first ? first.uid : null;
+    auth.onAuthStateChanged(u => { be.uid = u ? u.uid : null; });
+    if (!be.uid) await be.ensureAuth();
+  }
   db.ref('.info/connected').on('value', s => { be.connected = !!s.val(); onConn && onConn(); });
   return be;
 }
@@ -182,6 +199,7 @@ async function connectBackend(onConn) {
   be.on = fn => on(raw => {
     const v = (raw && raw.ctl && raw.ctl.reload) || 0;
     if (seen === undefined) seen = v; else if (v !== seen) { location.reload(); return; }
+    applyRoomEdits(raw && raw.site);
     fn(raw);
   });
   return be;
@@ -280,6 +298,15 @@ function roomOpen(S, roomId) {
   return !!(r && r.alwaysOpen) || !!S.rooms[roomId];
 }
 const roomName = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).name || id || '';
+const roomPlace = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).place || '';
+/** Room names and locations the host changed from the dashboard (site/rooms), layered over the story's. */
+function applyRoomEdits(site) {
+  const o = (site && site.rooms) || {};
+  (window.STORY_ROOMS || []).forEach(r => {
+    if (!r._orig) r._orig = { name: r.name, place: r.place || '' };
+    const e = o[r.id] || {}; r.name = e.name || r._orig.name; r.place = e.place || r._orig.place;
+  });
+}
 /** Has a memory's moment arrived? */
 function memoryDue(S, when) {
   when = when || {};

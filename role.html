@@ -153,7 +153,7 @@ const P = () => mergeParty(window.PARTY, S ? S.site : {});
 (function () { const box = document.getElementById('embers'), n = innerWidth < 600 ? 12 : 20; for (let i = 0; i < n; i++) { const e = document.createElement('i'), s = 2 + Math.random() * 4; e.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;--dx:${(Math.random() * 80 - 40).toFixed(0)}px;animation-duration:${14 + Math.random() * 16}s;animation-delay:${(Math.random() * 18).toFixed(1)}s`; box.appendChild(e); } })();
 
 function fail(title, text) { show(`<div class="msg fade">${MONO('#e8cf9a').replace('class="mono"', 'class="mono" style="width:64px;height:64px;display:block;margin:0 auto"')}<h1>${esc(title)}</h1><p>${esc(text)}</p></div>`); }
-const status = data => backend.update(Object.fromEntries(Object.entries(data).map(([k, v]) => ['inviteStatus/' + ID + '/' + k, v])));
+const status = async data => { if (backend.ensureAuth && !backend.uid) await backend.ensureAuth(); return backend.updateStrict(Object.fromEntries(Object.entries(data).map(([k, v]) => ['inviteStatus/' + ID + '/' + k, v]))); };
 
 /* 1. the sealed envelope */
 function envelope() {
@@ -181,7 +181,7 @@ function letter() {
        <div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button><button class="btn-text" data-go="decline">Decline the invitation</button></div>`;
   show(`<article class="paper fade">${MONO('#8a6b2e')}
     <p class="dear">Dear ${esc(INV.g)},</p>
-    <p class="thanks">Thank you for being part of <i>${esc(P().title || 'The Last Toast')}</i>. We've spent weeks building this night: the story, the secrets, and every clue hidden in every room. It only comes alive because of people like you who are willing to step into it. We can't wait to see what you do with your role.</p>
+    <p class="thanks">${P().thanks ? esc(P().thanks).replace(/\n+/g, '<br>') : `Thank you for being part of <i>${esc(P().title || 'The Last Toast')}</i>. We've spent weeks building this night: the story, the secrets, and every clue hidden in every room. It only comes alive because of people like you who are willing to step into it. We can't wait to see what you do with your role.`}</p>
     <p class="sign"><small>With gratitude,</small>${esc(INV.from || 'Your hosts')}</p>
     <div class="orn"><i></i><b>✦</b><i></i></div>
     <div class="congrats caps">Congratulations. You have been assigned</div>
@@ -292,7 +292,7 @@ stage.addEventListener('click', e => { const b = e.target.closest('[data-go]'); 
     catch (e) { clearTimeout(timer); return fail('This link is not valid', 'Open the full link from your invitation message, or ask your hosts to send it again.'); }
     clearTimeout(timer);
     ST = Object.assign({}, S.inviteStatus[ID] || {});
-    const upd = { last: backend.TS() }; if (!ST.opened) upd.opened = backend.TS(); status(upd);
+    const upd = { last: backend.TS() }; if (!ST.opened) upd.opened = backend.TS(); status(upd).catch(e => console.warn('open status', e));
     document.title = 'For ' + INV.g + ' · ' + (P().title || 'The Last Toast');
     if (ST.resp === 'accepted') letter(); else envelope();
   });
