@@ -70,11 +70,11 @@
 .tl li{display:grid;grid-template-columns:minmax(84px,auto) 1fr;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);margin:0!important}
 .tl li b{font-size:12px;font-weight:500;letter-spacing:.06em;color:var(--gold2);padding-top:2px}
 .bnote{border:1px dashed rgba(201,184,255,.45);border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:14px;color:var(--cyan)}
-.hex span img,.person .mono-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.hex span img,.person .mono-av img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;border-radius:50%;display:block}
 .person .mono-av{overflow:hidden}
 .linkish{background:none;border:0;padding:0;margin-top:9px;font-size:12.5px;color:var(--gold2);cursor:pointer;text-decoration:underline;text-decoration-color:rgba(247,220,154,.4);text-underline-offset:3px}
 .guest .gphoto.sm{width:34px;height:34px}
-.guest .gphoto{width:54px;height:54px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(212,162,76,.6);flex:none}
+.guest .gphoto{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 22%;border:1.5px solid rgba(212,162,76,.6);flex:none}
 .guest .contact{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:13px;margin:6px 0 2px}
 .guest .contact a{color:var(--gold2);text-decoration:none}
 .hex.red{background:conic-gradient(from 200deg,#ffb3ba,#8a1424,#ff4d5e,#ffb3ba);box-shadow:0 8px 30px rgba(255,77,94,.35)}
@@ -1010,7 +1010,7 @@ function briefHTML(c, host = false) {
 /* ---------------- who's who ---------------- */
 function dirEntry(d) { return (d.revealed && S.unmasked[d.id]) ? Object.assign({}, d, d.revealed) : d; }
 function directoryHTML(meId, filter) {
-  const dd = dead(), list = ui.directory.filter(d => !spareLocked(S, d.id)).map(dirEntry).filter(d => !filter || (d.name + ' ' + d.title + ' ' + d.group + ' ' + d.blurb).toLowerCase().includes(filter));
+  const dd = dead(), list = ui.directory.filter(d => !spareLocked(S, d.id) && !castHidden(S, d.id)).map(dirEntry).filter(d => !filter || (d.name + ' ' + d.title + ' ' + d.group + ' ' + d.blurb).toLowerCase().includes(filter));
   if (!ui.directory.length) return `<div class="empty">THE DIRECTORY IS UNAVAILABLE ON THIS DEVICE</div>`;
   const groups = [...new Set([...GROUPS, ...list.map(d => d.group)])].filter(g => list.some(d => d.group === g));
   return groups.map(g => `<div class="dir-group">${esc(g)}</div><div class="dir">${list.filter(d => d.group === g).map((d, i) => {
@@ -1211,7 +1211,7 @@ function renderPlayer() {
   patch($('#dossierBody'), [S.flags.killerKnows, JSON.stringify(dd), Object.keys(S.phaseLog).length, ui.photoVer].join('|'), dossierHTML(c));
   patch($('#briefBody'), [S.flags.killerKnows, (c.brief && c.brief.share || []).map((s, i) => store.get(sharedKey(i))).join()].join('|'), briefHTML(c));
   patch($('#mapBody'), JSON.stringify(S.rooms) + JSON.stringify(S.site.rooms || '') +(ui.freshRooms ? [...ui.freshRooms].join() : ''), mapHTML());
-  patch($('#dirBody'), JSON.stringify([ui.dirFilter, dd, S.unmasked, ui.directory.length, ui.photoVer, S.site.spares || '']), directoryHTML(c.id, ui.dirFilter));
+  patch($('#dirBody'), JSON.stringify([ui.dirFilter, dd, S.unmasked, ui.directory.length, ui.photoVer, S.site.spares || '', S.site.cast || '', S.site.castOnly]), directoryHTML(c.id, ui.dirFilter));
 
   // verdict
   const v = S.verdict, vp = $('#verdictPanel');
@@ -1280,7 +1280,7 @@ function renderPlayer() {
   const vpnl = $('#votePanel'), canVote = S.flags.voting && !iAmDead && !c.inspector;
   vpnl.classList.toggle('hidden', !canVote);
   if (canVote) {
-    const opts = ROSTER_LIST.filter(x => x.id !== c.id && x.suspect !== false && !spareLocked(S, x.id) && !(S.kill && S.kill.victim === x.id));
+    const opts = ROSTER_LIST.filter(x => x.id !== c.id && x.suspect !== false && !spareLocked(S, x.id) && !castHidden(S, x.id) && !(S.kill && S.kill.victim === x.id));
     const sel = $('#suspectSel'), cur = sel.value, sig = opts.map(o => o.id).join();
     const mine = playerRec(c.id), mv = mine && mine.vote;
     if (sel._sig !== sig) {
@@ -1450,6 +1450,7 @@ function adminShellHTML() {
   <div data-pane="characters">
     <section class="panel gold"><div class="ph"><h2>Characters, Codes &amp; Access</h2><span class="sub" id="castSub"></span></div>
       <p class="note" style="margin:0 0 12px"><b>Access QR</b> logs a phone straight into a dossier. <b>Revoke</b> blocks it instantly; <b>Restore</b> gives it back. <b>Sign out</b> kicks the current phone. <b>Message</b> is for emergencies only: memories arrive on their own. The effort level is what guests see on their invitation: <span class="pill eff-big">●●● LEADING</span> about 20 minutes of prep, <span class="pill eff-medium">●●○ FEATURED</span> 10 to 15, <span class="pill eff-light">●○○ SUPPORTING</span> about 5.</p>
+      <div class="ctl" style="padding-top:0"><div class="txt"><b>Hide characters nobody is playing</b><small>Guests won't see them in Who's Who or the accusation list. Every character still shows here for you.</small></div><span class="state" id="st-castOnly"></span><button class="toggle" id="castOnlyBtn" aria-label="Hide characters nobody is playing"></button></div>
       <div class="effsum" id="effSum"></div>
       <div class="cast-tools"><input class="input" id="castFilter" placeholder="Search characters or guests…"><select class="input" id="castEffort" style="width:auto;flex:none"><option value="">Every effort level</option><option value="big">Leading roles</option><option value="medium">Featured roles</option><option value="light">Supporting roles</option><option value="open">Open roles only</option></select><label class="check"><input type="checkbox" id="showCodes"> Show code words</label></div>
       <div id="castList"></div>
@@ -1690,6 +1691,11 @@ async function hostJobs() {
       }
     }
     await syncPhotoLinks();
+    // tell guests' phones which characters are actually being played, so the rest stay out of sight
+    if (HOST.assignOk && HOST.assignCt === (S.assign ? S.assign.ct : '')) {
+      const inPlay = {}; Object.values(HOST.assign.map).forEach(id => { inPlay[id] = 1; }); Object.values(S.succession).forEach(s => { if (s && s.to) inPlay[s.to] = 1; });
+      if (Object.keys(inPlay).length && JSON.stringify(Object.keys(inPlay).sort()) !== JSON.stringify(Object.keys(S.site.cast || {}).sort())) await backend.update({ 'site/cast': inPlay });
+    }
   } catch (e) { console.warn(e); }
   ui.jobBusy = false;
 }
@@ -2011,7 +2017,8 @@ async function openPrint(which) {
   w.document.write('<p style="font:16px sans-serif;padding:20px">Preparing…</p>');
   if (['tags', 'props', 'all'].includes(which)) { try { await loadQR(); } catch (e) { } }
   const qr = window.qrcode ? (text => { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createImgTag(5, 0); }) : null;
-  const story = { characters: HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId, hints: HOST.hints, directory: HOST.directory, puzzles: HOST.puzzles };
+  const played = new Set(Object.values(HOST.assign.map)), trim = ['badges', 'notebook'].includes(which) && S.site.castOnly !== false && played.size;
+  const story = { characters: trim ? HOST.list.filter(c => played.has(c.id)) : HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId, hints: HOST.hints, directory: HOST.directory, puzzles: HOST.puzzles };
   const awards = {}; ['best', 'dressed', 'detective', 'liar'].forEach(k => { const el = $('#rc-' + k), v = el ? el.value.trim() : ((S.site.recap || {}).awards || {})[k]; if (v) awards[k] = v; });
   const r = PrintKit.render(story, party(), which, { qr, base: siteBase(), players: guestFor(), awards });
   w.document.open();
@@ -2114,6 +2121,7 @@ function bindAdmin() {
   // players
   const sc = $('#showCodes'); sc.checked = store.get('showCodes') !== '0'; sc.onchange = () => { store.set('showCodes', sc.checked ? '1' : '0'); renderAdmin(true); };
   $('#castFilter').addEventListener('input', e => { ui.castFilter = e.target.value.toLowerCase(); renderAdmin(true); });
+  $('#castOnlyBtn').onclick = async () => { const on = S.site.castOnly === false; await backend.update({ 'site/castOnly': on }); log(on ? 'Unplayed characters hidden from guests' : 'Every character shown to guests'); };
   $('#castEffort').addEventListener('change', e => { ui.castEffort = e.target.value; renderAdmin(true); });
 
   // tools: projector
@@ -2548,6 +2556,7 @@ function renderAdmin(force) {
   const newN = Object.keys(S.rsvps).filter(isNewRsvp).length;
   badge('players', newN || (L.filter(c => c.mustCast && !who[c.id]).length || spots.filter(key => !HOST.assign.map[key]).length) + spots.filter(key => keyStatus(key).resp === 'swap').length);
   badge('characters', Object.keys(S.revoked).length);
+  { const on = S.site.castOnly !== false, b = $('#castOnlyBtn'), s = $('#st-castOnly'); if (b) b.setAttribute('aria-pressed', on); if (s) { s.textContent = on ? 'ON' : 'OFF'; s.className = 'state' + (on ? ' on' : ''); } }
   const openAsks = Object.entries(S.asks).filter(([, a]) => a && !a.done), helpN = openAsks.filter(([, a]) => a.kind === 'help').length;
   badge('inbox', openAsks.length); const ib = $('#badge-inbox'); if (ib) ib.classList.toggle('pulse', !!helpN);
   if (!HOST.assign.seenInit) initSeen();
