@@ -116,7 +116,8 @@ body::after{display:none}
 .scene.present .env-sway,.scene.present .env-shadow{animation:none}
 .scene.present .env-back,.scene.present .env-pocket{opacity:0;transform:translateY(90px)}
 .scene.present .env-flap,.scene.present .env-shadow{opacity:0}
-.scene.present .env-card{transform:translateY(-30%) scale(1.5);opacity:0;transition:transform 1.15s cubic-bezier(.5,0,.25,1),opacity .55s .65s}
+.scene.present .env-card{transform:translateY(-76%) scale(1.04);transition:transform .85s cubic-bezier(.4,0,.2,1)}
+.env-card.ghost{position:fixed;z-index:60;margin:0;pointer-events:none;transition:opacity .5s ease}
 /* gold dust and wax chips */
 .dust{position:fixed;left:0;top:0;width:0;height:0;z-index:40;pointer-events:none}
 .dust i{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;background:radial-gradient(circle,#fff6d8,#e8cf9a 45%,rgba(184,146,74,0) 72%);animation:burst var(--t) cubic-bezier(.15,.7,.3,1) forwards}
@@ -227,7 +228,9 @@ const P = () => mergeParty(window.PARTY, S ? S.site : {});
 (function () { const box = document.getElementById('embers'), n = innerWidth < 600 ? 12 : 20; for (let i = 0; i < n; i++) { const e = document.createElement('i'), s = 2 + Math.random() * 4; e.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;--dx:${(Math.random() * 80 - 40).toFixed(0)}px;animation-duration:${14 + Math.random() * 16}s;animation-delay:${(Math.random() * 18).toFixed(1)}s`; box.appendChild(e); } })();
 
 function fail(title, text) { show(`<div class="msg fade">${MONO('#e8cf9a').replace('class="mono"', 'class="mono" style="width:64px;height:64px;display:block;margin:0 auto"')}<h1>${esc(title)}</h1><p>${esc(text)}</p></div>`); }
-const status = async data => { if (backend.ensureAuth && !backend.uid) await backend.ensureAuth(); return backend.updateStrict(Object.fromEntries(Object.entries(data).map(([k, v]) => ['inviteStatus/' + ID + '/' + k, v]))); };
+/* the host's Guest View opens this page with ?preview=1: it shows everything but records nothing */
+const PREVIEW = /[?&]preview=1/.test(location.search);
+const status = async data => { if (PREVIEW) return true; if (backend.ensureAuth && !backend.uid) await backend.ensureAuth(); return backend.updateStrict(Object.fromEntries(Object.entries(data).map(([k, v]) => ['inviteStatus/' + ID + '/' + k, v]))); };
 
 /* gold dust (and a few chips of wax) bursting from a point on the screen */
 function burst(x, y, n = 40, reach = 1, chips = 0) {
@@ -325,6 +328,9 @@ function envelope() {
     if (started) return; started = true;
     if (reduce) { letter(true); return; }
     const sealAt = () => { const r = env.querySelector('.seal').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+    // ease the gentle sway to a stop instead of letting it wobble while the envelope opens
+    const sway = env.parentNode, now = getComputedStyle(sway).transform;
+    sway.style.animation = 'none'; sway.style.transform = now === 'none' ? '' : now; void sway.offsetWidth; sway.style.transition = 'transform .45s ease'; sway.style.transform = 'none';
     scene.classList.add('go'); env.classList.add('press'); buzz(15);
     setTimeout(() => env.classList.add('crack'), 260);
     setTimeout(() => {
@@ -333,24 +339,30 @@ function envelope() {
     }, 720);
     setTimeout(() => env.classList.add('open'), 1050);
     setTimeout(() => env.classList.add('rise'), 1850);
-    setTimeout(() => scene.classList.add('present'), 3250);
-    setTimeout(() => letter(true), 4050);
+    setTimeout(() => scene.classList.add('present'), 3150);
+    // the card grows straight into the letter: a copy of it fades out exactly where the letter fades in
+    setTimeout(() => {
+      const card = env.querySelector('.env-card'), from = card.getBoundingClientRect(), ghost = card.cloneNode(true);
+      ghost.classList.add('ghost'); Object.assign(ghost.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px', right: 'auto', transform: 'none' });
+      document.body.appendChild(ghost); letter(true, from);
+      requestAnimationFrame(() => requestAnimationFrame(() => { ghost.style.opacity = '0'; })); setTimeout(() => ghost.remove(), 700);
+    }, 3950);
   };
   env.addEventListener('click', open);
   env.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
 }
 /* 2. the letter: thanks, the role, and the choice */
-function letter(fromEnvelope) {
+function letter(fromEnvelope, fromRect) {
   const ef = EFFORT[INV.e] || EFFORT.medium, resp = ST.resp || '';
   const nameHTML = [...INV.n].map((ch, i) => `<span style="animation-delay:${(0.6 + i * 0.045).toFixed(2)}s">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('');
   const when = ST.at ? new Date(ST.at).toLocaleDateString([], { month: 'long', day: 'numeric' }) : '';
   const choices = resp === 'accepted'
-    ? `<div class="status">✓ You accepted this role${when ? ' on ' + esc(when) : ''}.</div><div class="choices"><button class="btn-gold" data-go="vault">Show my code word</button></div>`
+    ? `<div class="status">✓ You accepted this role${when ? ' on ' + esc(when) : ''}.</div><div class="choices"><button class="btn-gold" data-go="vault">Show my code word</button><button class="btn-text" data-go="decline">My plans changed: I can't make it</button></div>`
     : resp === 'declined'
     ? `<div class="status">You declined this invitation. Changed your mind? You can still accept, or ask for a different character.</div><div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button></div>`
     : `${resp === 'swap' ? `<div class="status">You asked for a different character${ST.note ? `: “${esc(ST.note)}”` : ''}. Your hosts will be in touch. You can still accept this one if you like.</div>` : ''}
        <div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button><button class="btn-text" data-go="decline">Decline the invitation</button></div>`;
-  show(`${fromEnvelope ? '<div class="bloom soft"></div>' : ''}<article class="paper ${fromEnvelope ? 'unfold' : 'fade'}">${MONO('#8a6b2e')}
+  show(`${fromEnvelope ? '<div class="bloom soft"></div>' : ''}<article class="paper ${fromEnvelope ? (fromRect ? '' : 'unfold') : 'fade'}">${MONO('#8a6b2e')}
     <p class="dear">Dear ${esc(INV.g)},</p>
     <p class="thanks">${P().thanks ? esc(P().thanks).replace(/\n+/g, '<br>') : `Thank you for being part of <i>${esc(P().title || 'The Last Toast')}</i>. We've spent weeks building this night: the story, the secrets, and every clue hidden in every room. It only comes alive because of people like you who are willing to step into it. We can't wait to see what you do with your role.`}</p>
     <p class="sign"><small>With gratitude,</small>${esc(INV.from || 'Your hosts')}</p>
@@ -362,6 +374,13 @@ function letter(fromEnvelope) {
     <div class="effort"><span class="lbl caps">Effort for the night</span><div class="pips">${[1, 2, 3].map(n => `<i class="${n <= ef.pips ? 'on' : ''}"></i>`).join('')}</div><b>${esc(ef.label)}</b><p>${esc(ef.text)}</p><small>${esc(ef.prep)}</small></div>
     ${choices}
     <div class="askline"><button class="btn-text" data-go="ask">Questions about your role? Ask your hosts</button></div></article>`);
+  // grow the letter out of the card it came from (the card's exact spot and size on screen)
+  if (fromRect && document.querySelector('.paper').animate) {
+    const paper = document.querySelector('.paper'), to = paper.getBoundingClientRect(), s = fromRect.width / to.width;
+    const dx = fromRect.left + fromRect.width / 2 - (to.left + to.width / 2), dy = fromRect.top - to.top;
+    paper.style.transformOrigin = '50% 0';
+    paper.animate([{ transform: `translate(${dx}px,${dy}px) scale(${s})`, opacity: 0 }, { opacity: 1, offset: .3 }, { transform: 'none', opacity: 1 }], { duration: 1050, easing: 'cubic-bezier(.22,.8,.24,1)' });
+  }
   // a shower of gold over the name once it has written itself out
   if (fromEnvelope && !matchMedia('(prefers-reduced-motion: reduce)').matches) setTimeout(() => {
     const el = document.querySelector('.cname'); if (!el) return; const r = el.getBoundingClientRect();
@@ -380,6 +399,7 @@ function ask() {
   const chips = document.getElementById('askChips');
   chips.addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (!b) return; pick = b.dataset.ask; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.ask === pick)); });
   document.getElementById('askBtn').addEventListener('click', async e => {
+    if (PREVIEW) { toast('Preview', 'Guests can ask their hosts a question from here.', 'ok'); return; }
     const text = document.getElementById('askNote').value.trim(); if (!text) { toast('Your question', 'Write your question first.', 'err'); return; }
     e.target.disabled = true; e.target.textContent = 'Sending…';
     try { await sendAsk(backend, { kind: 'question', where: 'role', name: INV.g, cid: INV.cid, cname: INV.n, topic: pick, text }); document.getElementById('askNote').value = ''; toast('Sent', 'Your hosts will reply here.', 'ok'); renderThreads(true); }
@@ -434,7 +454,8 @@ function vault(first) {
       <li><b>My File</b> is who you are. <b>Brief</b> is how to play: your goal, what to share, and your timeline.</li>
       <li>Plan a costume. The idea in your brief is only a suggestion, so make the character your own.</li>
       <li>Bring a charged phone${p.date ? ' on ' + esc(p.date) : ''}.</li>
-    </ul><div class="askline"><button class="copy" data-go="ask">Questions? Ask your hosts</button></div></section>`);
+    </ul><div class="askline"><button class="copy" data-go="ask">Questions? Ask your hosts</button></div>
+    <div class="askline" style="margin-top:8px"><button class="btn-text" style="color:var(--muted)" data-go="decline">Plans changed? Let your hosts know you can't make it</button></div></section>`);
   document.getElementById('copyCode').addEventListener('click', async () => { const ok = await copyText(code); toast(ok ? 'Copied' : "Couldn't copy", ok ? 'Your code word is on your clipboard.' : 'Write it down instead.', ok ? 'ok' : 'err'); });
   // unscramble, one letter at a time
   const el = document.getElementById('code'), A = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789', reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -467,9 +488,9 @@ function swap() {
 
 /* 3d. declining */
 function decline() {
-  show(`<article class="paper fade">${MONO('#8a6b2e')}<h2>Decline the invitation?</h2><p class="lead">We'll be sorry not to see you, ${esc(INV.g)}. If you'd like, leave your hosts a note.</p>
+  show(`<article class="paper fade">${MONO('#8a6b2e')}<h2>${ST.resp === 'accepted' ? 'Can\'t make it after all?' : 'Decline the invitation?'}</h2><p class="lead">${ST.resp === 'accepted' ? `No problem, ${esc(INV.g)}, plans change. Your hosts will be told right away so your role can go to someone else.` : `We'll be sorry not to see you, ${esc(INV.g)}.`} If you'd like, leave your hosts a note.</p>
     <textarea class="note" id="decNote" maxlength="400" placeholder="Optional"></textarea>
-    <div class="choices"><button class="btn-line" id="decBtn">Yes, decline the invitation</button><button class="btn-gold" data-go="letter">Go back</button></div></article>`);
+    <div class="choices"><button class="btn-line" id="decBtn">${ST.resp === 'accepted' ? 'Yes, I can\'t make it' : 'Yes, decline the invitation'}</button><button class="btn-gold" data-go="letter">Go back</button></div></article>`);
   document.getElementById('decBtn').addEventListener('click', async e => {
     e.target.disabled = true; const note = document.getElementById('decNote').value.trim();
     try { await status({ resp: 'declined', at: backend.TS(), note: note || null }); ST.resp = 'declined'; ST.note = note;

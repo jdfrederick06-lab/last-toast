@@ -446,6 +446,17 @@ body.has-nextbar #app{padding-bottom:120px}
 .safety small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .pill.fit{border-color:rgba(255,77,94,.5);color:var(--red2)}
 .tplvars{font-family:var(--mono);font-size:11px;color:var(--cyan);margin:4px 0 10px;line-height:1.7}
+/* ---------- host: guest view ---------- */
+.gv-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.gv-tools select{width:auto;flex:1;min-width:200px}
+.gv-seg{display:flex;gap:4px;padding:4px;border:1px solid var(--line2);border-radius:14px;background:rgba(255,255,255,.03)}
+.gv-seg button{border:0;background:none;color:var(--muted);border-radius:10px;padding:8px 12px;font:12px var(--sans);cursor:pointer}
+.gv-seg button.on{background:var(--gold-dim);color:var(--gold2);box-shadow:inset 0 0 0 1px rgba(212,162,76,.5)}
+.gv-stage{border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:#000;height:min(72vh,780px)}
+.gv-stage iframe{display:block;width:100%;height:100%;border:0;background:#06110e}
+.gv-stage.phone{width:min(100%,400px);margin:0 auto;border-radius:34px;border:6px solid #23222a;box-shadow:0 0 0 1px var(--line2),0 20px 50px rgba(0,0,0,.6)}
+.gv-stage .empty{margin:40px 20px}
+.pvbar{position:fixed;left:0;right:0;bottom:0;z-index:99;padding:7px 10px;text-align:center;font:10px var(--mono);letter-spacing:.16em;color:#1b1206;background:var(--gold-grad);pointer-events:none}
 /* ---------- host: navigation that stays put ---------- */
 .tabs{position:sticky;top:80px;z-index:19;margin:0 0 12px;padding:5px;gap:4px;border:1px solid var(--line);border-radius:20px;background:rgba(12,11,16,.86);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:0 12px 30px rgba(0,0,0,.4)}
 .tabs .tab{border-color:transparent;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:15px;padding:10px 12px;font-size:11px;letter-spacing:.12em}
@@ -567,17 +578,20 @@ const ICON = {
 /* Sessions.
    Host: kept only in this browser tab. Closing the tab, logging out, or 30 minutes idle locks the terminal.
    Player: remembered on their own phone so a refresh doesn't log them out. */
+/* Guest view: the host terminal opens this page as ?preview=1 inside a frame to see exactly what a guest sees.
+   It keeps its login in memory only (never touching the host's session) and saves nothing to the database. */
+const PREVIEW = /[?&]preview=1/.test(location.search);
 const TAB_KEY = store.k('session');
 const HOST_IDLE_MS = 30 * 60 * 1000;
 let session = (() => {
-  let s = null;
+  let s = null; if (PREVIEW) return null;
   try { s = JSON.parse(sessionStorage.getItem(TAB_KEY) || 'null'); } catch (e) { }
   if (!s) { try { s = JSON.parse(store.get('session') || 'null'); } catch (e) { } if (s && s.role !== 'player') { store.del('session'); s = null; } }
   if (s && s.role === 'admin' && Date.now() - (s.active || 0) > HOST_IDLE_MS) s = null;
   return s;
 })();
 const saveSession = s => {
-  session = s; const raw = s ? JSON.stringify(s) : null;
+  session = s; if (PREVIEW) return; const raw = s ? JSON.stringify(s) : null;
   try { raw ? sessionStorage.setItem(TAB_KEY, raw) : sessionStorage.removeItem(TAB_KEY); } catch (e) { }
   if (s && s.role === 'player') store.set('session', raw); else store.del('session');
 };
@@ -592,7 +606,7 @@ const ui = { built: null, bypass: false, drafts: {}, openCards: new Set(),selTar
   view: (() => { try { return sessionStorage.getItem('kane:view') || 'now'; } catch (e) { return 'now'; } })(), dirFilter: '', directory: [], evSeenCount: +(store.get('evSeen') || 0), succ: null };
 const isHostDevice = () => store.get('hostDevice') === '1';
 const dead = () => deathsOf(S);
-const log = (t, k) => backend && logEvent(backend, t, k);
+const log = (t, k) => backend && !PREVIEW && logEvent(backend, t, k);
 function playerRec(id) { const p = S.players[id]; return (p && p.epoch === S.epoch) ? p : null; }
 function isOnline(id) { const p = playerRec(id); return !!(p && typeof p.lastSeen === 'number' && backend && backend.now() - p.lastSeen < CONFIG.ONLINE_WINDOW_MS); }
 const party = () => mergeParty(window.PARTY, S.site);
@@ -613,6 +627,12 @@ async function boot() {
   if (hashTag) { try { sessionStorage.setItem(PEND, decodeURIComponent(hashTag)); } catch (e) { } }
   render();
   backend = await connectBackend(renderConn);
+  if (PREVIEW) {
+    // look, don't touch: every write is quietly ignored
+    const none = () => Promise.resolve(true);
+    Object.assign(backend, { update: none, set: none, updateStrict: none, setStrict: none, register: none, setRoot: none });
+    document.body.insertAdjacentHTML('afterbegin', '<div class="pvbar">HOST PREVIEW · THIS IS WHAT THE GUEST SEES · NOTHING HERE IS SAVED</div>');
+  }
   backend.on(raw => { RAW = raw; const prev = S, was = ready; S = normRoot(raw); ready = true; onState(prev, was); });
   if (session) await restore();
   if (hashCode) {
@@ -635,6 +655,7 @@ async function restore() {
 }
 /* tell the database's security rules who this device is (the host, or the player of one character) */
 async function registerAuth(b) {
+  if (PREVIEW) return;
   if (!backend || !session || !session.code || backend.mode === 'local') return;
   try {
     if (backend.ensureAuth && !backend.uid) await backend.ensureAuth();
@@ -768,6 +789,7 @@ function onState(prev, was) {
 const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) { } };
 
 function heartbeat() {
+  if (PREVIEW) return;
   if (!backend || !ready || !ME || ME.type !== 'player' || session.epoch !== S.epoch) return;
   const id = ME.c.id, p = PL(id), rec = S.players[id];
   const upd = { [p + '/lastSeen']: backend.TS(), [p + '/epoch']: session.epoch, [p + '/unlocked']: true };
@@ -1371,7 +1393,7 @@ const nightSwitches = () => [['killerKnows', 'red', 'Killer knows the truth', 'U
   ['sealed', 'red', 'Seal all dossiers', 'Locks every player out until you turn it off.']]
   .map(([f, cls, t, d]) => `<div class="ctl"><div class="txt"><b>${t}</b><small>${d}</small></div><span class="state" id="st-${f}"></span><button class="toggle ${cls}" data-flag="${f}" aria-label="${t}"></button></div>`).join('');
 function adminShellHTML() {
-  return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="printBtn">PRINT</button><button class="iconbtn" id="notesBtn">NOTES</button>`)}
+  return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="guestViewBtn">GUEST VIEW</button><button class="iconbtn" id="printBtn">PRINT</button><button class="iconbtn" id="notesBtn">NOTES</button>`)}
   <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${TAB_ICON[k] || ''}<span>${l}</span><span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
   <div class="hud"><div class="hudstats" id="hud"></div>
     <div class="gsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg><input id="gsIn" type="search" autocomplete="off" placeholder="Find a guest, character or setting…" aria-label="Find a guest, character or setting"><kbd>/</kbd><div class="gres hidden" id="gsRes" role="listbox"></div></div></div>
@@ -1909,6 +1931,7 @@ function whenText(w) {
 function castActions(c) {
   const id = esc(c.id), p = playerRec(c.id);
   return `<button class="btn sm" data-ca="dossier" data-id="${id}">DOSSIER</button>
+    <button class="btn sm ghost" data-ca="guestview" data-id="${id}">GUEST VIEW</button>
     <button class="btn sm ghost" data-ca="qr" data-id="${id}">ACCESS QR</button>
     ${S.revoked[c.id] ? `<button class="btn sm gold" data-ca="restore" data-id="${id}">RESTORE</button>` : `<button class="btn sm ghost" data-ca="revoke" data-id="${id}">REVOKE</button>`}
     <button class="btn sm ghost" data-ca="kick" data-id="${id}">SIGN OUT</button>
@@ -1920,6 +1943,7 @@ function handleCastAction(act, id) {
   const n = esc(rname(id));
   switch (act) {
     case 'dossier': return openDossierModal(id);
+    case 'guestview': return guestViewModal(id);
     case 'msg': return messageModal(id);
     case 'qr': return accessQR(id);
     case 'revoke': return confirmModal('Revoke access?', `${n}'s phone is blocked immediately, and the code word won't work until you restore it.`, 'REVOKE', () => A.revoke(id));
@@ -1929,6 +1953,34 @@ function handleCastAction(act, id) {
     case 'undodeath': A.undoDeath(id); return closeModal();
     case 'death': return announceDeath(id);
   }
+}
+
+/* ---------------- host: guest view (see exactly what a guest sees, without leaving the terminal) ---------------- */
+function guestViewModal(cid) {
+  const who = guestFor(), keyOf = {}; for (const [key, c] of Object.entries(HOST.assign.map)) keyOf[c] = key;
+  cid = cid || (HOST.list.find(c => who[c.id]) || HOST.list[0]).id;
+  let view = 'dossier', phone = store.get('gvPhone') !== '0';
+  openModal(`<div class="ph"><h2>Guest View</h2></div><p class="note" style="margin:-4px 0 12px">Exactly what guests see. Tap around freely: nothing you do in here is saved or shown to anyone.</p>
+    <div class="gv-tools"><div class="gv-seg" id="gvSeg"><button data-gv="dossier">Their dossier</button><button data-gv="invite">Their role invitation</button><button data-gv="page">Invitation page</button></div>
+      <select class="input sm" id="gvChar">${HOST.list.map(c => `<option value="${esc(c.id)}" ${c.id === cid ? 'selected' : ''}>${esc(c.name)}${who[c.id] ? ' · ' + esc(who[c.id]) : ' · open role'}</option>`).join('')}</select>
+      <label class="check" style="margin:0"><input type="checkbox" id="gvPhone" ${phone ? 'checked' : ''}> Phone size</label><a class="btn sm ghost" id="gvOpen" target="_blank" rel="noopener">OPEN IN A NEW TAB ↗</a></div>
+    <div class="gv-stage ${phone ? 'phone' : ''}" id="gvStage"><iframe id="gvFrame" title="Guest view"></iframe><div class="empty hidden" id="gvEmpty"></div></div>`, true);
+  const frame = $('#gvFrame'), empty = $('#gvEmpty');
+  const load = () => {
+    $$('#gvSeg button').forEach(b => b.classList.toggle('on', b.dataset.gv === view));
+    $('#gvChar').style.visibility = view === 'page' ? 'hidden' : '';
+    const c = HOST.chars[$('#gvChar').value], inv = keyOf[c.id] && (HOST.assign.invites || {})[keyOf[c.id]];
+    const url = view === 'page' ? 'index.html?preview=1'
+      : view === 'invite' ? (inv && inv.cid === c.id && S.invites[inv.id] ? `role.html?preview=1&t=${Date.now()}#${inv.id}.${inv.s}` : '')
+      : `database.html?preview=1&t=${Date.now()}#k=${encodeURIComponent(c.code)}`;
+    empty.classList.toggle('hidden', !!url); frame.classList.toggle('hidden', !url);
+    if (!url) { empty.textContent = `${c.name.toUpperCase()} HASN'T BEEN SENT A ROLE INVITATION YET. SEND ONE FROM GUESTS, THEN COME BACK.`; frame.src = 'about:blank'; return; }
+    frame.src = url; $('#gvOpen').href = url;
+  };
+  $('#gvSeg').onclick = e => { const b = e.target.closest('[data-gv]'); if (b) { view = b.dataset.gv; load(); } };
+  $('#gvChar').onchange = load;
+  $('#gvPhone').onchange = e => { phone = e.target.checked; store.set('gvPhone', phone ? '1' : '0'); $('#gvStage').classList.toggle('phone', phone); };
+  load();
 }
 
 /* ---------------- host: printable documents ---------------- */
@@ -1997,6 +2049,7 @@ function bindAdmin() {
   });
   bindSearch(setTab, jumpTo);
   $('#printBtn').onclick = printModal;
+  $('#guestViewBtn').onclick = () => guestViewModal();
   $('#notesBtn').onclick = () => openModal(`<div class="ph"><h2>Host Notes</h2><span class="sub">DO NOT DISTRIBUTE</span></div><div class="host-notes">${HOST.notes || ''}</div>`);
 
   // one click router for everything (also covers modals)
@@ -2485,8 +2538,9 @@ function guestFor() {
 function renderAdmin(force) {
   if (!HOST || !$('#tabs')) return;
   if (force) $$('#app [data-pane] *').forEach(el => { if (el._sig !== undefined) el._sig = undefined; });
-  patch($('#modeNote'), (backend ? backend.mode : 'x') + !!ui.authWarn, backend && backend.mode === 'local'
-    ? `<div class="panel" style="border-color:rgba(212,162,76,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> only syncs between tabs on this device. Add your Firebase config to <span class="mono">config.js</span> for the real game.</p></div>`
+  patch($('#modeNote'), (backend ? backend.mode : 'x') + !!ui.authWarn + HOST.assignOk, S.assign && HOST.assignOk === false
+    ? `<div class="warnbar" data-cract="migrate"><span class="pill red">ACTION NEEDED</span><span><b>Your role assignments are still locked with your old host password.</b> Tap here and enter the old password once to move them over. Nothing is lost.</span></div>`
+    : backend && backend.mode === 'local' ? `<div class="panel" style="border-color:rgba(212,162,76,.5);padding:12px 14px"><p class="note" style="margin:0"><b style="color:var(--gold2)">LOCAL MODE:</b> only syncs between tabs on this device. Add your Firebase config to <span class="mono">config.js</span> for the real game.</p></div>`
     : ui.authWarn ? `<div class="warnbar" data-cract="retryauth"><span class="pill red">NOT VERIFIED</span><span><b>This device couldn't prove to the database that it's the host,</b> so some changes may be refused. Tap to try again. If it keeps happening, reload the page.</span></div>` : '');
   const L = HOST.list, who = guestFor();
   const badge = (k, n) => { const b = $('#badge-' + k); if (b) { b.textContent = n; b.classList.toggle('hidden', !n); } };
@@ -2865,9 +2919,30 @@ function castModal(cid) {
     toast('ROLE ASSIGNED', `${guestName(key)} will play ${c.name}. Send their invitation from Players.`, 'ok');
   };
 }
+/* after the host password changes: re-lock the saved roles (and photos you added) with the new password */
+function migrateModal() {
+  openModal(`<div class="ph"><h2>Move your roles to the new password</h2></div>
+    <p class="note" style="margin:-4px 0 12px">Your role assignments, invitations and the photos you added were locked with your old host password. Enter it once and they're re-locked with the new one.</p>
+    <label class="lbl" for="oldCode">Old host password</label><input class="input mono" id="oldCode" autocomplete="off" autocapitalize="characters">
+    <div class="row-gap" style="margin-top:14px"><button class="btn gold" id="migGo">MOVE THEM OVER</button><button class="btn ghost" data-close>CANCEL</button></div>`);
+  $('#migGo').onclick = async () => {
+    const btn = $('#migGo'); btn.disabled = true; btn.textContent = 'MOVING…';
+    try {
+      const oldKey = await deriveAssignKey($('#oldCode').value);
+      const d = await decryptJSON(oldKey, S.assign);
+      const photos = {};
+      for (const [k, blob] of Object.entries(S.hostPhotos)) { try { photos['hostPhotos/' + k] = await encryptJSON(HOST.assignKey, await decryptJSON(oldKey, blob)); } catch (e) { } }
+      HOST.assign = d && d.map ? Object.assign(blankAssign(), d) : Object.assign(blankAssign(), { map: d || {} }); HOST.assignOk = true;
+      await saveAssign(); if (Object.keys(photos).length) await backend.update(photos);
+      HOST.hostPhotoCache = {}; log('Roles moved to the new host password'); closeModal(); renderAdmin(true);
+      toast('ALL MOVED OVER', 'Your roles, invitations and photos now open with the new password.', 'ok');
+    } catch (e) { btn.disabled = false; btn.textContent = 'MOVE THEM OVER'; toast("THAT DIDN'T OPEN THEM", 'Check the old password and try again.', 'err'); }
+  };
+}
 async function controlAction(act, id) {
   switch (act) {
     case 'backup': return downloadRsvpBackup();
+    case 'migrate': return migrateModal();
     case 'retryauth': {
       ui.authWarn = false; await registerAuth(ME); renderAdmin(true);
       return toast(ui.authWarn ? 'STILL NOT VERIFIED' : 'VERIFIED', ui.authWarn ? 'Reload the page and sign in again.' : 'This device is recognized as the host.', ui.authWarn ? 'err' : 'ok');

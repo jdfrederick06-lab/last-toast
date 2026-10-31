@@ -350,6 +350,8 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
 ['config.js', 'party.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 let backend, S = normRoot({}), lastSite = null;
+/* the host's Guest View opens this page with ?preview=1: no opening animation, and nothing can be submitted */
+const PREVIEW = /[?&]preview=1/.test(location.search);
 const myId = () => store.get('myRsvp');
 const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') || {}; } catch (e) { return {}; } };
 /* ---------- the opening (once per visit; tap to skip) ---------- */
@@ -357,7 +359,7 @@ const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') 
   const intro = $('#intro'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let seen = false; try { seen = sessionStorage.getItem('kane:intro') === '1'; } catch (e) { }
   const go = () => document.body.classList.add('go');
-  if (seen || reduce || location.hash === '#rsvp') { intro.remove(); go(); return; }
+  if (seen || reduce || PREVIEW || location.hash === '#rsvp') { intro.remove(); go(); return; }
   try { sessionStorage.setItem('kane:intro', '1'); } catch (e) { }
   document.body.classList.add('opening');
   let done = false;
@@ -525,6 +527,7 @@ function startNewReply() {
 /* ---------- questions for the hosts (sealed; the reply comes back to this device only) ---------- */
 $('#askForm').addEventListener('submit', async e => {
   e.preventDefault();
+  if (PREVIEW) { toast('Preview', 'Guests send their questions from here.', 'ok'); return; }
   if (!backend) { toast('One moment', 'Still connecting. Try again in a second.', 'err'); return; }
   const name = $('#aName').value.trim(), text = $('#aText').value.trim();
   if (!name) { $('#aName').focus(); toast('Your name', 'So your hosts know who is asking.', 'err'); return; }
@@ -549,6 +552,7 @@ const nameTokens = s => String(s || '').toLowerCase().replace(/[^a-z\s]/g, '').s
 const samePerson = (a, b) => { const x = nameTokens(a), y = nameTokens(b); if (!x.length || !y.length) return false; const [s, l] = x.length <= y.length ? [x, y] : [y, x]; return s.every(t => l.includes(t)); };
 $('#rsvpForm').addEventListener('submit', async e => {
   e.preventDefault();
+  if (PREVIEW) { toast('Preview', 'Guests reply from here. Nothing was sent.', 'ok'); return; }
   if (!backend) { toast('One moment', 'Still connecting. Try again in a second.', 'err'); return; }
   const name = $('#rName').value.trim(), email = $('#rEmail').value.trim(), phone = $('#rPhone').value.trim(), att = document.querySelector('input[name=att]:checked').value, going = att !== 'no';
   if (!name) { $('#rName').focus(); toast('Your name', 'Please tell us who you are.', 'err'); return; }
