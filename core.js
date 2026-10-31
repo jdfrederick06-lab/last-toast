@@ -277,6 +277,8 @@ function hintStatus(S, isOnlineFn) {
 /* ---------- spare characters ----------
    Extra roles that stay hidden everywhere (Who's Who, voting, casting) until the host unlocks them (site/spares). */
 const spareLocked = (S, id) => { const r = (window.STORY_ROSTER || []).find(x => x.id === id); return !!(r && r.spare) && !((S.site && S.site.spares) || {})[id]; };
+/** Characters nobody is playing are hidden from guests (site/cast lists who's in play; the host terminal keeps it up to date). */
+const castHidden = (S, id) => !!(S.site && S.site.castOnly !== false && S.site.cast) && !S.site.cast[id];
 /** How many roles there are: the capacity on the invitation, plus any spare characters the host has unlocked. */
 function capacityOf(P, S) { return Math.max(1, Math.round(+P.capacity) || 34) + Object.keys((S.site && S.site.spares) || {}).length; }
 
