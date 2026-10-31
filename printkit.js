@@ -177,6 +177,10 @@ tr{break-inside:avoid}
 .brief .lbl{font:700 8pt 'Segoe UI',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin:6pt 0 2pt}
 .brief .lbl:first-child{margin-top:0}
 .brief p,.brief li{font-size:10pt}
+/* player backup sheets: one page each, so they can print double-sided */
+.pbs{font-size:9pt;line-height:1.36}.pbs h2{margin:0}.pbs p{margin:0 0 4pt}.pbs .kv{margin:6pt 0}
+.pbs .secs{column-count:2;column-gap:16pt}.pbs .sec{margin:0 0 4pt}.pbs .sec h4{margin-top:4pt}.pbs .sec.key{margin:4pt 0;padding:3pt 7pt 4pt}
+.pbs .brief{padding:6pt 10pt;margin:8pt 0 0}.pbs .brief p,.pbs .brief li{font-size:8.6pt}.pbs .brief .lbl{margin:4pt 0 1pt}
 .brief ul{margin:0 0 4pt;padding-left:16pt}
 .puz{border:1.5pt solid var(--gold);border-radius:8pt;padding:10pt 14pt;margin:12pt 0;break-inside:avoid}
 .puz .ans{font:700 18pt Consolas,monospace;letter-spacing:.2em;color:var(--red)}
@@ -473,6 +477,30 @@ tr{break-inside:avoid}
       <p class="small muted">Each dossier starts on a new page. Red tags show what players don't see. Gold boxes list memories that pop up on that player's phone during the game.</p>` +
       chars.map(dossier).join('');
 
+    /* ---------------- PLAYER BACKUP SHEETS (one per player, no spoilers: only what their own phone would show before the night) ---------------- */
+    const sheets = () => {
+      const who = opts.players || {}, cast = Object.keys(who).length ? chars.filter(c => who[c.id]) : chars;
+      const first = n => String(n || '').trim().split(/\s+/)[0];
+      const li = arr => (arr || []).map(x => `<li>${esc(x)}</li>`).join('');
+      return cast.map((c, i) => {
+        const d = DIR[c.id] || {}, b = c.brief || {};
+        // what the player sees before the night: no host-only notes, sealed text only in its sealed form, no secret classification,
+        // and no "Motive read" (it says who is NOT the killer, which paper can leak to the person sitting next to them)
+        const secs = c.sections.filter(s => !s.hostOnly && s.sealed !== true && !/^motive read/i.test(s.h)).map(s => `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h4>${esc(s.h)}</h4>${paras(typeof s.sealed === 'string' ? s.sealed : s.t)}</div>`).join('');
+        return `<section class="dossier pbs" ${i ? 'style="break-before:page"' : ''}>
+          <div class="dos-head"><div><div class="file">KANE OIL &amp; ENERGY · PERSONNEL FILE ${esc(c.file || '')}${who[c.id] ? ' · FOR ' + esc(first(who[c.id]).toUpperCase()) : ''}</div><h2>${esc(c.name)}</h2>
+            <div class="muted">${esc(d.title || c.occ || '')}</div></div><div class="code">${esc(c.code)}</div></div>
+          <div class="kv"><b>Classification</b><span>${esc(c.cls || 'SUBJECT')}</span><b>Age</b><span>${esc(c.age)}</span><b>Occupation</b><span>${esc(c.occ)}</span></div>
+          <div class="secs">${secs}</div>
+          ${c.brief ? `<div class="brief"><div class="lbl">Your Brief: how to play tonight</div>${b.goal ? `<p><b>Your goal:</b> ${esc(b.goal)}</p>` : ''}
+            ${(b.share || []).length ? `<div class="lbl">Share these tonight</div><ul>${li(b.share)}</ul>` : ''}
+            ${(b.ifAsked || []).length ? `<div class="lbl">Only if someone asks you directly</div><ul>${li(b.ifAsked)}</ul>` : ''}
+            ${(b.timeline || []).length ? `<div class="lbl">Your day, before the gala</div><ul>${li(b.timeline)}</ul>` : ''}
+            ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(b.costume)}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(b.note)}</i></p>` : ''}</div>` : ''}
+          <p class="small muted" style="margin-top:10pt;border-top:1pt solid #ddd;padding-top:6pt">Backup copy, in case the Kane Oil Database goes down. Your code word is in the box above. This page is for your eyes only: don't show it to anyone. More will come to you during the night.</p></section>`;
+      }).join('');
+    };
+
     /* ---------------- DETECTIVE'S NOTEBOOK (a handout for every guest: no spoilers) ---------------- */
     const notebook = () => {
       const sus = chars.filter(c => c.tier !== 'ext' && c.suspect !== false && !c.inspector).map(c => { const d = DIR[c.id] || {}; return { name: d.name || c.name, title: d.title || c.occ || '' }; })
@@ -535,10 +563,10 @@ tr{break-inside:avoid}
         <div class="dt">${esc(P.date || '')}</div><div class="seal">${seal}</div></section>`).join('');
     };
 
-    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc };
+    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {
