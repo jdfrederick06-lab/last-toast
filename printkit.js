@@ -178,9 +178,10 @@ tr{break-inside:avoid}
 .brief .lbl:first-child{margin-top:0}
 .brief p,.brief li{font-size:10pt}
 /* player backup sheets: one page each, so they can print double-sided */
-.pbs{font-size:9pt;line-height:1.36}.pbs h2{margin:0}.pbs p{margin:0 0 4pt}.pbs .kv{margin:6pt 0}
+.pbs{font-size:8.6pt;line-height:1.33}.pbs h2{margin:0}.pbs p{margin:0 0 4pt}.pbs .kv{margin:6pt 0}
 .pbs .secs{column-count:2;column-gap:16pt}.pbs .sec{margin:0 0 4pt}.pbs .sec h4{margin-top:4pt}.pbs .sec.key{margin:4pt 0;padding:3pt 7pt 4pt}
-.pbs .brief{padding:6pt 10pt;margin:8pt 0 0}.pbs .brief p,.pbs .brief li{font-size:8.6pt}.pbs .brief .lbl{margin:4pt 0 1pt}
+.pbs .brief{padding:6pt 10pt;margin:6pt 0 0;break-inside:auto}.pbs .brief p,.pbs .brief li{font-size:8.3pt}.pbs .brief .lbl{margin:4pt 0 1pt}
+.pbs.tight{font-size:7.9pt;line-height:1.28}.pbs.tight .brief p,.pbs.tight .brief li{font-size:7.7pt}
 .brief ul{margin:0 0 4pt;padding-left:16pt}
 .puz{border:1.5pt solid var(--gold);border-radius:8pt;padding:10pt 14pt;margin:12pt 0;break-inside:avoid}
 .puz .ans{font:700 18pt Consolas,monospace;letter-spacing:.2em;color:var(--red)}
@@ -487,17 +488,18 @@ tr{break-inside:avoid}
         // what the player sees before the night: no host-only notes, sealed text only in its sealed form, no secret classification,
         // and no "Motive read" (it says who is NOT the killer, which paper can leak to the person sitting next to them)
         const secs = c.sections.filter(s => !s.hostOnly && s.sealed !== true && !/^motive read/i.test(s.h)).map(s => `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h4>${esc(s.h)}</h4>${paras(typeof s.sealed === 'string' ? s.sealed : s.t)}</div>`).join('');
-        return `<section class="dossier pbs" ${i ? 'style="break-before:page"' : ''}>
+        const long = secs.replace(/<[^>]+>/g, '').length + JSON.stringify(b).length > 3500;   // the longest files get smaller type to stay on one page
+        return `<section class="dossier pbs${long ? ' tight' : ''}" ${i ? 'style="break-before:page"' : ''}>
           <div class="dos-head"><div><div class="file">KANE OIL &amp; ENERGY · PERSONNEL FILE ${esc(c.file || '')}${who[c.id] ? ' · FOR ' + esc(first(who[c.id]).toUpperCase()) : ''}</div><h2>${esc(c.name)}</h2>
             <div class="muted">${esc(d.title || c.occ || '')}</div></div><div class="code">${esc(c.code)}</div></div>
           <div class="kv"><b>Classification</b><span>${esc(c.cls || 'SUBJECT')}</span><b>Age</b><span>${esc(c.age)}</span><b>Occupation</b><span>${esc(c.occ)}</span></div>
-          <div class="secs">${secs}</div>
+          <div class="secs">${secs}
           ${c.brief ? `<div class="brief"><div class="lbl">Your Brief: how to play tonight</div>${b.goal ? `<p><b>Your goal:</b> ${esc(b.goal)}</p>` : ''}
             ${(b.share || []).length ? `<div class="lbl">Share these tonight</div><ul>${li(b.share)}</ul>` : ''}
             ${(b.ifAsked || []).length ? `<div class="lbl">Only if someone asks you directly</div><ul>${li(b.ifAsked)}</ul>` : ''}
             ${(b.timeline || []).length ? `<div class="lbl">Your day, before the gala</div><ul>${li(b.timeline)}</ul>` : ''}
-            ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(b.costume)}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(b.note)}</i></p>` : ''}</div>` : ''}
-          <p class="small muted" style="margin-top:10pt;border-top:1pt solid #ddd;padding-top:6pt">Backup copy, in case the Kane Oil Database goes down. Your code word is in the box above. This page is for your eyes only: don't show it to anyone. More will come to you during the night.</p></section>`;
+            ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(b.costume)}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(b.note)}</i></p>` : ''}</div>` : ''}</div>
+          <p class="small muted" style="margin:6pt 0 0;border-top:1pt solid #ddd;padding-top:4pt">Backup copy, in case the Kane Oil Database goes down. Your code word is in the box above. This page is for your eyes only: don't show it to anyone. More will come to you during the night.</p></section>`;
       }).join('');
     };
 
