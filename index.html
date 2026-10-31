@@ -141,6 +141,16 @@ select.input option{background:#0e2821}
 @media(min-width:900px){.castcta{display:none!important}}
 .someone{display:block;margin-top:10px;font-size:16px}
 .portal{text-align:center}
+.portal .mono.sm{width:64px;height:64px;margin:0 auto 14px}
+.pair2 .portal{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ask .dbnote{margin-top:-6px}
+.threads:empty{display:none}
+.threads{margin-top:20px}
+.thr{border-top:1px solid var(--line);padding:14px 0;text-align:left}
+.thr small{display:block;font-family:var(--caps);font-weight:300;font-style:normal;font-size:10px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.thr-q{font-size:18px;line-height:1.5;color:#ece3cc;white-space:pre-line}
+.thr-r{margin-top:10px;border-left:2px solid var(--gold);padding:6px 0 6px 14px;font-size:18px;font-style:italic;color:var(--gold2);white-space:pre-line}
+.thr-w{margin-top:6px;font-size:15.5px;font-style:italic;color:var(--dim)}
 .portal .btn{font-family:var(--sans);font-style:italic;font-size:19px;border-radius:999px;letter-spacing:0;padding:12px 26px}
 footer{text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px;letter-spacing:.34em;color:var(--dim);padding:26px 0 10px;text-transform:uppercase}
 .toast{font-family:var(--sans);font-size:17px}
@@ -166,6 +176,8 @@ footer{text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px
   .det{padding:10px 18px}.det span{font-size:23px}
   .pair{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:start}
   .pair .panel{height:100%;margin-bottom:22px}
+  .pair2{grid-template-columns:1.3fr 1fr}
+  .pair2.solo{display:block}
   .prose p{font-size:20px}
   .steps{grid-template-columns:repeat(3,1fr);gap:16px}
   .rules{columns:2;column-gap:44px}
@@ -306,11 +318,25 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
     </form>
     </div>
   </section>
-  <section class="panel rv portal" id="portalPanel">
-    <h2 class="sh">Already have your code word?</h2>
-    <p class="dbnote">Step inside the Kane Oil Database to read your dossier.</p>
-    <a class="btn" href="database.html">Enter the database →</a>
-  </section>
+  <div class="pair pair2">
+    <section class="panel rv ask" id="askPanel">
+      <h2 class="sh">Questions?</h2>
+      <p class="dbnote">Ask your hosts anything: your role, costumes, the night itself. Only they can read it, and their reply appears right here.</p>
+      <form id="askForm" novalidate>
+        <div class="two"><div class="field"><label class="lbl" for="aName">Your name</label><input class="input" id="aName" maxlength="60" autocomplete="name" placeholder="First and last name"></div>
+          <div class="field"><label class="lbl" for="aTopic">About</label><select class="input" id="aTopic"><option>My RSVP</option><option>My role</option><option>Costumes</option><option>The night itself</option><option>Something else</option></select></div></div>
+        <div class="field"><label class="lbl" for="aText">Your question</label><textarea class="input" id="aText" maxlength="800" style="min-height:96px" placeholder="Ask away…"></textarea></div>
+        <button class="btn gold block" type="submit" id="aBtn">Send to the hosts</button>
+      </form>
+      <div class="threads" id="askThreads"></div>
+    </section>
+    <section class="panel rv portal" id="portalPanel">
+      <svg class="mono sm" viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" stroke-width="1.1"/><circle cx="48" cy="48" r="38" stroke-width=".55"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="2.4"/></svg>
+      <h2 class="sh">Already have your code word?</h2>
+      <p class="dbnote">Step inside the Kane Oil Database to read your dossier.</p>
+      <a class="btn" href="database.html">Enter the database →</a>
+    </section>
+  </div>
   <footer>Kane Oil &amp; Energy · Est. 1974 · A private event</footer>
   <a class="castcta hidden" id="castCta" href="#rsvp">Claim your role <span id="castCtaLeft"></span></a>
 </div>
@@ -376,7 +402,7 @@ function renderStatic() {
   $('#expect').innerHTML = (P.expect || []).map(p => `<li>${esc(p)}</li>`).join('');
   $('#how').innerHTML = (P.howItWorks || []).map((s, i) => `<div class="step"><div class="n">${['i', 'ii', 'iii', 'iv', 'v', 'vi'][i] || i + 1}.</div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div>`).join('');
   const showDb = P.showDatabaseLink !== false;
-  $('#portalLink').classList.toggle('hidden', !showDb); $('#portalPanel').classList.toggle('hidden', !showDb);
+  $('#portalLink').classList.toggle('hidden', !showDb); $('#portalPanel').classList.toggle('hidden', !showDb); $('#portalPanel').parentNode.classList.toggle('solo', !showDb);
   const showRules = P.showRules && (P.rules || []).length;
   $('#rulesPanel').classList.toggle('hidden', !showRules);
   if (showRules) $('#rules').innerHTML = P.rules.map(r => `<li><div><b>${esc(r.title)}</b><p>${esc(r.text)}</p></div></li>`).join('');
@@ -416,7 +442,7 @@ function calendarLinks(P) {
 }
 /* how many roles are still free: the cast size minus everyone coming (and their plus-ones) */
 function rolesLeft(P) {
-  const cap = +P.capacity || 34;
+  const cap = capacityOf(P, S);
   const taken = Object.values(S.rsvps || {}).filter(r => r && r.attending === 'yes').reduce((n, r) => n + 1 + (r.plusOne ? 1 : 0), 0);
   return Math.max(0, cap - taken);
 }
@@ -472,6 +498,7 @@ function showDone() {
   $('#rsvpDone').innerHTML = r ? `<div class="done">${m.photo ? `<img src="${m.photo}" alt="">` : ''}<span class="t">Thank you, ${esc(r.name.split(' ')[0])}.</span>Your reply has been received: ${lbl[r.attending] || esc(r.attending)}${r.plusOne ? ', with a plus-one' : ''}.<br><span style="color:var(--muted);font-style:italic">You can change your answer below at any time.</span><button type="button" class="linkbtn someone" id="someoneElse">Replying for someone else? Start a new reply</button></div>` : '';
   const se = $('#someoneElse'); if (se) se.onclick = startNewReply;
   $('#rBtn').textContent = r ? 'Update my reply' : 'Reply with pleasure';
+  if (r && !$('#aName').value) $('#aName').value = r.name || '';
   if (r && !prefilled) {
     prefilled = true;
     $('#rName').value = r.name || '';
@@ -488,6 +515,29 @@ function startNewReply() {
   store.del('myRsvp'); store.del('myRsvpData'); prefilled = true;
   $('#rsvpForm').reset(); photos.me = photos.plus = null; showPhoto('me'); showPhoto('plus'); syncFields();
   $('#rsvpDone').innerHTML = ''; $('#rBtn').textContent = 'Reply with pleasure'; $('#rName').focus();
+}
+/* ---------- questions for the hosts (sealed; the reply comes back to this device only) ---------- */
+$('#askForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!backend) { toast('One moment', 'Still connecting. Try again in a second.', 'err'); return; }
+  const name = $('#aName').value.trim(), text = $('#aText').value.trim();
+  if (!name) { $('#aName').focus(); toast('Your name', 'So your hosts know who is asking.', 'err'); return; }
+  if (!text) { $('#aText').focus(); toast('Your question', 'Write your question first.', 'err'); return; }
+  const btn = $('#aBtn'); btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    await sendAsk(backend, { kind: 'question', where: 'invite', name, email: mine().email || '', topic: $('#aTopic').value, text });
+    $('#aText').value = ''; toast('Sent to your hosts', 'Their reply will appear right here.', 'ok'); renderAsks(true);
+  } catch (err) { console.error(err); toast("Your question didn't go through", `Check your connection and try again. (${err.code || err.message || 'error'})`, 'err'); }
+  btn.disabled = false; btn.textContent = 'Send to the hosts';
+});
+let askSig = null;
+async function renderAsks(force) {
+  const q = myAsks(); if (!Object.keys(q).length) return;
+  const sig = JSON.stringify(Object.keys(q).map(id => [id, S.asks[id] ? Object.keys(S.asks[id].replies || {}) : 0, !!(S.asks[id] && S.asks[id].done)]));
+  if (sig === askSig && !force) return; askSig = sig;
+  const th = await myAskThreads(S), u = unseenReplies(th);
+  $('#askThreads').innerHTML = `<span class="lbl" style="text-align:center;margin-bottom:4px">Your questions</span>` + threadsHTML(th);
+  if (u.fresh.length) { toast('Your hosts replied', u.fresh[u.fresh.length - 1].text.slice(0, 140), 'ok', () => $('#askPanel').scrollIntoView({ behavior: 'smooth' })); u.mark(); }
 }
 const nameTokens = s => String(s || '').toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(Boolean);
 const samePerson = (a, b) => { const x = nameTokens(a), y = nameTokens(b); if (!x.length || !y.length) return false; const [s, l] = x.length <= y.length ? [x, y] : [y, x]; return s.every(t => l.includes(t)); };
@@ -529,7 +579,7 @@ $('#rsvpForm').addEventListener('submit', async e => {
 syncFields();
 (async () => {
   backend = await connectBackend();
-  backend.on(raw => { S = normRoot(raw); renderStatic(); showDone(); });
+  backend.on(raw => { S = normRoot(raw); renderStatic(); showDone(); renderAsks(); });
 })();
 </script>
 </body>

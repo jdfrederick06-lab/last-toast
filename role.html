@@ -34,35 +34,92 @@ body::after{display:none}
 .spin{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(232,207,154,.2);border-top-color:var(--gold);margin:0 auto;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ---------- the envelope ---------- */
-.env-wrap{text-align:center;width:100%;max-width:440px}
-.env-to{font-family:var(--serif);font-style:italic;font-size:clamp(22px,6vw,28px);color:var(--gold2);margin-bottom:6px}
-.env-sub{margin-bottom:26px;font-size:11px;color:var(--gold)}
-.envelope{position:relative;width:min(88vw,400px);aspect-ratio:7/5;margin:0 auto;perspective:1200px;cursor:pointer;border:0;padding:0;background:none}
-.envelope .body{position:absolute;inset:0;border-radius:6px;background:linear-gradient(160deg,#1c4a3d,#0d2620 70%);box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 0 0 1px rgba(232,207,154,.35)}
-.envelope .body::after{content:"";position:absolute;inset:8px;border:1px solid rgba(232,207,154,.25);border-radius:3px}
-.envelope .pocket{position:absolute;inset:0;border-radius:6px;background:linear-gradient(165deg,#1d4b3e,#0e2822 75%);box-shadow:inset 0 0 0 1px rgba(232,207,154,.35);z-index:3;overflow:hidden}
-.envelope .flap{position:absolute;left:0;right:0;top:0;height:62%;transform-origin:top;z-index:4;transition:transform 1s cubic-bezier(.6,0,.3,1),z-index 0s .5s}
-.envelope .flap::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#235747,#123a30);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
-.envelope .flap::after{content:"";position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(180deg,rgba(232,207,154,.35),transparent 30%);opacity:.6}
-.envelope .letter{position:absolute;left:7%;right:7%;top:10%;bottom:8%;background:var(--paper);border-radius:3px;z-index:2;transition:transform 1s cubic-bezier(.3,.7,.2,1) .9s;box-shadow:0 6px 18px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
-.envelope .letter i{font-family:var(--serif);color:var(--emerald);font-size:clamp(18px,5vw,22px)}
-.seal{position:absolute;left:50%;top:62%;width:clamp(64px,18vw,82px);aspect-ratio:1;margin:-41px 0 0 -41px;margin:calc(clamp(64px,18vw,82px) / -2) 0 0 calc(clamp(64px,18vw,82px) / -2);z-index:5;transition:opacity .5s ease .2s}
-.seal .half{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 38% 34%,#c9505c,#6e1420 72%);box-shadow:0 8px 20px rgba(60,5,12,.55),inset 0 -4px 10px rgba(0,0,0,.35);transition:transform .7s cubic-bezier(.5,0,.4,1)}
+/* ---------- the envelope: it floats in, the wax seal cracks, gold dust bursts, the flap swings open and the letter rises into the light ---------- */
+.env-wrap{position:relative;z-index:1;text-align:center;width:100%;max-width:460px}
+.env-to{font-family:var(--serif);font-style:italic;font-size:clamp(24px,6.4vw,32px);color:var(--gold2);margin-bottom:6px;min-height:1.3em}
+.env-to span{display:inline-block;opacity:0;filter:blur(6px);transform:translateY(6px);animation:letter .6s cubic-bezier(.2,.7,.2,1) forwards}
+.env-sub{margin-bottom:34px;font-size:11px;color:var(--gold);animation:fadeIn 1s .9s both}
+.env-stage{position:relative;width:min(86vw,400px);margin:0 auto;animation:floatIn 1.5s cubic-bezier(.2,.8,.2,1) both}
+.env-bob{animation:bob 5s 1.5s ease-in-out infinite}
+@keyframes floatIn{from{opacity:0;transform:translateY(-70px) rotate(-8deg) scale(.9)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(.7deg)}}
+.env-shadow{position:absolute;left:14%;right:14%;bottom:-30px;height:24px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent);filter:blur(5px);animation:shadowBob 5s 1.5s ease-in-out infinite;transition:opacity .6s}
+@keyframes shadowBob{50%{transform:scaleX(.9);opacity:.7}}
+.env-rays{position:fixed;left:50%;top:50%;width:220vmax;height:220vmax;margin:-110vmax 0 0 -110vmax;pointer-events:none;z-index:0;opacity:0;background:repeating-conic-gradient(rgba(255,226,160,.14) 0deg 4deg,transparent 4deg 13deg);-webkit-mask:radial-gradient(circle,#000,rgba(0,0,0,.35) 14%,transparent 30%);mask:radial-gradient(circle,#000,rgba(0,0,0,.35) 14%,transparent 30%);transition:opacity 1.6s ease;animation:spin 90s linear infinite}
+.env-rays.on{opacity:1}
+.env-rays.soft{opacity:.5;animation:spin 90s linear infinite,raysIn 2.4s ease both}
+@keyframes raysIn{from{opacity:0}}
+.envelope{position:relative;display:block;width:100%;aspect-ratio:7/5;margin:0 auto;perspective:1400px;cursor:pointer;border:0;padding:0;background:none;-webkit-tap-highlight-color:transparent}
+.envelope .back{position:absolute;inset:0;border-radius:8px;background:linear-gradient(160deg,#173f34,#0a201b 75%);box-shadow:0 34px 80px rgba(0,0,0,.6),inset 0 0 0 1px rgba(232,207,154,.35);transition:opacity .7s,transform .9s}
+.envelope .glowin{position:absolute;left:8%;right:8%;top:2%;height:56%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,180,.95),rgba(255,214,140,.4) 55%,transparent);opacity:0;filter:blur(8px);z-index:2;transition:opacity 1.1s ease}
+.envelope .letter{position:absolute;left:7%;right:7%;top:9%;bottom:7%;background:linear-gradient(180deg,#fffdf6,#f4ecd6);border-radius:3px;z-index:2;box-shadow:0 6px 18px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;padding-top:7%;gap:4px;transition:transform 1.2s cubic-bezier(.25,.8,.25,1),opacity .6s}
+.envelope .letter::after{content:"";position:absolute;inset:6px;border:1px solid rgba(184,146,74,.6);border-radius:2px;pointer-events:none}
+.envelope .letter svg{width:22%;max-width:52px}
+.envelope .letter i{font-family:var(--serif);color:var(--emerald);font-size:clamp(17px,4.6vw,21px)}
+.envelope .letter small{font-family:var(--caps);font-size:8.5px;letter-spacing:.3em;color:#8a6b2e;text-transform:uppercase}
+.envelope .pocket{position:absolute;inset:0;border-radius:8px;z-index:3;overflow:hidden;background:linear-gradient(165deg,#1d4b3e,#0e2822 75%);box-shadow:inset 0 0 0 1px rgba(232,207,154,.38);transition:opacity .7s,transform .9s}
+.envelope .pocket svg{position:absolute;inset:0;width:100%;height:100%}
+.envelope .pocket .foil{position:absolute;inset:7px;border:1px solid rgba(232,207,154,.32);border-radius:4px}
+.envelope .pocket .addr{position:absolute;left:0;right:0;bottom:9%;font-family:var(--caps);font-weight:300;font-size:9px;letter-spacing:.38em;color:rgba(241,223,180,.72);text-transform:uppercase}
+.envelope .flap{position:absolute;left:0;right:0;top:0;height:60%;transform-origin:50% 0;transform-style:preserve-3d;z-index:4;transition:transform 1s cubic-bezier(.55,0,.25,1),z-index 0s .45s,opacity .6s}
+.envelope .flap>div{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.envelope .flap .out{background:linear-gradient(180deg,#2a6352,#123a30)}
+.envelope .flap .out::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,236,190,.4),transparent 35%)}
+.envelope .flap .in{transform:rotateX(180deg);background:radial-gradient(circle at 50% 0,rgba(255,226,160,.4),transparent 60%),repeating-linear-gradient(45deg,rgba(232,207,154,.22) 0 2px,transparent 2px 12px),repeating-linear-gradient(-45deg,rgba(232,207,154,.22) 0 2px,transparent 2px 12px),linear-gradient(180deg,#0f3a2f,#0a2620)}
+.envelope .shine{position:absolute;inset:0;border-radius:8px;overflow:hidden;z-index:6;pointer-events:none}
+.envelope .shine::before{content:"";position:absolute;top:-25%;bottom:-25%;width:32%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,240,200,.24),transparent);transform:skewX(-18deg);animation:sheen 4.4s 1.9s ease-in-out infinite}
+@keyframes sheen{0%{left:-60%}45%,100%{left:130%}}
+.seal{position:absolute;left:50%;top:60%;width:clamp(66px,19vw,86px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:7}
+.seal .half{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 32%,#e3707b,#a12233 46%,#5e0f1a 80%);box-shadow:0 10px 22px rgba(60,5,12,.6),inset 0 -5px 12px rgba(0,0,0,.4),inset 0 3px 6px rgba(255,190,190,.35)}
 .seal .half.l{clip-path:polygon(0 0,52% 0,46% 38%,55% 60%,47% 100%,0 100%)}
 .seal .half.r{clip-path:polygon(52% 0,100% 0,100% 100%,47% 100%,55% 60%,46% 38%)}
-.seal svg{position:absolute;inset:22%;width:56%;height:56%}
-.seal::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(241,223,180,.45);animation:pulse 2.2s ease-in-out infinite}
+.seal .half svg{position:absolute;inset:22%;width:56%;height:56%}
+.seal .crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.seal .crack path{fill:none;stroke:#ffe9b0;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:130;stroke-dashoffset:130;filter:drop-shadow(0 0 4px #ffd27a)}
+.seal::before{content:"";position:absolute;inset:-35%;border-radius:50%;background:radial-gradient(circle,rgba(255,214,140,.55),transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none}
+.seal::after{content:"";position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(241,223,180,.5);animation:pulse 2.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(.9);opacity:0}50%{transform:scale(1.06);opacity:1}}
-.env-hint{margin-top:28px;font-style:italic;color:var(--muted);font-size:18px;animation:fadeIn 1s 1.2s both}
-.envelope.open .seal::after{display:none}
-.env-wrap.opened .env-to,.env-wrap.opened .env-sub,.env-wrap.opened .env-hint{opacity:0;transition:opacity .4s ease}
-.envelope.open .seal .half.l{transform:translate(-26px,14px) rotate(-28deg)}
-.envelope.open .seal .half.r{transform:translate(26px,18px) rotate(24deg)}
-.envelope.open .seal{opacity:0}
-.envelope.open .flap{transform:rotateX(180deg);z-index:1}
-.envelope.open .letter{transform:translateY(-58%)}
-
+.env-hint{margin-top:40px;font-style:italic;color:var(--muted);font-size:18px;animation:fadeIn 1s 1.6s both}
+.env-hint b{font-weight:500;color:var(--gold2)}
+/* the opening, step by step */
+.envelope.cracking .seal{animation:sealPress .5s ease both}
+@keyframes sealPress{0%{transform:translate(-50%,-50%) scale(1)}40%{transform:translate(-50%,-50%) scale(.88)}100%{transform:translate(-50%,-50%) scale(1.14)}}
+.envelope.cracking .seal::before{opacity:1}
+.envelope.cracking .seal::after{display:none}
+.envelope.cracking .seal .crack path{animation:draw .45s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.envelope.broken .seal::before,.envelope.broken .seal .crack{opacity:0;transition:opacity .25s}
+.envelope.broken .seal .half.l{animation:fallL 1.1s cubic-bezier(.45,0,.85,.55) forwards}
+.envelope.broken .seal .half.r{animation:fallR 1.1s cubic-bezier(.45,0,.85,.55) forwards}
+@keyframes fallL{to{transform:translate(-80px,260px) rotate(-95deg);opacity:0}}
+@keyframes fallR{to{transform:translate(72px,280px) rotate(80deg);opacity:0}}
+.envelope.opening .flap{transform:rotateX(180deg);z-index:1}
+.envelope.opening .glowin{opacity:1}
+.envelope.opening .shine{display:none}
+.envelope.rising .letter{transform:translateY(-64%)}
+.env-wrap.shake .envelope{animation:shake .4s ease}
+@keyframes shake{20%{transform:translate(-4px,1px) rotate(-.7deg)}40%{transform:translate(4px,-1px) rotate(.7deg)}60%{transform:translate(-2px,0)}80%{transform:translate(2px,0)}}
+.env-wrap.opened .env-to,.env-wrap.opened .env-sub,.env-wrap.opened .env-hint{animation:fadeAway .45s ease forwards}
+@keyframes fadeAway{to{opacity:0;transform:translateY(-6px)}}
+.env-wrap.zoom .env-bob,.env-wrap.zoom .env-shadow{animation:none}
+.env-wrap.zoom .env-shadow{opacity:0}
+.env-wrap.zoom .envelope .back,.env-wrap.zoom .envelope .pocket{opacity:0;transform:translateY(70px)}
+.env-wrap.zoom .envelope .flap{opacity:0}
+.env-wrap.zoom .envelope .glowin{opacity:0}
+.env-wrap.zoom .envelope .letter{transform:translateY(-40%) scale(2.6);opacity:0;transition:transform 1.05s cubic-bezier(.5,0,.3,1),opacity .55s .5s}
+.flash{position:fixed;inset:0;z-index:50;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(255,246,222,.95),rgba(255,230,170,.55) 40%,transparent 75%);opacity:0;animation:flash 1.2s ease forwards}
+@keyframes flash{30%{opacity:1}100%{opacity:0}}
+/* gold dust */
+.dust{position:fixed;left:0;top:0;width:0;height:0;z-index:40;pointer-events:none}
+.dust i{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;background:radial-gradient(circle,#fff6d8,#e8cf9a 45%,rgba(184,146,74,0) 72%);animation:burst var(--t) cubic-bezier(.15,.7,.3,1) forwards}
+.dust i.star{border-radius:0;background:#fff3d6;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+@keyframes burst{0%{transform:translate(0,0) scale(.3);opacity:1}70%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1) rotate(160deg);opacity:0}}
+.ring{position:fixed;z-index:39;pointer-events:none;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid rgba(255,226,160,.9);box-shadow:0 0 20px rgba(255,214,140,.8);animation:ring 1s ease-out forwards}
+@keyframes ring{to{transform:scale(16);opacity:0;border-width:.4px}}
+/* the letter unfolds out of the light */
+.paper.unfold{animation:unfold 1.15s cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 25%}
+@keyframes unfold{from{opacity:0;transform:perspective(1100px) rotateX(-70deg) translateY(50px) scale(.86)}55%{opacity:1}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.env-stage,.env-bob,.env-shadow,.env-rays,.envelope .shine::before{animation:none!important}}
 /* ---------- the letter ---------- */
 .paper{position:relative;width:100%;max-width:580px;background:var(--paper);color:var(--ink);border-radius:6px;padding:46px 34px 34px;box-sizing:border-box;box-shadow:0 30px 80px rgba(0,0,0,.5);text-align:center}
 .paper::before,.paper::after{content:"";position:absolute;pointer-events:none;border-radius:4px}
@@ -110,6 +167,14 @@ textarea.note:focus{outline:none;border-color:#154236;box-shadow:0 0 0 3px rgba(
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 12px}
 .chips button{font-family:var(--sans);font-style:italic;font-size:16px;border:1px solid rgba(138,107,46,.45);border-radius:999px;padding:7px 14px;background:transparent;color:var(--emerald);cursor:pointer}
 .chips button.on{background:var(--emerald);color:var(--paper);border-color:var(--emerald)}
+.askline{margin-top:18px;text-align:center}
+.threads:empty{display:none}
+.paper .threads{margin-top:18px;text-align:left}
+.paper .thr{border-top:1px solid rgba(138,107,46,.25);padding:12px 0}
+.paper .thr small{display:block;font-family:var(--caps);font-size:10px;letter-spacing:.24em;color:#8a6b2e;text-transform:uppercase;margin-bottom:3px}
+.paper .thr-q{font-size:17.5px;color:#2b302b;line-height:1.5;white-space:pre-line}
+.paper .thr-r{margin-top:8px;border-left:2px solid #b8924a;padding:4px 0 4px 12px;font-style:italic;color:var(--emerald);font-size:17.5px;white-space:pre-line}
+.paper .thr-w{margin-top:4px;font-style:italic;color:var(--ink2);font-size:15px}
 
 /* ---------- the code word ---------- */
 .vault{position:relative;width:100%;max-width:520px;text-align:center;border-radius:20px;padding:40px 26px 30px;box-sizing:border-box;background:linear-gradient(180deg,rgba(14,40,33,.92),rgba(6,17,14,.96));border:1px solid rgba(232,207,154,.4);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(232,207,154,.12) inset}
@@ -155,21 +220,51 @@ const P = () => mergeParty(window.PARTY, S ? S.site : {});
 function fail(title, text) { show(`<div class="msg fade">${MONO('#e8cf9a').replace('class="mono"', 'class="mono" style="width:64px;height:64px;display:block;margin:0 auto"')}<h1>${esc(title)}</h1><p>${esc(text)}</p></div>`); }
 const status = async data => { if (backend.ensureAuth && !backend.uid) await backend.ensureAuth(); return backend.updateStrict(Object.fromEntries(Object.entries(data).map(([k, v]) => ['inviteStatus/' + ID + '/' + k, v]))); };
 
-/* 1. the sealed envelope */
+/* gold dust: a burst of sparks from a point on the screen */
+function burst(x, y, n = 46, reach = 1) {
+  const box = document.createElement('div'); box.className = 'dust'; box.style.left = x + 'px'; box.style.top = y + 'px';
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('i'), a = Math.random() * Math.PI * 2, d = (60 + Math.random() * 180) * reach;
+    if (Math.random() < .3) p.className = 'star';
+    p.style.cssText = `--s:${(2 + Math.random() * 6).toFixed(1)}px;--dx:${(Math.cos(a) * d).toFixed(0)}px;--dy:${(Math.sin(a) * d + 50 * Math.random()).toFixed(0)}px;--t:${(0.9 + Math.random() * 1).toFixed(2)}s`;
+    box.appendChild(p);
+  }
+  const ring = document.createElement('div'); ring.className = 'ring'; ring.style.left = x + 'px'; ring.style.top = y + 'px';
+  document.body.append(box, ring); setTimeout(() => { box.remove(); ring.remove(); }, 2300);
+}
+const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (x) { } };
+const SEAL_MK = `<svg viewBox="0 0 96 96" fill="none" stroke="#f6e3b8" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66"/></svg>`;
+
+/* 1. the sealed envelope: it drifts in, you break the wax, gold dust bursts, the flap swings open and the letter rises into the light */
 function envelope() {
-  show(`<div class="env-wrap fade"><div class="env-to">For ${esc(INV.g)}</div><div class="env-sub caps">Private &amp; Confidential</div>
-    <button class="envelope" id="env" aria-label="Break the seal and open your invitation"><div class="body"></div><div class="letter"><i>${esc(P().title || 'The Last Toast')}</i></div><div class="pocket"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 L50 55 L100 100" fill="none" stroke="rgba(232,207,154,.28)" stroke-width=".6" vector-effect="non-scaling-stroke"/><path d="M0 0 L42 52 M100 0 L58 52" fill="none" stroke="rgba(232,207,154,.14)" stroke-width=".6" vector-effect="non-scaling-stroke"/></svg></div><div class="flap"></div>
-      <div class="seal"><div class="half l"></div><div class="half r"></div><svg viewBox="0 0 96 96" fill="none" stroke="#f1dfb4" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66"/></svg></div></button>
-    <div class="env-hint">Tap the seal to open</div></div>`);
-  document.getElementById('env').addEventListener('click', e => {
-    const env = e.currentTarget; if (env.classList.contains('open')) return;
-    env.classList.add('open'); env.parentNode.classList.add('opened'); try { navigator.vibrate && navigator.vibrate(40); } catch (x) { }
-    setTimeout(letter, 2300);
+  const name = [...String(INV.g)].map((ch, i) => `<span style="animation-delay:${(0.4 + i * 0.06).toFixed(2)}s">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('');
+  show(`<div class="env-rays" id="rays"></div><div class="env-wrap" id="envWrap"><div class="env-to">For ${name}</div><div class="env-sub caps">Private &amp; Confidential</div>
+    <div class="env-stage"><div class="env-bob"><button class="envelope" id="env" aria-label="Break the seal and open your invitation">
+      <div class="back"></div><div class="glowin"></div>
+      <div class="letter">${MONO('#8a6b2e')}<i>${esc(P().title || 'The Last Toast')}</i><small>Your role awaits</small></div>
+      <div class="pocket"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 L50 55 L100 100" fill="none" stroke="rgba(232,207,154,.3)" stroke-width=".6" vector-effect="non-scaling-stroke"/><path d="M0 0 L42 52 M100 0 L58 52" fill="none" stroke="rgba(232,207,154,.14)" stroke-width=".6" vector-effect="non-scaling-stroke"/></svg><div class="foil"></div><div class="addr">Kane Oil &amp; Energy · The Annual Gala</div></div>
+      <div class="flap"><div class="out"></div><div class="in"></div></div>
+      <div class="seal"><div class="half l">${SEAL_MK}</div><div class="half r">${SEAL_MK}</div><svg class="crack" viewBox="0 0 100 100" aria-hidden="true"><path d="M52 2 L46 38 L55 60 L47 98"/></svg></div>
+      <div class="shine"></div>
+    </button></div><div class="env-shadow"></div></div>
+    <div class="env-hint">Tap the <b>wax seal</b> to break it</div></div>`);
+  const env = document.getElementById('env'), wrap = document.getElementById('envWrap'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  env.addEventListener('click', () => {
+    if (env.classList.contains('cracking')) return;
+    if (reduce) { letter(true); return; }
+    const at = () => { const r = env.querySelector('.seal').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+    env.classList.add('cracking'); wrap.classList.add('opened'); buzz(25);
+    setTimeout(() => { const [x, y] = at(); env.classList.add('broken'); wrap.classList.add('shake'); burst(x, y, 60); buzz([20, 30, 60]); }, 480);
+    setTimeout(() => env.classList.add('opening'), 720);
+    setTimeout(() => { env.classList.add('rising'); document.getElementById('rays').classList.add('on'); }, 1550);
+    setTimeout(() => { const r = env.getBoundingClientRect(); wrap.classList.add('zoom'); burst(r.left + r.width / 2, r.top + r.height * .15, 34, .9); }, 2800);
+    setTimeout(() => { const f = document.createElement('div'); f.className = 'flash'; document.body.appendChild(f); setTimeout(() => f.remove(), 1300); }, 3150);
+    setTimeout(() => letter(true), 3500);
   });
 }
 
 /* 2. the letter: thanks, the role, and the choice */
-function letter() {
+function letter(fromEnvelope) {
   const ef = EFFORT[INV.e] || EFFORT.medium, resp = ST.resp || '';
   const nameHTML = [...INV.n].map((ch, i) => `<span style="animation-delay:${(0.6 + i * 0.045).toFixed(2)}s">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('');
   const when = ST.at ? new Date(ST.at).toLocaleDateString([], { month: 'long', day: 'numeric' }) : '';
@@ -179,7 +274,7 @@ function letter() {
     ? `<div class="status">You declined this invitation. Changed your mind? You can still accept, or ask for a different character.</div><div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button></div>`
     : `${resp === 'swap' ? `<div class="status">You asked for a different character${ST.note ? `: “${esc(ST.note)}”` : ''}. Your hosts will be in touch. You can still accept this one if you like.</div>` : ''}
        <div class="choices"><button class="btn-gold" data-go="terms">Accept the role</button><button class="btn-line" data-go="swap">Request a different character</button><button class="btn-text" data-go="decline">Decline the invitation</button></div>`;
-  show(`<article class="paper fade">${MONO('#8a6b2e')}
+  show(`${fromEnvelope ? '<div class="env-rays soft"></div>' : ''}<article class="paper ${fromEnvelope ? 'unfold' : 'fade'}">${MONO('#8a6b2e')}
     <p class="dear">Dear ${esc(INV.g)},</p>
     <p class="thanks">${P().thanks ? esc(P().thanks).replace(/\n+/g, '<br>') : `Thank you for being part of <i>${esc(P().title || 'The Last Toast')}</i>. We've spent weeks building this night: the story, the secrets, and every clue hidden in every room. It only comes alive because of people like you who are willing to step into it. We can't wait to see what you do with your role.`}</p>
     <p class="sign"><small>With gratitude,</small>${esc(INV.from || 'Your hosts')}</p>
@@ -189,7 +284,42 @@ function letter() {
     ${INV.t ? `<div class="ctitle">${esc(INV.t)}</div>` : ''}
     ${INV.b ? `<p class="cblurb">${esc(INV.b)}</p>` : ''}
     <div class="effort"><span class="lbl caps">Effort for the night</span><div class="pips">${[1, 2, 3].map(n => `<i class="${n <= ef.pips ? 'on' : ''}"></i>`).join('')}</div><b>${esc(ef.label)}</b><p>${esc(ef.text)}</p><small>${esc(ef.prep)}</small></div>
-    ${choices}</article>`);
+    ${choices}
+    <div class="askline"><button class="btn-text" data-go="ask">Questions about your role? Ask your hosts</button></div></article>`);
+  // a shower of gold over the name once it has written itself out
+  if (fromEnvelope && !matchMedia('(prefers-reduced-motion: reduce)').matches) setTimeout(() => {
+    const el = document.querySelector('.cname'); if (!el) return; const r = el.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 44, .85); buzz([30, 40, 30]);
+  }, (0.75 + [...INV.n].length * 0.045) * 1000);
+}
+
+/* 4. questions for the hosts: sealed, and the reply comes back to this device only */
+function ask() {
+  let pick = 'My role';
+  show(`<article class="paper fade">${MONO('#8a6b2e')}<h2>Ask your hosts</h2><p class="lead">Only your hosts can read this. Their reply will appear right here.</p>
+    <div class="chips" id="askChips">${['My role', 'My costume', 'The night itself', 'Something else'].map(c => `<button type="button" data-ask="${esc(c)}" class="${c === pick ? 'on' : ''}">${esc(c)}</button>`).join('')}</div>
+    <textarea class="note" id="askNote" maxlength="800" placeholder="Ask away…"></textarea>
+    <div class="choices"><button class="btn-gold" id="askBtn">Send to my hosts</button><button class="btn-text" data-go="${ST.resp === 'accepted' ? 'vault' : 'letter'}">Go back</button></div>
+    <div class="threads" id="askThreads"></div></article>`);
+  const chips = document.getElementById('askChips');
+  chips.addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (!b) return; pick = b.dataset.ask; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.ask === pick)); });
+  document.getElementById('askBtn').addEventListener('click', async e => {
+    const text = document.getElementById('askNote').value.trim(); if (!text) { toast('Your question', 'Write your question first.', 'err'); return; }
+    e.target.disabled = true; e.target.textContent = 'Sending…';
+    try { await sendAsk(backend, { kind: 'question', where: 'role', name: INV.g, cid: INV.cid, cname: INV.n, topic: pick, text }); document.getElementById('askNote').value = ''; toast('Sent', 'Your hosts will reply here.', 'ok'); renderThreads(true); }
+    catch (x) { toast("Couldn't send", 'Check your connection and try again.', 'err'); }
+    e.target.disabled = false; e.target.textContent = 'Send to my hosts';
+  });
+  renderThreads(true);
+}
+let threadSig = null;
+async function renderThreads(force) {
+  const mine = myAsks(); if (!Object.keys(mine).length || !S) return;
+  const sig = JSON.stringify(Object.keys(mine).map(id => [id, S.asks[id] ? Object.keys(S.asks[id].replies || {}) : 0, !!(S.asks[id] && S.asks[id].done)]));
+  if (sig === threadSig && !force) return; threadSig = sig;
+  const th = await myAskThreads(S), u = unseenReplies(th), box = document.getElementById('askThreads');
+  if (box) { box.innerHTML = threadsHTML(th); u.mark(); }
+  else if (u.fresh.length) toast('Your hosts replied', u.fresh[u.fresh.length - 1].text.slice(0, 140), 'ok', ask);
 }
 
 /* 3a. accepting: what it means */
@@ -228,7 +358,7 @@ function vault(first) {
       <li><b>My File</b> is who you are. <b>Brief</b> is how to play: your goal, what to share, and your timeline.</li>
       <li>Plan a costume. The idea in your brief is only a suggestion, so make the character your own.</li>
       <li>Bring a charged phone${p.date ? ' on ' + esc(p.date) : ''}.</li>
-    </ul></section>`);
+    </ul><div class="askline"><button class="copy" data-go="ask">Questions? Ask your hosts</button></div></section>`);
   document.getElementById('copyCode').addEventListener('click', async () => { const ok = await copyText(code); toast(ok ? 'Copied' : "Couldn't copy", ok ? 'Your code word is on your clipboard.' : 'Write it down instead.', ok ? 'ok' : 'err'); });
   // unscramble, one letter at a time
   const el = document.getElementById('code'), A = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789', reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -273,7 +403,7 @@ function decline() {
 }
 
 addEventListener('hashchange', () => location.reload());
-stage.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; ({ letter, terms, swap, decline, vault: () => vault(false) })[b.dataset.go](); });
+stage.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; ({ letter: () => letter(), terms, swap, decline, ask, vault: () => vault(false) })[b.dataset.go](); });
 
 (async () => {
   const m = location.hash.match(/^#([A-Za-z0-9]+)\.([A-Za-z0-9_-]{20,})$/);
@@ -285,6 +415,7 @@ stage.addEventListener('click', e => { const b = e.target.closest('[data-go]'); 
   let first = true;
   backend.on(async raw => {
     S = normRoot(raw);
+    if (INV) renderThreads();
     if (!first) return; first = false;
     const blob = S.invites[ID];
     if (!blob) { clearTimeout(timer); return fail('This invitation is no longer active', 'Your hosts may have sent you a newer link. Check your messages, or ask them for a new one.'); }

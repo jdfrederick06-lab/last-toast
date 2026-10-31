@@ -54,9 +54,9 @@ window.PARTY = {
 
   // How the Kane Oil Database works (shown on the invite)
   howItWorks: [
-    { title: `Your role`, text: `Once roles are assigned, you'll get a private invitation link. Accept your character and it reveals your secret code word, which unlocks your dossier in the Kane Oil Database. Tell no one.` },
-    { title: `Before the party`, text: `Log in, read your dossier closely, and plan your costume and your secrets.` },
-    { title: `On the night`, text: `Bring a charged phone. You'll use it to scan evidence tags, see which rooms are open, and cast your final accusation.` }
+    { title: `Your role`, text: `A private invitation reveals your character. Accept it to unlock your secret code word. Tell no one.` },
+    { title: `Before the party`, text: `Log in with your code word, read your dossier and brief, and plan your costume and your secrets.` },
+    { title: `On the night`, text: `Bring a charged phone to scan evidence tags, follow the rooms as they open, and make your accusation.` }
   ],
 
   // Rules of the night. Set showRules to false to hide them until you're ready.

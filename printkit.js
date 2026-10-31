@@ -275,19 +275,19 @@ tr{break-inside:avoid}
       part('Part 2', 'The Schedule') +
       `<p>${esc(P.date || '')}${P.time ? ' · ' + esc(P.time) : ''}${hosted ? ' · ' + esc(hosted) : ''}</p>
       <table><tr><th>Time</th><th>Phase</th><th>What happens</th></tr>${show.map((st, i) => `<tr><td class="mono" style="white-space:nowrap"><b>${esc(st.time || '')}</b></td><td><b>${i + 1}. ${esc(st.title)}</b>${st.skippable ? '<br><span class="tag">Skippable if late</span>' : ''}</td><td>${(st.actions || []).map(act).join(' · ') || '<span class="muted">No automatic actions</span>'}</td></tr>`).join('')}</table>
-      <div class="box gold"><div class="lbl">Running late?</div><p style="margin:0">Phases marked <b>Skippable</b> can be skipped with Game → All phases → JUMP. The Inspector can say those lines in the next phase instead. Check your hall's <b>quiet hours</b> with your hall director: the curtain call is planned for about 11:40 PM.</p></div>` +
+      <div class="box gold"><div class="lbl">Running late?</div><p style="margin:0">Phases marked <b>Skippable</b> can be skipped with Game Night → All phases → JUMP. The Inspector can say those lines in the next phase instead. Check your hall's <b>quiet hours</b> with your hall director: the curtain call is planned for about 11:40 PM.</p></div>` +
 
       part('Part 3', 'Setting the Stage') +
       `<h3>Timeline</h3>
       <table><tr><th>When</th><th>Task</th></tr>
-      <tr><td><b>3–4 weeks before</b></td><td>Book the four spaces through Residence Life. Confirm quiet hours, capacity and decoration rules. Send the invitation.</td></tr>
+      <tr><td><b>3–4 weeks before</b></td><td>Book the three spaces through Residence Life. Confirm quiet hours, capacity and decoration rules. Send the invitation.</td></tr>
       <tr><td><b>2 weeks before</b></td><td>Close RSVPs. Assign roles (must-cast first, then the Inspector). Send role texts. Start gathering props (shopping list below).</td></tr>
-      <tr><td><b>1 week before</b></td><td>Guests → EMAIL REMINDER TO ALL. Fill in the real room names in story.js and rebuild. Print the tags, props, badges and signs. Test-scan a tag on your phone.</td></tr>
+      <tr><td><b>1 week before</b></td><td>Guests → EMAIL REMINDER TO ALL. Check the room names and places in Settings → Rooms &amp; Locations. Print the tags, props, badges and signs. Test-scan a tag on your phone.</td></tr>
       <tr><td><b>2 days before</b></td><td>Two-phone rehearsal with your co-host: NEXT through a few phases, scan a tag, cast a vote. Brief the Inspector, Alex and Gordon on their big moments.</td></tr>
-      <tr><td><b>5:30 PM</b></td><td>Start setup: Gala Hall first (biggest job), then the Archive Lounge, Alex's Office, Gordon's Study.</td></tr>
+      <tr><td><b>5:30 PM</b></td><td>Start setup: the Gala Hall and Gordon's Study first (one room, split by the paper wall), then the Archive Lounge and Alex's Office.</td></tr>
       <tr><td><b>7:00 PM</b></td><td>Place every tag and prop. Test-scan each one. Hang SEALED signs, close the doors. Projector on.</td></tr>
-      <tr><td><b>7:30 PM</b></td><td>Tools → HARD RESET. Hosts in costume. Name badges and a pen at the door. Music on.</td></tr>
-      <tr><td><b>After the party</b></td><td>Tools → Case Files: add the honors and album link, then PUBLISH. Take down every tag, sign and piece of tape. Leave the rooms as you found them. Export a backup, then delete the RSVPs.</td></tr></table>
+      <tr><td><b>7:30 PM</b></td><td>Settings → Backups → HARD RESET. Hosts in costume. Name badges and a pen at the door. Music on.</td></tr>
+      <tr><td><b>After the party</b></td><td>Settings → Case Files: add the honors and album link, then PUBLISH. Take down every tag, sign and piece of tape. Leave the rooms as you found them. Export a backup, then delete the RSVPs.</td></tr></table>
       <h3>Shopping list</h3>
       <table><tr><th>For</th><th>Items</th></tr>
       <tr><td><b>Gala Hall</b></td><td>Black tablecloths, gold runners, battery LED candles, warm string lights, gold/black/white balloons, plastic flutes and coupes, sparkling cider or ginger ale, place-card holders, an easel or frame for Richard Kane's portrait, a white sheet, CAUTION tape, a cork board or poster board, push pins</td></tr>
@@ -298,9 +298,9 @@ tr{break-inside:avoid}
       <h3>Residence Life–friendly rules</h3>
       <ul class="tight"><li>No open flames: LED candles only.</li><li>Painter's tape only, and never on fire doors, exit signs, alarms, sprinklers or extinguishers.</li><li>Keep hallways and exits completely clear. Signs go on walls, not across doorways.</li><li>Alcohol-free: the "champagne" is sparkling cider.</li><li>If a dorm room belongs to a resident, get their written permission and put their belongings away first.</li><li>Keep music at a volume that respects neighbors and quiet hours.</li><li>Leave every space exactly as you found it.</li></ul>
       <h3>How to hide evidence well</h3>
-      <ul class="tight"><li><b>Hide it where people naturally look</b>: drawers, pockets, bags, boxes and binders. Never behind heavy furniture or up high.</li><li><b>Aim for 1–3 minutes to find each one.</b> Players should feel clever, not frustrated.</li><li><b>Put the tag on the paper prop itself</b> (the Evidence Props printout already has the QR code on it) so the object and the evidence feel like one thing.</li><li><b>Leave a trail</b>: a drawer open an inch, a pocket with paper sticking out, a box lid askew.</li><li><b>One tag per object</b>, and never on anything that belongs to the building.</li><li><b>Test-scan every tag</b> after placing it: logged in as host, your phone shows "✓ This tag works."</li><li><b>Photograph each hiding spot</b> so you (or your co-host) can put things back if they get moved.</li><li>Keep a spare printed set of tags in your pocket. If one goes missing: Game → Evidence Board → REVEAL NOW.</li></ul>
+      <ul class="tight"><li><b>Hide it where people naturally look</b>: drawers, pockets, bags, boxes and binders. Never behind heavy furniture or up high.</li><li><b>Aim for 1–3 minutes to find each one.</b> Players should feel clever, not frustrated.</li><li><b>Put the tag on the paper prop itself</b> (the Evidence Props printout already has the QR code on it) so the object and the evidence feel like one thing.</li><li><b>Leave a trail</b>: a drawer open an inch, a pocket with paper sticking out, a box lid askew.</li><li><b>One tag per object</b>, and never on anything that belongs to the building.</li><li><b>Test-scan every tag</b> after placing it: logged in as host, your phone shows "✓ This tag works."</li><li><b>Photograph each hiding spot</b> so you (or your co-host) can put things back if they get moved.</li><li>Keep a spare printed set of tags in your pocket. If one goes missing: Game Night → Evidence Board → REVEAL NOW.</li></ul>
       <h3>Signs</h3>
-      <ul class="tight"><li>Welcome sign at the building entrance, and arrows at every turn on the way to the Gala Hall.</li><li>A door sign on each of the four spaces.</li><li>A red SEALED sign on the Office, Lounge and Study doors until their phase opens them. Take each SEALED sign down when that room opens.</li><li>Coat check, charging station, "How to scan evidence" and Investigation Board signs in the Gala Hall.</li><li>A "Private event in progress" sign on hallway doors near dorm rooms.</li></ul>` +
+      <ul class="tight"><li>Welcome sign at the building entrance, and arrows at every turn on the way to the Gala Hall.</li><li>A door sign on each space. Gordon's Study's sign goes on the paper wall.</li><li>A red SEALED sign on the Office, Lounge and Study doors until their phase opens them. Take each SEALED sign down when that room opens.</li><li>Coat check, charging station, "How to scan evidence" and Investigation Board signs in the Gala Hall.</li><li>A "Private event in progress" sign on hallway doors near dorm rooms.</li></ul>` +
       rooms.map(r => { const g = r.guide || {}; return `<div class="room-card"><h3>${esc(r.name)}</h3><div class="where">${esc(r.place || '')} · ${esc(roomOpens(r))}</div>
         ${g.purpose ? `<p>${esc(g.purpose)}</p>` : ''}
         ${g.layout ? `<h4>Layout</h4>${list(g.layout)}` : ''}${g.decor ? `<h4>Decorating</h4>${list(g.decor)}` : ''}${g.props ? `<h4>Props</h4>${list(g.props)}` : ''}${g.hide ? `<h4>Hiding the evidence</h4>${list(g.hide)}` : ''}${g.atmosphere ? `<h4>Atmosphere</h4>${list(g.atmosphere)}` : ''}</div>`; }).join('') +
@@ -312,7 +312,7 @@ tr{break-inside:avoid}
        <p class="small muted">Optional: print the official reports from Evidence Props and hand the paper copy to the Inspector to read from.</p>` +
 
       part('Part 5', 'The Night, Phase by Phase') +
-      `<p class="muted small">Press and hold <b>START</b> on the Game tab to begin each phase; everything under "When it starts" happens by itself. Blue lines are what the Inspector reads (it's on their phone).</p>` +
+      `<p class="muted small">Press and hold <b>START</b> on the Game Night tab to begin each phase; everything under "When it starts" happens by itself. Blue lines are what the Inspector reads (it's on their phone).</p>` +
       show.map((st, i) => {
         const mems = []; chars.forEach(c => memOf(c).forEach(m => { if (m.when && m.when.phase === st.id) mems.push(`${m.cue ? 'Cue' : 'Memory'} → ${nm(c.id)}`); }));
         return `<div class="step"><div class="step-h"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(st.title)}</span><span class="tm">${esc(st.time || '')}${st.skippable ? ' · SKIPPABLE' : ''}</span></div>
@@ -329,29 +329,33 @@ tr{break-inside:avoid}
       part('Part 7', 'Memories & Hints') +
       `<p class="muted small">Memories appear on the player's phone by themselves. You don't send anything.</p>` +
       chars.filter(c => memOf(c).length).map(c => `<div class="box ${c.inspector ? 'blue' : c.killer ? 'red' : 'gold'}"><div class="lbl">${esc(c.name)}</div>${memOf(c).map(m => `<p class="small"><span class="tag">${m.cue ? 'Cue' : 'Memory'} · ${esc(whenText(m.when))}</span><br>${esc(m.text)}</p>`).join('')}</div>`).join('') +
-      `<h3>Hints (unlocked by player vote)</h3><p class="small muted">Switch on Hint Voting in the Game tab. When more than half of the living players who are online vote yes, the next hint appears on every phone and the projector. You can also press GIVE NOW.</p><ol>${hints.map(h => `<li style="margin-bottom:5pt">${esc(h)}</li>`).join('')}</ol>` +
+      `<h3>Hints (unlocked by player vote)</h3><p class="small muted">Switch on Hint Voting in the Game Night tab. When more than half of the living players who are online vote yes, the next hint appears on every phone and the projector. You can also press GIVE NOW.</p><ol>${hints.map(h => `<li style="margin-bottom:5pt">${esc(h)}</li>`).join('')}</ol>` +
 
       part('Part 8', 'Cast & Code Words') +
-      `<table><tr><th>#</th><th>Character</th><th>Code word</th><th>Role in the story</th></tr>${chars.map(c => `<tr><td class="mono">${esc(c.file || '')}</td><td><b>${esc(c.name)}</b><br><span class="muted">${esc(c.occ || '')}</span></td><td class="mono"><b>${esc(c.code)}</b></td><td>${[c.mustCast ? '<span class="tag red">★ Must cast</span>' : '', c.inspector ? '<span class="tag blue">Inspector</span>' : '', c.killer ? '<span class="tag red">Killer</span>' : '', c.scriptedDeath ? '<span class="tag red">Scripted death</span>' : '', shortlist.some(t => t.id === c.id) ? '<span class="tag gold">Possible 3rd victim</span>' : '', c.tier === 'ext' ? '<span class="tag">Extended cast</span>' : ''].join('')}</td></tr>`).join('')}</table>
+      `<table><tr><th>#</th><th>Character</th><th>Code word</th><th>Role in the story</th></tr>${chars.map(c => `<tr><td class="mono">${esc(c.file || '')}</td><td><b>${esc(c.name)}</b><br><span class="muted">${esc(c.occ || '')}</span></td><td class="mono"><b>${esc(c.code)}</b></td><td>${[c.mustCast ? '<span class="tag red">★ Must cast</span>' : '', c.inspector ? '<span class="tag blue">Inspector</span>' : '', c.killer ? '<span class="tag red">Killer</span>' : '', c.scriptedDeath ? '<span class="tag red">Scripted death</span>' : '', shortlist.some(t => t.id === c.id) ? '<span class="tag gold">Possible 3rd victim</span>' : '', c.tier === 'ext' ? '<span class="tag">Extended cast</span>' : '', c.spare ? '<span class="tag gold">Spare · hidden until you unlock it</span>' : ''].join('')}</td></tr>`).join('')}</table>
       <p class="small muted">Master host code: <span class="mono"><b>${S.adminCode ? esc(S.adminCode) : '(the code you log in with)'}</b></span></p>` +
 
       part('Part 9', 'Using the Terminal') +
       `<p>Open <b>database.html</b> and log in with the host code. It locks itself after 30 minutes idle. Give your co-host the code too, so one of you can run the tech while the other hosts.</p>
       <table><tr><th>Tab</th><th>What it's for</th></tr>
-      <tr><td><b>Game</b></td><td>The only tab you need on the night. The bar at the bottom shows what's next: <b>press and hold START</b>. Also: the must-cast warning, Lockdown, announcements, hint voting, rooms, the Evidence Board, accusations, deaths and backup roles.</td></tr>
-      <tr><td><b>Players</b></td><td>Every character, code word and player. Access QR, Revoke / Restore, Sign out, emergency Message, Kill / Undo.</td></tr>
-      <tr><td><b>Guests</b></td><td>Invite links, RSVPs, assign roles (★ must-cast first), add backup roles, copy or email role texts, email everyone a reminder.</td></tr>
-      <tr><td><b>Tools</b></td><td>Manual switches, projector control, live invitation editor (including the calendar dates), Case Files (the recap you publish after the game), emergency tools, activity log, hard reset.</td></tr></table>
+      <tr><td><b>Overview</b></td><td>Everything at a glance: the countdown, the numbers, a "Needs your attention" list (tap any item to jump to it), the RSVP Safety Net, a live feed of everything guests do, and the Big Board of every character. The search box at the top finds any guest, character or setting.</td></tr>
+      <tr><td><b>Inbox</b></td><td>Questions and help flags from guests (from the invitation page, their role invitation, or the database). A red HELP flag means someone needs you now. Reply privately or mark it done.</td></tr>
+      <tr><td><b>Guests</b></td><td>RSVPs, assigning roles (★ must-cast first), personal invitations, check-in, photos and backup roles. NEW marks a reply you haven't looked at; ROLLING marks a reply that came in after the reply-by date.</td></tr>
+      <tr><td><b>Characters</b></td><td>Every character, effort level, code word and player. Access QR, Revoke / Restore, Sign out, emergency Message, Kill / Undo. Spare characters are unlocked here.</td></tr>
+      <tr><td><b>Game Night</b></td><td>The only tab you need on the night. The bar at the bottom shows what's next: <b>press and hold START</b>. Also: Lockdown, announcements, hint voting, rooms, the Evidence Board, accusations, deaths, the projector, manual switches and emergency tools.</td></tr>
+      <tr><td><b>Settings</b></td><td>The live invitation editor (date, time, address, rolling RSVPs, capacity, thank-you note), Rooms &amp; Locations, Message Templates, Case Files, backups, hard reset and the activity log.</td></tr></table>
       <h3>If something goes wrong</h3><table><tr><th>Problem</th><th>Fix</th></tr>
-      <tr><td>Started a phase too early or skipped one</td><td>Game → All phases → JUMP or RE-RUN</td></tr>
-      <tr><td>An evidence tag is lost or won't scan</td><td>Game → Evidence Board → REVEAL NOW</td></tr>
+      <tr><td>Started a phase too early or skipped one</td><td>Game Night → All phases → JUMP or RE-RUN</td></tr>
+      <tr><td>An evidence tag is lost or won't scan</td><td>Game Night → Evidence Board → REVEAL NOW</td></tr>
       <tr><td>The Inspector's phone died</td><td>Read their lines from Part 5; Evidence Board → RELEASE NOW for reports</td></tr>
-      <tr><td>A room needs opening or closing</td><td>Game → Rooms → OPEN / SEAL</td></tr>
-      <tr><td>The room is stuck on the mystery</td><td>Game → Hint Voting on, or GIVE NOW</td></tr>
-      <tr><td>A screen is stuck</td><td>Tools → FORCE REFRESH ALL</td></tr>
-      <tr><td>The room is frozen</td><td>Tools → LIFT ALL</td></tr>
-      <tr><td>A player is locked out</td><td>Players → RESTORE, or ACCESS QR</td></tr>
-      <tr><td>A death happened by mistake</td><td>Game → Deaths → UNDO</td></tr>
+      <tr><td>A room needs opening or closing</td><td>Game Night → Rooms → OPEN / SEAL</td></tr>
+      <tr><td>The room is stuck on the mystery</td><td>Game Night → Hint Voting on, or GIVE NOW</td></tr>
+      <tr><td>A screen is stuck</td><td>Game Night → Emergency Tools → FORCE REFRESH ALL</td></tr>
+      <tr><td>The room is frozen</td><td>Game Night → Emergency Tools → LIFT ALL</td></tr>
+      <tr><td>A player is locked out</td><td>Characters → RESTORE, or ACCESS QR</td></tr>
+      <tr><td>A guest flagged you for help</td><td>Inbox → read it, reply, then MARK DONE</td></tr>
+      <tr><td>More guests than roles</td><td>Characters → Spare Characters → UNLOCK A SPARE</td></tr>
+      <tr><td>A death happened by mistake</td><td>Game Night → Deaths → UNDO</td></tr>
       <tr><td>Total failure</td><td>Printed dossiers + read evidence aloud from Part 6</td></tr></table>` +
 
       part('Part 10', 'Puzzles & Answers') +
@@ -361,8 +365,8 @@ tr{break-inside:avoid}
         <h4>Answer</h4><p class="ans">${esc(z.answer)}</p>${z.setup ? `<h4>Setting it up</h4><p>${esc(z.setup)}</p>` : ''}</div>`).join('') +
 
       part('Part 11', 'Checklists') +
-      `<h3>The week before</h3><ul class="check"><li>All ★ must-cast roles filled, then the Inspector</li><li>Backup roles set for Alex's and Gordon's players</li><li>Role texts sent (Guests tab shows "ROLE SENT")</li><li>Real room names filled in and story rebuilt</li><li>Tags, props, badges, signs and Host Book printed</li><li>Props bought (shopping list, Part 3)</li><li>Rehearsal with your co-host</li><li>Lockbox bought, code set (Part 10)</li><li>Spaces confirmed with Residence Life</li></ul>
-      <h3>On the day</h3><ul class="check"><li>Firebase rules open (not locked)</li><li>Rooms set up and decorated (Part 3)</li><li>Tags and props placed and test-scanned (Part 4)</li><li>SEALED signs up, doors closed</li><li>Tools → HARD RESET</li><li>Projector: display.html unlocked and full screen (F11). Its corner chip says LIVE</li><li>Host terminal's status chip says LINK SECURE (not LOCAL MODE)</li><li>Lockbox set to its code, letter inside, locked, on Alex's desk</li><li>Name badges, badge holders and a pen at the door</li><li>Wi-Fi details posted, charging station live</li><li>This book, open to Part 5</li></ul>`;
+      `<h3>The week before</h3><ul class="check"><li>All ★ must-cast roles filled, then the Inspector</li><li>Backup roles set for Alex's and Gordon's players</li><li>Personal invitations sent (Guests tab shows ✓ ACCEPTED)</li><li>Room names and places checked (Settings → Rooms &amp; Locations)</li><li>Tags, props, badges, signs and Host Book printed</li><li>Props bought (shopping list, Part 3)</li><li>Rehearsal with your co-host</li><li>Lockbox bought, code set (Part 10)</li><li>Spaces confirmed with Residence Life</li></ul>
+      <h3>On the day</h3><ul class="check"><li>Firebase security rules published (private\firebase-rules.json)</li><li>Guest Inbox empty, or every question answered</li><li>Rooms set up and decorated (Part 3)</li><li>Tags and props placed and test-scanned (Part 4)</li><li>SEALED signs up, doors closed</li><li>Settings → Backups → HARD RESET</li><li>Projector: display.html unlocked and full screen (F11). Its corner chip says LIVE</li><li>Host terminal's status chip says LINK SECURE (not LOCAL MODE)</li><li>Lockbox set to its code, letter inside, locked, on Alex's desk</li><li>Name badges, badge holders and a pen at the door</li><li>Wi-Fi details posted, charging station live</li><li>This book, open to Part 5</li></ul>`;
 
     /* ---------------- QR TAGS ---------------- */
     const tags = () => {

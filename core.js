@@ -245,6 +245,7 @@ function normRoot(r) {
     invites: r.invites || {},       // inviteId -> {iv,ct,ts}  personal role invitations, locked with the key in each guest's link
     inviteStatus: r.inviteStatus || {}, // inviteId -> {opened, last, resp:'accepted'|'declined'|'swap', note, at}
     hostPhotos: r.hostPhotos || {}, // guestKey -> {iv,ct}  photos the host added for a guest (host-locked)
+    asks: r.asks || {},             // askId -> {sec, ts, kind, replies:{id:{iv,ct,ts}}, done}  guest questions & help flags
     site: r.site || {},             // live edits to the public pages
     ctl: r.ctl || {}
   };
@@ -271,6 +272,51 @@ function hintStatus(S, isOnlineFn) {
   const votes = Object.keys(S.hintVotes[round] || {}).filter(id => !(id in dd));
   const needed = Math.max(1, Math.floor(eligible.length / 2) + 1);
   return { round, votes: votes.length, needed, eligible: eligible.length, left: Math.max(0, (S.hintTotal || 0) - round) };
+}
+
+/* ---------- spare characters ----------
+   Extra roles that stay hidden everywhere (Who's Who, voting, casting) until the host unlocks them (site/spares). */
+const spareLocked = (S, id) => { const r = (window.STORY_ROSTER || []).find(x => x.id === id); return !!(r && r.spare) && !((S.site && S.site.spares) || {})[id]; };
+/** How many roles there are: the capacity on the invitation, plus any spare characters the host has unlocked. */
+function capacityOf(P, S) { return Math.max(1, Math.round(+P.capacity) || 34) + Object.keys((S.site && S.site.spares) || {}).length; }
+
+/* ---------- guest questions & help flags ----------
+   A guest's message is sealed for the hosts, like RSVP details. It carries a fresh key that stays on the
+   guest's own device, so the hosts' replies can only be read there. */
+function myAsks() { try { return JSON.parse(store.get('myAsks') || '{}') || {}; } catch (e) { return {}; } }
+/** msg: {kind:'question'|'help', topic, text, where:'invite'|'role'|'portal', name?, email?, cid?, cname?} */
+async function sendAsk(be, msg) {
+  const k = b64url(crypto.getRandomValues(new Uint8Array(32))), id = uid('q'), kind = msg.kind === 'help' ? 'help' : 'question';
+  const sec = await sealForHost(Object.assign({}, msg, { kind, k }));
+  if (be.ensureAuth && !be.uid) await be.ensureAuth();
+  await be.setStrict('asks/' + id, { sec, kind, ts: be.TS() });
+  const m = myAsks(); m[id] = { k, kind, topic: msg.topic || '', t: String(msg.text || '').slice(0, 400), ts: Date.now() }; store.set('myAsks', JSON.stringify(m));
+  return id;
+}
+/** This device's questions with any replies from the hosts, newest first. */
+async function myAskThreads(S) {
+  const out = [];
+  for (const [id, a] of Object.entries(myAsks())) {
+    const r = S.asks[id], replies = [];
+    if (r && r.replies) {
+      const key = await importInviteKey(a.k);
+      for (const [rid, b] of Object.entries(r.replies)) { try { replies.push({ rid, ts: +b.ts || 0, text: (await decryptJSON(key, b)).text }); } catch (e) { } }
+    }
+    out.push(Object.assign({ id, replies: replies.sort((x, y) => x.ts - y.ts), done: !!(r && r.done), gone: !r && Date.now() - a.ts > 60000 }, a));
+  }
+  return out.sort((x, y) => y.ts - x.ts);
+}
+/** Replies this device hasn't shown yet (so a page can announce them once). */
+function unseenReplies(threads) {
+  let seen = {}; try { seen = JSON.parse(store.get('seenReplies') || '{}') || {}; } catch (e) { }
+  const fresh = threads.flatMap(t => t.replies.filter(r => !seen[r.rid]));
+  return { fresh, mark() { fresh.forEach(r => { seen[r.rid] = 1; }); store.set('seenReplies', JSON.stringify(seen)); } };
+}
+/** A guest's questions and the hosts' replies, as plain markup each page styles itself (.thr, .thr-q, .thr-r, .thr-w). */
+function threadsHTML(threads) {
+  const when = ts => new Date(ts).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return threads.map(t => `<div class="thr${t.kind === 'help' ? ' help' : ''}"><div class="thr-q"><small>${t.kind === 'help' ? 'Help request' : 'You asked'}${t.topic ? ' · ' + esc(t.topic) : ''} · ${esc(when(t.ts))}</small>${esc(t.t)}</div>`
+    + (t.replies.map(r => `<div class="thr-r"><small>Your hosts replied${r.ts ? ' · ' + esc(when(r.ts)) : ''}</small>${esc(r.text)}</div>`).join('') || `<div class="thr-w">${t.done ? 'Seen by your hosts.' : 'Sent. Waiting for a reply…'}</div>`) + `</div>`).join('');
 }
 
 /* Sound was removed on request. This silent stub keeps older calls harmless. */
