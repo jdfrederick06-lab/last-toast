@@ -737,7 +737,7 @@ async function saveAssign() {
   const blob = await encryptJSON(HOST.assignKey, HOST.assign);
   HOST.assignCt = blob.ct;
   await backend.set('assign', blob);
-  renderAdmin();
+  renderAdmin(); syncCastList();
 }
 
 function onState(prev, was) {
@@ -1669,6 +1669,14 @@ async function changeMyPhoto() {
   };
   inp.click();
 }
+/* tell guests' phones which characters are actually being played, so the rest stay out of sight */
+async function syncCastList() {
+  try {
+    if (!HOST || !ready || !HOST.assignOk || HOST.assignCt !== (S.assign ? S.assign.ct : '')) return;
+    const inPlay = {}; Object.values(HOST.assign.map).forEach(id => { inPlay[id] = 1; }); Object.values(S.succession).forEach(s => { if (s && s.to) inPlay[s.to] = 1; });
+    if (Object.keys(inPlay).length && JSON.stringify(Object.keys(inPlay).sort()) !== JSON.stringify(Object.keys(S.site.cast || {}).sort())) await backend.update({ 'site/cast': inPlay });
+  } catch (e) { console.warn('cast list', e); }
+}
 async function hostJobs() {
   if (!HOST || !ready || ui.jobBusy) return;
   ui.jobBusy = true;
@@ -1690,12 +1698,8 @@ async function hostJobs() {
         log(`${cc.name}'s player continues as ${nc.name}`);
       }
     }
+    await syncCastList();
     await syncPhotoLinks();
-    // tell guests' phones which characters are actually being played, so the rest stay out of sight
-    if (HOST.assignOk && HOST.assignCt === (S.assign ? S.assign.ct : '')) {
-      const inPlay = {}; Object.values(HOST.assign.map).forEach(id => { inPlay[id] = 1; }); Object.values(S.succession).forEach(s => { if (s && s.to) inPlay[s.to] = 1; });
-      if (Object.keys(inPlay).length && JSON.stringify(Object.keys(inPlay).sort()) !== JSON.stringify(Object.keys(S.site.cast || {}).sort())) await backend.update({ 'site/cast': inPlay });
-    }
   } catch (e) { console.warn(e); }
   ui.jobBusy = false;
 }
