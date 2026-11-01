@@ -448,10 +448,10 @@ function calendarLinks(P) {
   const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Kane Oil//The Last Toast//EN', 'BEGIN:VEVENT', 'UID:last-toast-' + stamp(a) + '@kane-oil', 'DTSTAMP:' + stamp(new Date()), 'DTSTART:' + stamp(a), 'DTEND:' + stamp(b), 'SUMMARY:' + ical(title), 'LOCATION:' + ical(where), 'DESCRIPTION:' + ical(details), 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
   return { google, ics: 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics) };
 }
-/* how many roles are still free: the cast size minus everyone coming (and their plus-ones) */
+/* how many roles are still free: the cast size minus everyone coming or maybe (and their plus-ones) */
 function rolesLeft(P) {
   const cap = capacityOf(P, S);
-  const taken = Object.values(S.rsvps || {}).filter(r => r && r.attending === 'yes').reduce((n, r) => n + 1 + (r.plusOne ? 1 : 0), 0);
+  const taken = Object.values(S.rsvps || {}).filter(r => r && r.name && r.attending !== 'no').reduce((n, r) => n + 1 + (r.plusOne ? 1 : 0), 0);
   return Math.max(0, cap - taken);
 }
 const ui = { ctaOn: false };

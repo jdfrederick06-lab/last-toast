@@ -2696,7 +2696,7 @@ function renderCast(who) {
 function renderGuests(who) {
   const rs = Object.entries(S.rsvps).filter(([, r]) => r && r.name).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0));
   const yes = rs.filter(([, r]) => r.attending === 'yes'), maybe = rs.filter(([, r]) => r.attending === 'maybe'), no = rs.filter(([, r]) => r.attending === 'no');
-  $('#rsvpSub').textContent = `${yes.length + yes.filter(([, r]) => r.plusOne).length} COMING · ${maybe.length} MAYBE · ${no.length} NO`;
+  $('#rsvpSub').textContent = `${[...yes, ...maybe].reduce((n, [, r]) => n + 1 + (r.plusOne ? 1 : 0), 0)} COMING${maybe.length ? ' (' + maybe.length + ' MAYBE)' : ''} · ${no.length} NO`;
   const spotsOf = ([id, r]) => r.attending === 'no' ? [] : r.plusOne ? [id, id + '#p'] : [id];
   const allSpots = rs.flatMap(spotsOf), K = Object.fromEntries(allSpots.map(k => [k, keyStatus(k)]));
   const f = ui.guestStatus || 'all', q = (ui.guestQ || '').toLowerCase();
@@ -2785,7 +2785,7 @@ function hostStats(who) {
   const spots = rs.filter(([, r]) => r.attending !== 'no').flatMap(([id, r]) => r.plusOne ? [id, id + '#p'] : [id]);
   const K = Object.fromEntries(spots.map(k => [k, keyStatus(k)])), cast = Object.values(HOST.assign.map);
   return {
-    P, cap, rs, going, maybes, spots, K, people: going.length + going.filter(([, r]) => r.plusOne).length,
+    P, cap, rs, going, maybes, spots, K, people: spots.length,   // maybes count as coming until they decline
     assigned: spots.filter(k => K[k].cid).length, accepted: spots.filter(k => K[k].resp === 'accepted').length,
     inCount: cast.filter(cid => S.checkins[cid]).length, castN: cast.length,
     online: HOST.list.filter(c => isOnline(c.id)).length, openRoles: HOST.list.filter(c => !who[c.id]).length
