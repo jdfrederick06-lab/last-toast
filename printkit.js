@@ -190,7 +190,7 @@ tr{break-inside:avoid}
 .nb .prop-of{font:9.5pt 'Segoe UI',Arial,sans-serif;color:var(--muted);margin:3pt 0 6pt}
 .nb table{font-size:8.5pt;margin:2pt 0 6pt}
 .nb th{padding:3pt 6pt}
-.nb td{height:.41in;padding:2pt 6pt;line-height:1.15}
+.nb td{height:.36in;padding:2pt 6pt;line-height:1.15}
 .nb.p2 td{height:.35in}
 .nb td b{font-size:9pt}
 .nb td small{display:block;font-size:7.5pt;color:var(--muted)}
