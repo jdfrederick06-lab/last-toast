@@ -1022,7 +1022,7 @@ function directoryHTML(meId, filter) {
 }
 
 /* ---------------- player view ---------------- */
-const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}" title="${esc(r.desc || '')}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(r.name)}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
+const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}" title="${esc((!o && r.sealedDesc) || r.desc || '')}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(roomLabel(S, r.id))}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
 function playerShellHTML() {
   const views = [['now', 'Now', ICON.now], ['brief', 'Brief', ICON.brief], ['evidence', 'Evidence', ICON.ev], ['people', "Who's Who", ICON.people], ['file', 'My File', ICON.file]];
   return `${topbar(ME.c.inspector ? 'INVESTIGATOR ACCESS' : 'SECURE PERSONNEL DOSSIER', `<button class="iconbtn askbtn" id="helpBtn">ASK HOSTS<span class="hnb hidden" id="helpNb"></span></button>`)}
@@ -3102,7 +3102,7 @@ function renderOverlays() {
       bind = () => { const r = $('#scanReveal'); if (r) r.onclick = () => { revealEvidence(e, c.id, roomName(e.room), 'found'); log(`${c.name} revealed "${e.title}"`, 'player'); ui.scan = null; toast('REVEALED', 'Everyone can now see it.', 'ok'); render(); }; $('#scanClose').onclick = () => { ui.scan = null; render(); }; };
     } else {
       const msg = { nothing: ['NOTHING OF INTEREST', "This tag isn't part of the investigation."], dead: ['THE DEAD DON\'T INVESTIGATE', 'You can watch and listen, but you can\'t collect evidence.'],
-        sealed: ['SEALED AREA', `${sc.e ? esc(roomName(sc.e.room)) : 'This room'} is sealed. Leave it as you found it until your phone says it's open.`], locked: ['LOCKED', 'This item can\'t be examined yet. Try again later in the night.'] }[sc.kind];
+        sealed: ['SEALED AREA', `${sc.e ? esc(roomLabel(S, sc.e.room)) : 'This room'} is sealed. Leave it as you found it until your phone says it's open.`], locked: ['LOCKED', 'This item can\'t be examined yet. Try again later in the night.'] }[sc.kind];
       html = `<div class="overlay fullmsg blocked"><div class="box"><div class="k">KANE-OS · EVIDENCE SCAN</div><h1 style="font-size:clamp(22px,6vw,32px)">${msg[0]}</h1><p>${msg[1]}</p>${close}</div></div>`;
       bind = () => $('#scanClose').onclick = () => { ui.scan = null; render(); };
     }

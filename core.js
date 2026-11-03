@@ -347,6 +347,11 @@ function roomOpen(S, roomId) {
 }
 const roomName = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).name || id || '';
 const roomPlace = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).place || '';
+/** The name guests see: a room can go by a neutral name (sealedName) until it opens, so it doesn't give the plot away. */
+function roomLabel(S, id) {
+  const r = (window.STORY_ROOMS || []).find(x => x.id === id);
+  return r && r.sealedName && !roomOpen(S, id) ? r.sealedName : roomName(id);
+}
 /** Room names and locations the host changed from the dashboard (site/rooms), layered over the story's. */
 function applyRoomEdits(site) {
   const o = (site && site.rooms) || {};

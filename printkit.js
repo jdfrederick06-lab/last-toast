@@ -429,7 +429,7 @@ tr{break-inside:avoid}
       out.push(sign('', 'This way to the gala', esc(gala.name), '', '', `<div class="arrow">→</div>`));
       out.push(sign('', 'This way to the gala', esc(gala.name), '', '', `<div class="arrow">←</div>`));
       rooms.forEach(r => out.push(sign(r.alwaysOpen ? 'dark' : '', esc(r.sign || 'Kane Oil & Energy'), esc(r.name), '', esc(r.alwaysOpen ? 'Welcome. Find the Investigation Board, the coat check and the charging station inside.' : (r.desc || 'Private.')))));
-      rooms.filter(r => !r.alwaysOpen).forEach(r => out.push(sign('sealed', 'Kane Oil Security', 'SEALED', esc(r.name), 'Do not enter until the Kane Oil Database on your phone shows this room as <b>OPEN</b>.')));
+      rooms.filter(r => !r.alwaysOpen).forEach(r => out.push(sign('sealed', 'Kane Oil Security', 'SEALED', esc(r.sealedName || r.name),'Do not enter until the Kane Oil Database on your phone shows this room as <b>OPEN</b>.')));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Evidence Tags', 'Found a Kane Oil evidence tag?', 'Scan it with your phone camera, then log in if asked. You decide whether to reveal it to everyone or keep it for now. <b>Please leave the tag where you found it.</b>'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'The Investigation Board', 'Pin revealed evidence here', 'Found something? Once it\'s revealed, add a copy to the board so everyone can connect the dots.'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Coat Check', '', 'Please leave coats and bags here. Kane Oil & Energy is not responsible for anything you find in them.'));
