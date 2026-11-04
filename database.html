@@ -45,6 +45,13 @@
 .pc-pick{flex:1;display:flex;align-items:flex-start;gap:8px;cursor:pointer;min-width:0}.pc-pick input{margin-top:3px;flex:none}.pc-pick .t{min-width:0}.pc-pick .t b{display:block}.pc-pick small{display:block;font-family:var(--sans);font-size:12px;color:var(--muted)}.pc-pick .pc-paper{color:var(--cyan);margin-top:2px}
 .pc-n{display:flex;align-items:center;gap:2px;font:12px var(--mono);color:var(--muted)}.pc-n input{width:46px;padding:5px;border-radius:8px;border:1px solid var(--line);background:transparent;color:inherit;font:inherit}
 .pc-go{position:sticky;bottom:-1px;background:var(--bg,#121117);padding:12px 0 2px;margin-top:10px;align-items:center}
+.pane-h{font:600 12px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);margin:18px 2px 10px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.pane-h small{font:12.5px var(--sans);letter-spacing:0;text-transform:none;color:var(--muted)}
+.jumps .jsep{font:600 10px var(--mono);letter-spacing:.2em;color:var(--dim);align-self:center;padding:0 4px 0 10px}
+.alrt-wrap{position:relative}.alrt-wrap .alrt{width:100%;padding-right:40px}
+.alrt-x{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--muted);cursor:pointer;font-size:12px;line-height:1}.alrt-x:hover{color:#fff;border-color:rgba(255,255,255,.35)}
+.alrt-show{border:0;background:transparent;color:var(--muted);font:600 11px var(--mono);letter-spacing:.12em;cursor:pointer;padding:6px 2px;text-align:left}
+.ca-more{display:inline-block;vertical-align:middle}.ca-more summary{list-style:none;cursor:pointer;font:600 11px var(--mono);letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px}.ca-more summary::-webkit-details-marker{display:none}
+.ca-more[open] summary{color:var(--gold2);border-color:rgba(212,162,76,.5)}.ca-more-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .desk-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.desk-kpis div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.desk-kpis b{display:block;font-size:17px;color:var(--gold2)}.desk-kpis span{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .desk-list{display:grid;gap:6px}.desk-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);color:inherit;padding:9px 10px;cursor:pointer;font:inherit}
 .desk-row .nn{flex:1;min-width:0}.desk-row .nn b{display:block;font-size:14.5px}.desk-row .nn small{display:block;font-size:11.5px;color:var(--muted)}.desk-row.in{opacity:.65}
@@ -659,6 +666,7 @@ const ICON = {
   ev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>',
   people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>',
   file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+  cohost: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/><path d="m9 13 2 2 4-4"/></svg>',
   notes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6M9 17h3"/><path d="m15.5 17.5 4-4"/></svg>',
   brief: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>'
 };
@@ -912,7 +920,8 @@ function render() {
     if (ui.built !== 'admin') { ui.built = 'admin'; app.innerHTML = adminShellHTML(); bindAdmin(); }
     renderAdmin();
   } else {
-    if (ui.built !== 'p:' + ME.c.id) { ui.built = 'p:' + ME.c.id; app.innerHTML = playerShellHTML(); bindPlayer(); }
+    const pk = 'p:' + ME.c.id + (isCohost() ? ':co' : '');   // Alex's screen rebuilds when her co-host tab is switched on or off
+    if (ui.built !== pk) { ui.built = pk; app.innerHTML = playerShellHTML(); bindPlayer(); }
     renderPlayer();
   }
   renderOverlays(); renderConn();
@@ -1217,12 +1226,39 @@ function bindNotes() {
   });
 }
 
+/* ---------------- Alex's co-host inbox (on her own phone) ---------------- */
+const isCohost = () => !!(ME && ME.type === 'player' && ME.c && ME.c.id === COHOST_ID && S.site && S.site.cohost === true);
+async function renderCohostInbox() {
+  const box = $('#coInbox'); if (!box) return;
+  ui.coCache = ui.coCache || {}; ui.coDrafts = ui.coDrafts || {};
+  try { ui.coKey = ui.coKey || await _stableKey(session.code, 'cohost'); } catch (e) { return; }
+  const mirror = (RAW.cohost && RAW.cohost.asks) || {};
+  for (const [id, m] of Object.entries(mirror)) {
+    if (!m || (ui.coCache[id] && ui.coCache[id].v === m.v)) continue;
+    try { ui.coCache[id] = { v: m.v, d: await decryptJSON(ui.coKey, m) }; } catch (e) { ui.coCache[id] = { v: m.v, d: null }; }
+  }
+  const items = Object.entries(ui.coCache).filter(([id, c]) => c.d && S.asks[id]).map(([id, c]) => ({ id, d: c.d, a: S.asks[id] }))
+    .sort((x, y) => (!!x.a.done - !!y.a.done) || ((y.a.kind === 'help') - (x.a.kind === 'help')) || ((+y.a.ts || 0) - (+x.a.ts || 0)));
+  const open = items.filter(x => !x.a.done);
+  $('#coInboxSub').textContent = open.length ? `${open.length} OPEN${open.some(x => x.a.kind === 'help') ? ' · ' + open.filter(x => x.a.kind === 'help').length + ' HELP' : ''}` : 'ALL CAUGHT UP';
+  if (box.contains(document.activeElement) && document.activeElement.tagName === 'TEXTAREA') return;
+  patch(box, JSON.stringify(items.map(x => [x.id, x.a.done, x.a.kind, Object.keys(x.a.replies || {}).length])),
+    items.length ? items.slice(0, 30).map(({ id, d, a }) => { const help = a.kind === 'help', done = !!a.done, nR = Object.keys(a.replies || {}).length;
+      return `<div class="ask ${help && !done ? 'help' : ''} ${done ? 'done' : ''}"><div class="ah"><span class="pill ${help ? 'red' : 'gold'}">${help ? '🚩 HELP' : 'QUESTION'}</span>${d.topic ? `<span class="pill">${esc(d.topic)}</span>` : ''}<b>${esc(d.name || (d.cname ? 'The player of ' + d.cname : 'A guest'))}</b><span class="sp"></span><span class="when">${esc(whenStr(+a.ts))}</span>${done ? '<span class="pill green">DONE</span>' : ''}</div>
+        <p class="aq">${esc(d.text || '')}</p>${nR ? `<p class="note" style="margin:4px 0 0">${nR} repl${nR > 1 ? 'ies' : 'y'} sent</p>` : ''}
+        ${done ? `<div class="row-gap" style="margin-top:8px"><button class="btn sm ghost" data-codone="${esc(id)}">REOPEN</button></div>` : `<div class="areply"><div class="chips">${QUICK_REPLIES.map(q => `<button type="button" data-coquick="${esc(id)}" data-text="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+        <textarea class="input" data-coreplyin="${esc(id)}" maxlength="800" rows="2" placeholder="Reply as a host…">${esc(ui.coDrafts[id] || '')}</textarea>
+        <div class="row-gap" style="margin-top:8px"><button class="btn sm gold" data-coreply="${esc(id)}">SEND REPLY</button><button class="btn sm ghost" data-codone="${esc(id)}">MARK DONE</button></div></div>`}</div>`; }).join('')
+      : `<div class="empty">NO GUEST MESSAGES. QUESTIONS AND HELP FLAGS SHOW UP HERE WHILE THE HOST PORTAL IS OPEN.</div>`);
+}
+
 /* ---------------- player view ---------------- */
 const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}" title="${esc((!o && r.sealedDesc) || r.desc || '')}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(roomLabel(S, r.id))}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
 function playerShellHTML() {
   const views = [['now', 'Now', ICON.now], ['brief', 'Brief', ICON.brief], ['evidence', 'Evidence', ICON.ev], ['notes', 'Notes', ICON.notes], ['people', "Who's Who", ICON.people], ['file', 'My File', ICON.file]];
+  if (isCohost()) views.push(['cohost', 'Co-host', ICON.cohost]);
   return `${topbar(ME.c.inspector ? 'INVESTIGATOR ACCESS' : 'SECURE PERSONNEL DOSSIER', `<button class="iconbtn askbtn" id="helpBtn">ASK HOSTS<span class="hnb hidden" id="helpNb"></span></button>`)}
-    <nav class="pnav" id="pnav">${views.map(([k, l, ic]) => `<button data-view="${k}">${ic}<span>${l}</span><span class="nb hidden" id="nb-${k}"></span></button>`).join('')}</nav>
+    <nav class="pnav" id="pnav" style="grid-template-columns:repeat(${views.length},1fr)">${views.map(([k, l, ic]) => `<button data-view="${k}">${ic}<span>${l}</span><span class="nb hidden" id="nb-${k}"></span></button>`).join('')}</nav>
     <div class="view" data-v="now">
       <div id="deadStrip"></div>
       <div id="checkinBox"></div>
@@ -1257,8 +1293,11 @@ function playerShellHTML() {
     <div class="view hidden" data-v="brief">
       <section class="panel gold"><div class="ph"><h2>Your Brief</h2><span class="sub">HOW TO PLAY YOUR CHARACTER TONIGHT</span></div><div id="briefBody"></div></section>
     </div>
-    <div class="view hidden" data-v="file">
+    <div class="view hidden" data-v="cohost">
       <section class="panel gold hidden" id="deskPanel"></section>
+      <section class="panel" id="coInboxPanel"><div class="ph"><h2>Guest Inbox</h2><span class="sub" id="coInboxSub">QUESTIONS &amp; HELP FLAGS</span></div><div id="coInbox"></div></section>
+    </div>
+    <div class="view hidden" data-v="file">
       <section class="panel"><div class="ph"><h2>Personnel Dossier</h2><span class="sub">EYES ONLY</span></div><div id="dossierBody"></div></section>
     </div>`;
 }
@@ -1284,7 +1323,23 @@ function bindPlayer() {
     try { await backend.update({ ['live/checkins/' + cid]: on ? backend.TS() : null }); log(on ? `${rname(cid)} checked in by Alex (co-host)` : `Check-in undone by Alex: ${rname(cid)}`, 'player'); }
     catch (err) { toast('NOT ALLOWED', 'The host needs to switch your desk on (and update the database rules).', 'err'); }
   });
-  goView(['now', 'brief', 'evidence', 'notes', 'people', 'file'].includes(ui.view) ? ui.view : 'now');
+  $('#coInbox').addEventListener('click', async e => {
+    if (!isCohost()) return;
+    const q = e.target.closest('[data-coquick]'); if (q) { const ta = $(`[data-coreplyin="${q.dataset.coquick}"]`); if (ta) { ta.value = q.dataset.text; ta.focus(); } return; }
+    const r = e.target.closest('[data-coreply]');
+    if (r) {
+      const id = r.dataset.coreply, ta = $(`[data-coreplyin="${id}"]`), text = ta ? ta.value.trim() : '', c = (ui.coCache || {})[id];
+      if (!text) { toast('WRITE A REPLY', 'Type your reply first.', 'err'); return; }
+      if (!c || !c.d || !c.d.k) { toast("CAN'T REPLY", 'This message can only be answered from the host portal.', 'err'); return; }
+      r.disabled = true;
+      try { const blob = await encryptJSON(await importInviteKey(c.d.k), { text, by: 'Alex' }); await backend.update({ [`asks/${id}/replies/${uid('a')}`]: Object.assign(blob, { ts: backend.TS() }), [`asks/${id}/done`]: backend.TS() }); ui.coDrafts[id] = ''; log(`Alex (co-host) replied to ${c.d.name || c.d.cname || 'a guest'}`, 'player'); toast('REPLY SENT', 'It shows up on their screen, and in the host inbox.', 'ok'); }
+      catch (err) { r.disabled = false; toast("COULDN'T SEND", 'Ask the host to update the database rules, or reply from the host portal.', 'err'); }
+      return;
+    }
+    const d = e.target.closest('[data-codone]'); if (d) { const id = d.dataset.codone, was = S.asks[id] && S.asks[id].done; try { await backend.update({ [`asks/${id}/done`]: was ? null : backend.TS() }); } catch (err) { toast('NOT ALLOWED', 'Ask the host to update the database rules.', 'err'); } }
+  });
+  $('#coInbox').addEventListener('input', e => { const t = e.target.closest('[data-coreplyin]'); if (t) ui.coDrafts[t.dataset.coreplyin] = t.value; });
+  goView(['now', 'brief', 'evidence', 'notes', 'people', 'file'].concat(isCohost() ? ['cohost'] : []).includes(ui.view) ? ui.view : 'now');
   $('#briefBody').addEventListener('change', e => { const cb = e.target.closest('[data-shared]'); if (cb) { store.set(sharedKey(cb.dataset.shared), cb.checked ? '1' : '0'); renderPlayer(); } });
   $('#dirFilter').addEventListener('input', e => { ui.dirFilter = e.target.value.toLowerCase(); renderPlayer(); });
   $('#voteForm').addEventListener('submit', e => {
@@ -1517,8 +1572,9 @@ function renderPlayer() {
 
   renderNotes();
 
-  // Alex's co-host desk (only when the host switches it on)
-  const desk = $('#deskPanel'), deskOn = c.id === 'alex' && S.site.cohost === true;
+  // Alex's co-host tab (only when the host switches it on): check-in + the guest inbox
+  if (isCohost()) renderCohostInbox();
+  const desk = $('#deskPanel'), deskOn = isCohost();
   desk.classList.toggle('hidden', !deskOn);
   if (deskOn) {
     const ppl = ui.directory.filter(d => !spareLocked(S, d.id) && !castHidden(S, d.id)).map(dirEntry).sort((a, b) => (!!S.checkins[a.id] - !!S.checkins[b.id]) || a.name.localeCompare(b.name));
@@ -1593,6 +1649,10 @@ const PLACES = [
   ['Invitation page: date, time, address, rolling RSVPs, capacity', 'tools', 'pePanel', 'rsvp rolling capacity roles date time venue address dress notice banner calendar thank you note open closed'],
   ['Rooms & locations', 'tools', 'roomsPanel', 'room office lounge study gala archive 208 204 paper wall rename'],
   ['Message templates (invitation & reminder wording)', 'tools', 'tplPanel', 'email text wording invite reminder'],
+  ["Alex's co-host desk (check-in & inbox on her phone)", 'game', 'cohostPanel', 'alex cohost co-host helper desk check in inbox'],
+  ['Manual switches (killer knows, voting, seal dossiers)', 'game', 'switchPanel', 'switch flag override killer voting seal'],
+  ['Website mode (RSVPs closed / company crash)', 'game', 'modePanel', 'crash shutdown website mode rsvp closed'],
+  ['Emergency tools (force refresh, unfreeze, clear votes)', 'game', 'emergPanel', 'emergency refresh reload stuck unfreeze'],
   ['Case files & awards', 'tools', 'recapPanel', 'recap awards album best dressed detective liar publish'],
   ['Backups, restore, hard reset, delete RSVPs', 'tools', 'backupPanel', 'export import save restore reset wipe delete'],
   ['Activity log', 'tools', 'logPanel', 'history log'],
@@ -1715,7 +1775,7 @@ function adminShellHTML() {
       <div class="stat"><b><span id="n-ev">0</span><em> / ${HOST.evidence.length}</em></b><span>Evidence revealed</span></div>
       <div class="stat"><b><span id="n-votes">0</span></b><span>Accusations</span></div>
     </div>
-    <div class="jumps">${[['phasePanel', 'The night'], ['quickPanel', 'Lockdown & announcements'], ['roomPanel', 'Rooms'], ['evPanel', 'Evidence'], ['hintPanel', 'Hints'], ['deathPanel', 'Deaths'], ['projPanel', 'Projector'], ['switchPanel', 'Switches'], ['modePanel', 'Website mode'], ['emergPanel', 'Emergency']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div>
+    <div class="jumps">${[['phasePanel', 'The night'], ['quickPanel', 'Lockdown & announcements'], ['roomPanel', 'Rooms'], ['evPanel', 'Evidence'], ['deathPanel', 'Deaths'], ['hintPanel', 'Hints'], ['cohostPanel', "Alex's desk"]].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}<span class="jsep">BACKSTAGE</span>${[['projPanel', 'Projector'], ['switchPanel', 'Switches'], ['modePanel', 'Website mode'], ['emergPanel', 'Emergency']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div><div class="pane-h">During the night <small>everything you need while the game is running</small></div>
     <div class="grid2"><div>
       <section class="panel gold" id="phasePanel"><div class="ph"><h2>The Night</h2><span class="sub" id="phaseSub"></span></div>
         <div class="progress"><i id="phaseBar" style="width:0"></i></div>
@@ -1731,23 +1791,25 @@ function adminShellHTML() {
         <div id="hintHost" style="margin-top:10px"></div>
       </section>
     </div><div>
+      <section class="panel" id="cohostPanel" data-fold="cohost"><div class="ph"><h2>Alex's Co-host Desk</h2><span class="sub" id="cohostSub">OFF</span></div>
+        <p class="note" style="margin:0 0 10px">Adds a <b>Co-host</b> tab to Alex's phone: she can <b>check guests in</b> and <b>answer guest questions and help flags</b>, then tap back to playing. Guest questions reach her while this portal is open. Turn it off when you don't need it.</p>
+        <button class="btn" id="cohostBtn">TURN ON ALEX'S DESK</button></section>
       <section class="panel" id="roomPanel"><div class="ph"><h2>Rooms</h2><span class="sub">TAP TO OPEN OR SEAL</span></div><div class="relist" id="roomCtl"></div></section>
       <section class="panel" id="evPanel"><div class="ph"><h2>Evidence Board</h2><span class="sub" id="evSub"></span></div><div id="evBoard"></div></section>
       <section class="panel gold hidden" id="tallyPanel"><div class="ph"><h2>Accusations</h2><span class="sub" id="tallySub"></span></div><div id="tally"></div><div id="verdictCtl" style="margin-top:12px"></div></section>
       <section class="panel red" id="deathPanel"><div class="ph"><h2>Deaths &amp; Backup Roles</h2></div><div class="relist" id="deathList"></div><div style="margin-top:8px" id="killStatus"></div></section>
     </div></div>
+    <div class="pane-h">Backstage <small>the projector, manual overrides and emergency fixes. Tap a heading to open it.</small></div>
     <div class="grid2"><div>
-      <section class="panel" id="projPanel" data-fold="proj"><div class="ph"><h2>Projector</h2><span class="sub" id="projNow"></span></div>
+      <section class="panel" id="projPanel" data-fold="proj" data-fold-default="1"><div class="ph"><h2>Projector</h2><span class="sub" id="projNow"></span></div>
         <div class="row-gap" style="margin-bottom:12px"><a class="btn sm" id="openDisplay" target="_blank" rel="noopener">OPEN DISPLAY ↗</a><button class="btn sm ghost" data-copy="display">COPY LINK</button></div>
         <div class="scenes" id="scenes">${['company', 'title', 'evidence', 'wall', 'voting', 'tally', 'confessions'].map(s => `<button class="btn sm" data-scene="${s}">${SCENES[s]}</button>`).join('')}</div>
         <div style="height:12px"></div>
         <div class="row-gap"><input class="input" id="msgIn" maxlength="300" placeholder="Custom message for the big screen…" style="flex:1;min-width:180px"><button class="btn sm" id="msgBtn">SHOW</button></div>
       </section>
-      <section class="panel" id="switchPanel" data-fold="switches"><div class="ph"><h2>Manual Switches</h2><span class="sub">NEXT DOES THESE FOR YOU</span></div>${nightSwitches()}</section>
-      <section class="panel gold" id="modePanel" data-fold="modes"><div class="ph"><h2>Website Mode</h2><span class="sub">AUTOMATIC · OR FORCE IT</span></div><p class="note" style="margin:0 0 10px">Both of these happen by themselves. Use these buttons if one doesn't, or to undo it. "Automatic" goes back to normal.</p>${modeHTML()}</section>
-      <section class="panel" id="cohostPanel"><div class="ph"><h2>Alex's Co-host Desk</h2><span class="sub" id="cohostSub">OFF</span></div>
-        <p class="note" style="margin:0 0 10px">Adds a small desk to the top of Alex's own dossier (My File) on her phone: she can <b>check guests in</b> and see the night at a glance (phase, who's online, who hasn't arrived). Nothing else. Anyone logged in as Alex gets it, so switch it off when you don't need it.</p>
-        <button class="btn" id="cohostBtn">TURN ON ALEX'S DESK</button></section>
+      <section class="panel" id="switchPanel" data-fold="switches" data-fold-default="1"><div class="ph"><h2>Manual Switches</h2><span class="sub">NEXT DOES THESE FOR YOU</span></div>${nightSwitches()}</section>
+      <section class="panel gold" id="modePanel" data-fold="modes" data-fold-default="1"><div class="ph"><h2>Website Mode</h2><span class="sub">AUTOMATIC · OR FORCE IT</span></div><p class="note" style="margin:0 0 10px">Both of these happen by themselves. Use these buttons if one doesn't, or to undo it. "Automatic" goes back to normal.</p>${modeHTML()}</section>
+
     </div><div>
       <section class="panel red" id="emergPanel"><div class="ph"><h2>Emergency Tools</h2><span class="sub">IF ANYTHING GOES WRONG</span></div>
         <div class="relist">
@@ -2221,14 +2283,18 @@ function whenText(w) {
 }
 function castActions(c) {
   const id = esc(c.id), p = playerRec(c.id);
+  // the two you use most stay visible; everything else is one tap away under MORE
+  const open = ui.caOpen && ui.caOpen.has(c.id);
   return `<button class="btn sm" data-ca="dossier" data-id="${id}">DOSSIER</button>
+    <button class="btn sm ghost" data-ca="msg" data-id="${id}">MESSAGE</button>
+    ${S.revoked[c.id] ? `<button class="btn sm gold" data-ca="restore" data-id="${id}">RESTORE</button>` : ''}
+    <details class="ca-more" data-id="${id}" ${open ? 'open' : ''}><summary>MORE ▾</summary><div class="ca-more-in">
     <button class="btn sm ghost" data-ca="guestview" data-id="${id}">GUEST VIEW</button>
     <button class="btn sm ghost" data-ca="qr" data-id="${id}">ACCESS QR</button>
-    ${S.revoked[c.id] ? `<button class="btn sm gold" data-ca="restore" data-id="${id}">RESTORE</button>` : `<button class="btn sm ghost" data-ca="revoke" data-id="${id}">REVOKE</button>`}
+    ${S.revoked[c.id] ? '' : `<button class="btn sm ghost" data-ca="revoke" data-id="${id}">REVOKE</button>`}
     <button class="btn sm ghost" data-ca="kick" data-id="${id}">SIGN OUT</button>
-    <button class="btn sm ghost" data-ca="msg" data-id="${id}">MESSAGE</button>
     ${p && p.vote ? `<button class="btn sm ghost" data-ca="clearvote" data-id="${id}">CLEAR VOTE</button>` : ''}
-    ${(c.id in S.deaths) ? `<button class="btn sm ghost" data-ca="undodeath" data-id="${id}">UNDO DEATH</button>` : (S.kill && S.kill.victim === c.id) || c.inspector ? '' : `<button class="btn sm danger" data-ca="death" data-id="${id}">KILL</button>`}`;
+    ${(c.id in S.deaths) ? `<button class="btn sm ghost" data-ca="undodeath" data-id="${id}">UNDO DEATH</button>` : (S.kill && S.kill.victim === c.id) || c.inspector ? '' : `<button class="btn sm danger" data-ca="death" data-id="${id}">KILL</button>`}</div></details>`;
 }
 function handleCastAction(act, id) {
   const n = esc(rname(id));
@@ -2362,6 +2428,11 @@ function bindAdmin() {
   document.body.onclick = async e => {
     if (!HOST) return;
     const t = e.target;
+    // dismiss / restore notifications on the Overview
+    const dm = t.closest('[data-dismiss]'); if (dm) { let d = {}; try { d = JSON.parse(store.get('dismissed') || '{}'); } catch (x) { } d[dm.dataset.dismiss] = Date.now(); store.set('dismissed', JSON.stringify(d)); renderAdmin(); return; }
+    if (t.closest('[data-undismiss]')) { store.set('dismissed', '{}'); renderAdmin(); return; }
+    // remember which character rows have MORE open, so a screen refresh doesn't snap them shut
+    const cm = t.closest('.ca-more > summary'); if (cm) { const d = cm.parentElement, id = d.dataset.id; ui.caOpen = ui.caOpen || new Set(); if (d.open) ui.caOpen.delete(id); else ui.caOpen.add(id); return; }
     const ca = t.closest('[data-ca]'); if (ca) { handleCastAction(ca.dataset.ca, ca.dataset.id); return; }
     const c = t.closest('[data-copy]'); if (c) { const u = linkUrl(c.dataset.copy); await copyText(u); toast('COPIED', u, 'ok'); return; }
     const q = t.closest('[data-qr]'); if (q) { showQR(linkUrl(q.dataset.qr)); return; }
@@ -2626,7 +2697,7 @@ function bindAdmin() {
   $('#tplReset').onclick = () => confirmModal('Reset all the templates?', 'Goes back to the original wording.', 'RESET', async () => { HOST.assign.tpl = {}; await saveAssign(); fillTpl(); }, false);
 
   // Alex's co-host desk
-  $('#cohostBtn').onclick = async () => { const on = S.site.cohost !== true; await backend.set('site/cohost', on ? true : null); log(on ? "Alex's co-host desk switched on" : "Alex's co-host desk switched off"); toast(on ? 'ALEX’S DESK ON' : 'ALEX’S DESK OFF', on ? 'It appears at the top of her My File tab.' : 'It disappears from her phone.', 'ok'); };
+  $('#cohostBtn').onclick = async () => { const on = S.site.cohost !== true; await backend.set('site/cohost', on ? true : null); log(on ? "Alex's co-host desk switched on" : "Alex's co-host desk switched off"); toast(on ? 'ALEX’S DESK ON' : 'ALEX’S DESK OFF', on ? 'A Co-host tab appears on her phone.' : 'It disappears from her phone.', 'ok'); };
 
   // tools: emergency
   $('#emReload').onclick = () => confirmModal('Force refresh every device?', 'Every open phone, the projector and the invitation page reload. Everyone stays logged in.', 'REFRESH ALL', async () => { log('Forced refresh of all devices'); await backend.set('ctl/reload', Date.now()); }, false);
@@ -2995,7 +3066,7 @@ async function syncAsks() {
     // the host can read its own replies too: they're locked with the key the guest sent
     for (const [rid, b] of Object.entries(a.replies || {})) {
       if (c.replies[rid] !== undefined || !c.d || !c.d.k) continue;
-      try { c.replies[rid] = { ts: +b.ts || 0, text: (await decryptJSON(await importInviteKey(c.d.k), b)).text }; } catch (e) { c.replies[rid] = null; }
+      try { const rp = await decryptJSON(await importInviteKey(c.d.k), b); c.replies[rid] = { ts: +b.ts || 0, text: rp.text, by: rp.by || '' }; } catch (e) { c.replies[rid] = null; }
       changed = true;
     }
   }
@@ -3024,7 +3095,7 @@ function renderInbox(who) {
     return `<div class="ask ${help && !done ? 'help' : ''} ${done ? 'done' : ''}">
       <div class="ah"><span class="pill ${help ? 'red' : 'gold'}">${help ? '🚩 HELP' : 'QUESTION'}</span>${d.topic ? `<span class="pill">${esc(d.topic)}</span>` : ''}<b>${esc(from)}</b>${d.cname ? `<span class="muted">as ${esc(d.cname)}</span>` : ''}<span class="sp"></span><span class="when">${esc(WHERE[d.where] || '')} · ${esc(whenStr(+a.ts))}</span>${done ? '<span class="pill green">DONE</span>' : ''}</div>
       ${c.err ? `<p class="note" style="color:var(--red2);margin:6px 0 0">This message couldn't be opened (it was sent with a different key).</p>` : c.d ? `<p class="aq">${esc(d.text || '')}</p>` : '<p class="note" style="margin:6px 0 0">Opening…</p>'}
-      ${replies.map(r => `<div class="ar"><small>YOU REPLIED · ${esc(whenStr(r.ts))}</small>${esc(r.text)}</div>`).join('')}
+      ${replies.map(r => `<div class="ar"><small>${r.by ? esc(String(r.by).toUpperCase()) + ' (CO-HOST) REPLIED' : 'YOU REPLIED'} · ${esc(whenStr(r.ts))}</small>${esc(r.text)}</div>`).join('')}
       ${c.d ? `<div class="areply"><div class="chips">${QUICK_REPLIES.map(q => `<button type="button" data-quick="${esc(id)}" data-text="${esc(q)}">${esc(q)}</button>`).join('')}</div>
         <textarea class="input" data-replyin="${esc(id)}" maxlength="800" rows="2" placeholder="Reply privately to ${esc(firstName(from))}…">${esc(ui.drafts[id] || '')}</textarea>
         <div class="row-gap" style="margin-top:8px"><button class="btn sm gold" data-reply="${esc(id)}">SEND REPLY</button><button class="btn sm ghost" data-done="${esc(id)}">${done ? 'REOPEN' : 'MARK DONE'}</button>${d.email ? `<a class="btn sm ghost" href="mailto:${esc(d.email)}">EMAIL</a>` : ''}${d.cid && HOST.chars[d.cid] ? `<button class="btn sm ghost" data-ca="dossier" data-id="${esc(d.cid)}">DOSSIER</button><button class="btn sm ghost" data-ca="msg" data-id="${esc(d.cid)}">MESSAGE THEIR PHONE</button>` : ''}<button class="btn sm ghost" data-delask="${esc(id)}" aria-label="Delete">✕</button></div></div>` : ''}
@@ -3181,7 +3252,15 @@ function renderControl(who) {
 
   // what needs the host, most urgent first
   const al = [], esN = keys => keys.slice(0, 5).map(k => esc(guestName(k))).join(', ') + (keys.length > 5 ? ` +${keys.length - 5} more` : '');
-  const add = (cls, ic, text, sub, attrs) => al.push(`<button class="alrt ${cls}" ${attrs || ''}><span class="ic">${ic}</span><span class="t">${text}${sub ? `<small>${sub}</small>` : ''}</span>${attrs ? '<span class="go">GO ▸</span>' : ''}</button>`);
+  // each item can be dismissed (✕); it stays hidden until its text changes, so anything new still shows up
+  let dismissed = {}; try { dismissed = JSON.parse(store.get('dismissed') || '{}'); } catch (e) { }
+  let hiddenN = 0;
+  const akey = s => { let h = 0; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) | 0; return 'a' + (h >>> 0).toString(36); };
+  const add = (cls, ic, text, sub, attrs) => {
+    const k = akey(text + '|' + (sub || ''));
+    if (cls !== 'ok' && dismissed[k]) { hiddenN++; return; }
+    al.push(`<div class="alrt-wrap"><button class="alrt ${cls}" ${attrs || ''}><span class="ic">${ic}</span><span class="t">${text}${sub ? `<small>${sub}</small>` : ''}</span>${attrs ? '<span class="go">GO ▸</span>' : ''}</button>${cls !== 'ok' ? `<button class="alrt-x" data-dismiss="${k}" aria-label="Dismiss" title="Dismiss (it comes back if it changes)">✕</button>` : ''}</div>`);
+  };
   const go = (tab, f, q) => `data-gotab="${tab}"${f ? ` data-gfilter="${f}"` : ''}${q !== undefined ? ` data-gq="${esc(q)}"` : ''}`;
   const keys = f => st.spots.filter(k => keyMatches(K[k], f)), pl = (n, one, many) => n + ' ' + (n === 1 ? one : many);
   if (ui.authWarn) add('red', '⚠', "This device isn't verified with the database", 'Changes may be refused. Tap to try again.', 'data-cract="retryauth"');
@@ -3208,10 +3287,11 @@ function renderControl(who) {
   const lockedN = Object.values(HOST.rsvpSec).filter(s => s && s.err).length; if (lockedN) add('red', '⚿', `${pl(lockedN, 'RSVP was', 'RSVPs were')} sent with an old key`, "Their contact details can't be opened. Edit them by hand, or ask them to reply again.", go('players'));
   const rv = Object.keys(S.revoked); if (rv.length) add('', '⛔', `${pl(rv.length, 'dossier is', 'dossiers are')} revoked`, rv.map(id => esc(rname(id))).join(', '), go('characters'));
   if (P.rsvpOpen === false) add('blue', '■', 'RSVPs are closed on the invitation page', 'Turn them back on in Tools → Live Page Editor.', go('tools'));
-  const reds = al.filter(h => h.startsWith('<button class="alrt red')).length;
-  if (!al.length) add('ok', '✓', 'All clear', 'Nothing needs you right now.');
+  const reds = al.filter(h => h.includes('<button class="alrt red')).length;
+  if (!al.length) add('ok', '✓', 'All clear', hiddenN ? 'Nothing new. Dismissed items are hidden.' : 'Nothing needs you right now.');
   $('#crAlertSub').textContent = reds ? `${reds} URGENT · ${al.length} IN ALL` : al[0].includes('alrt ok') ? 'ALL CLEAR' : `${al.length} ITEM${al.length > 1 ? 'S' : ''}`;
-  patch($('#crAlerts'), al.join(''), al.join(''));
+  const tail = hiddenN ? `<button class="alrt-show" data-undismiss="1">${hiddenN} dismissed · SHOW</button>` : '';
+  patch($('#crAlerts'), al.join('') + tail, al.join('') + tail);
   const bdg = $('#badge-control'); if (bdg) { bdg.textContent = reds; bdg.classList.toggle('hidden', !reds); }
 
   // RSVP safety net
