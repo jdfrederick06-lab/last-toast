@@ -349,7 +349,7 @@ function roomOpen(S, roomId) {
 const roomName = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).name || id || '';
 const roomPlace = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).place || '';
 /** The night has begun once the host starts "Doors open" (phase 2): RSVPs close and the invitation points everyone at the database. */
-const gameStarted = S => { const m = (S.site || {}).inviteMode; return m === 'live' ? true : m === 'pre' ? false : !!((S.phaseLog || {}).arrive || (S.phase && S.phase.i >= 1)); };   // the host can force either way from Game Night → Website mode
+const gameStarted = S => { const m = (S.site || {}).inviteMode; return m === 'live' ? true : m === 'pre' ? false : !!((S.phaseLog || {}).arrive || (S.phase && S.phase.i >= 1)); };   // the host can force either way from Tonight → Website mode
 /** After the host publishes the case files, Kane Oil "goes under": the invitation and the guest database crash, and only the case files stay up. */
 const companyClosed = S => { const m = (S.site || {}).crashMode; return m === 'on' ? true : m === 'off' ? false : !!(S.site && S.site.recap); };
 /** The name guests see: a room can go by a neutral name (sealedName) until it opens, so it doesn't give the plot away. */

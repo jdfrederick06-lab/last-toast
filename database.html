@@ -45,6 +45,9 @@
 .pc-pick{flex:1;display:flex;align-items:flex-start;gap:8px;cursor:pointer;min-width:0}.pc-pick input{margin-top:3px;flex:none}.pc-pick .t{min-width:0}.pc-pick .t b{display:block}.pc-pick small{display:block;font-family:var(--sans);font-size:12px;color:var(--muted)}.pc-pick .pc-paper{color:var(--cyan);margin-top:2px}
 .pc-n{display:flex;align-items:center;gap:2px;font:12px var(--mono);color:var(--muted)}.pc-n input{width:46px;padding:5px;border-radius:8px;border:1px solid var(--line);background:transparent;color:inherit;font:inherit}
 .pc-go{position:sticky;bottom:-1px;background:var(--bg,#121117);padding:12px 0 2px;margin-top:10px;align-items:center}
+.seg2{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);margin:0 0 14px}
+.seg2 button{border:0;background:transparent;color:var(--muted);font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:8px 18px;border-radius:999px;cursor:pointer}
+.seg2 button.on{color:#1b1206;background:var(--gold-grad);box-shadow:0 0 14px rgba(212,162,76,.35)}
 .pane-h{font:600 12px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);margin:18px 2px 10px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.pane-h small{font:12.5px var(--sans);letter-spacing:0;text-transform:none;color:var(--muted)}
 .jumps .jsep{font:600 10px var(--mono);letter-spacing:.2em;color:var(--dim);align-self:center;padding:0 4px 0 10px}
 .alrt-wrap{position:relative}.alrt-wrap .alrt{width:100%;padding-right:40px}
@@ -1631,7 +1634,7 @@ function confirmKill() {
 }
 
 /* =========================================================================
-   HOST · MASTER CONTROL TERMINAL  —  Overview · Inbox · Guests · Characters · Game Night · Settings
+   HOST · MASTER CONTROL TERMINAL  —  Overview · Tonight · People (Guests | Characters) · Inbox · Setup
    ========================================================================= */
 
 const TAB_ICON = {
@@ -1642,21 +1645,22 @@ const TAB_ICON = {
   game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 4.5v15l12-7.5z"/></svg>',
   tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>'
 };
-const TABS = [['control', 'Overview'], ['inbox', 'Inbox'], ['players', 'Guests'], ['characters', 'Characters'], ['game', 'Game Night'], ['tools', 'Settings']];
-const TAB_NAME = Object.fromEntries(TABS);
+const TABS = [['control', 'Overview'], ['game', 'Tonight'], ['players', 'People'], ['inbox', 'Inbox'], ['tools', 'Setup']];
+const TAB_NAME = Object.assign(Object.fromEntries(TABS), { characters: 'People · Characters', players: 'People · Guests' });
+const TAB_OF = t => t === 'characters' ? 'players' : t;   // Characters lives inside the People tab
 /* "Find anything": every control is one search away. [label, tab, panel id, extra search words] */
 const PLACES = [
   ['Invitation page: date, time, address, rolling RSVPs, capacity', 'tools', 'pePanel', 'rsvp rolling capacity roles date time venue address dress notice banner calendar thank you note open closed'],
   ['Rooms & locations', 'tools', 'roomsPanel', 'room office lounge study gala archive 208 204 paper wall rename'],
   ['Message templates (invitation & reminder wording)', 'tools', 'tplPanel', 'email text wording invite reminder'],
   ["Alex's co-host desk (check-in & inbox on her phone)", 'game', 'cohostPanel', 'alex cohost co-host helper desk check in inbox'],
-  ['Manual switches (killer knows, voting, seal dossiers)', 'game', 'switchPanel', 'switch flag override killer voting seal'],
-  ['Website mode (RSVPs closed / company crash)', 'game', 'modePanel', 'crash shutdown website mode rsvp closed'],
+  ['Manual switches (killer knows, voting, seal dossiers)', 'tools', 'switchPanel', 'switch flag override killer voting seal'],
+  ['Website mode (RSVPs closed / company crash)', 'tools', 'modePanel', 'crash shutdown website mode rsvp closed'],
   ['Emergency tools (force refresh, unfreeze, clear votes)', 'game', 'emergPanel', 'emergency refresh reload stuck unfreeze'],
   ['Case files & awards', 'tools', 'recapPanel', 'recap awards album best dressed detective liar publish'],
   ['Backups, restore, hard reset, delete RSVPs', 'tools', 'backupPanel', 'export import save restore reset wipe delete'],
   ['Activity log', 'tools', 'logPanel', 'history log'],
-  ['Projector', 'game', 'projPanel', 'display screen big screen scenes slides welcome message'],
+  ['Projector', 'tools', 'projPanel', 'display screen big screen scenes slides welcome message'],
   ['Lockdown & announcements', 'game', 'quickPanel', 'broadcast alert announce lockdown'],
   ['Hint voting', 'game', 'hintPanel', 'hints stuck'],
   ['Open or seal rooms', 'game', 'roomPanel', 'rooms open seal'],
@@ -1691,7 +1695,7 @@ function renderModes() {
 function bindModes() {
   $$('[data-mode]').forEach(b => b.addEventListener('click', () => {
     const k = b.dataset.mode, v = b.dataset.v, go = async () => { await backend.set('site/' + k, v || null); log(`Website mode: ${MODES[k][0]} → ${b.textContent}`); toast('WEBSITE MODE', `${MODES[k][0]}: ${b.textContent}`, 'ok'); };
-    if (k === 'crashMode' && v === 'on') return confirmModal('Crash the website now?', `The invitation shows "no longer in business" and every guest's database turns to the corrupted screen, right now.${S.site.recap ? '' : '<br><br><b style="color:var(--red2)">The case files aren\'t published yet,</b> so the "see what happened" button will only show "sealed". Publish them in Settings → Case Files first.'} You can switch back any time.`, 'CRASH IT', go, true);
+    if (k === 'crashMode' && v === 'on') return confirmModal('Crash the website now?', `The invitation shows "no longer in business" and every guest's database turns to the corrupted screen, right now.${S.site.recap ? '' : '<br><br><b style="color:var(--red2)">The case files aren\'t published yet,</b> so the "see what happened" button will only show "sealed". Publish them in Setup → Case Files first.'} You can switch back any time.`, 'CRASH IT', go, true);
     if (k === 'inviteMode' && v === 'live') return confirmModal('Switch the invitation to game night?', 'RSVPs close and the invitation only shows "Enter the database". You can switch back any time.', 'SWITCH', go, false);
     go();
   }));
@@ -1731,6 +1735,7 @@ function adminShellHTML() {
 
   <!-- GUESTS -->
   <div data-pane="players">
+    <div class="seg2"><button data-gotab="players">Guests</button><button data-gotab="characters">Characters</button></div>
     <section class="panel gold" id="rsvpPanel"><div class="ph"><h2>Guests</h2><span class="sub" id="rsvpSub"></span></div>
       <div class="pstats" id="pstats"></div>
       <div class="cast-tools"><input class="input" id="guestQ" placeholder="Search guests or characters…"><button class="btn sm gold" id="addRsvp">+ ADD AN RSVP</button><button class="btn sm ghost" id="expandAll">EXPAND ALL</button></div>
@@ -1753,6 +1758,7 @@ function adminShellHTML() {
 
   <!-- CHARACTERS -->
   <div data-pane="characters">
+    <div class="seg2"><button data-gotab="players">Guests</button><button data-gotab="characters">Characters</button></div>
     <section class="panel gold"><div class="ph"><h2>Characters, Codes &amp; Access</h2><span class="sub" id="castSub"></span></div>
       <p class="note" style="margin:0 0 12px"><b>Access QR</b> logs a phone straight into a dossier. <b>Revoke</b> blocks it instantly; <b>Restore</b> gives it back. <b>Sign out</b> kicks the current phone. <b>Message</b> is for emergencies only: memories arrive on their own. The effort level is what guests see on their invitation: <span class="pill eff-big">●●● LEADING</span> about 20 minutes of prep, <span class="pill eff-medium">●●○ FEATURED</span> 10 to 15, <span class="pill eff-light">●○○ SUPPORTING</span> about 5.</p>
       <div class="ctl" style="padding-top:0"><div class="txt"><b>Hide characters nobody is playing</b><small>Guests won't see them in Who's Who or the accusation list. Every character still shows here for you.</small></div><span class="state" id="st-castOnly"></span><button class="toggle" id="castOnlyBtn" aria-label="Hide characters nobody is playing"></button></div>
@@ -1775,7 +1781,7 @@ function adminShellHTML() {
       <div class="stat"><b><span id="n-ev">0</span><em> / ${HOST.evidence.length}</em></b><span>Evidence revealed</span></div>
       <div class="stat"><b><span id="n-votes">0</span></b><span>Accusations</span></div>
     </div>
-    <div class="jumps">${[['phasePanel', 'The night'], ['quickPanel', 'Lockdown & announcements'], ['roomPanel', 'Rooms'], ['evPanel', 'Evidence'], ['deathPanel', 'Deaths'], ['hintPanel', 'Hints'], ['cohostPanel', "Alex's desk"]].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}<span class="jsep">BACKSTAGE</span>${[['projPanel', 'Projector'], ['switchPanel', 'Switches'], ['modePanel', 'Website mode'], ['emergPanel', 'Emergency']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div><div class="pane-h">During the night <small>everything you need while the game is running</small></div>
+    <div class="jumps">${[['phasePanel', 'The night'], ['quickPanel', 'Lockdown & announcements'], ['roomPanel', 'Rooms'], ['evPanel', 'Evidence'], ['deathPanel', 'Deaths'], ['hintPanel', 'Hints'], ['cohostPanel', "Alex's desk"], ['emergPanel', 'Emergency']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div><div class="pane-h">During the night <small>everything you need while the game is running</small></div>
     <div class="grid2"><div>
       <section class="panel gold" id="phasePanel"><div class="ph"><h2>The Night</h2><span class="sub" id="phaseSub"></span></div>
         <div class="progress"><i id="phaseBar" style="width:0"></i></div>
@@ -1799,8 +1805,22 @@ function adminShellHTML() {
       <section class="panel gold hidden" id="tallyPanel"><div class="ph"><h2>Accusations</h2><span class="sub" id="tallySub"></span></div><div id="tally"></div><div id="verdictCtl" style="margin-top:12px"></div></section>
       <section class="panel red" id="deathPanel"><div class="ph"><h2>Deaths &amp; Backup Roles</h2></div><div class="relist" id="deathList"></div><div style="margin-top:8px" id="killStatus"></div></section>
     </div></div>
-    <div class="pane-h">Backstage <small>the projector, manual overrides and emergency fixes. Tap a heading to open it.</small></div>
-    <div class="grid2"><div>
+    <div class="pane-h">If something goes wrong <small>one-tap fixes for a stuck screen, a frozen room or a voting mix-up</small></div>
+    <section class="panel red" id="emergPanel"><div class="ph"><h2>Emergency Tools</h2><span class="sub">IF ANYTHING GOES WRONG</span></div>
+        <div class="relist">
+          <div class="reitem"><div class="t">A screen is stuck or out of date<small>Reloads every phone, the projector and the invitation</small></div><button class="btn sm" id="emReload">FORCE REFRESH ALL</button></div>
+          <div class="reitem"><div class="t">Unfreeze the room<small>Lifts lockdown and clears the current alert</small></div><button class="btn sm" id="emLift">LIFT ALL</button></div>
+          <div class="reitem"><div class="t">Let everyone back in<small>Unseals dossiers and restores every revoked player</small></div><button class="btn sm" id="emAccess">RESTORE ALL ACCESS</button></div>
+          <div class="reitem"><div class="t">Start the voting over<small>Clears every accusation and the verdict</small></div><button class="btn sm" id="emVotes">CLEAR VOTES</button></div>
+        </div>
+      </section>
+  </div>
+
+  <!-- SETTINGS -->
+  <div data-pane="tools">
+    <div class="jumps">${[['projPanel', 'Projector'], ['switchPanel', 'Switches'], ['modePanel', 'Website mode']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}<span class="jsep">SETTINGS</span>${[['pePanel', 'Invitation page'], ['roomsPanel', 'Rooms'], ['tplPanel', 'Messages'], ['recapPanel', 'Case files'], ['backupPanel', 'Backups & reset'], ['logPanel', 'Activity log']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div>
+    <div class="pane-h">Backstage <small>the projector, manual overrides and website mode. Tap a heading to open it.</small></div>
+    <div class="backstage"><div>
       <section class="panel" id="projPanel" data-fold="proj" data-fold-default="1"><div class="ph"><h2>Projector</h2><span class="sub" id="projNow"></span></div>
         <div class="row-gap" style="margin-bottom:12px"><a class="btn sm" id="openDisplay" target="_blank" rel="noopener">OPEN DISPLAY ↗</a><button class="btn sm ghost" data-copy="display">COPY LINK</button></div>
         <div class="scenes" id="scenes">${['company', 'title', 'evidence', 'wall', 'voting', 'tally', 'confessions'].map(s => `<button class="btn sm" data-scene="${s}">${SCENES[s]}</button>`).join('')}</div>
@@ -1809,22 +1829,8 @@ function adminShellHTML() {
       </section>
       <section class="panel" id="switchPanel" data-fold="switches" data-fold-default="1"><div class="ph"><h2>Manual Switches</h2><span class="sub">NEXT DOES THESE FOR YOU</span></div>${nightSwitches()}</section>
       <section class="panel gold" id="modePanel" data-fold="modes" data-fold-default="1"><div class="ph"><h2>Website Mode</h2><span class="sub">AUTOMATIC · OR FORCE IT</span></div><p class="note" style="margin:0 0 10px">Both of these happen by themselves. Use these buttons if one doesn't, or to undo it. "Automatic" goes back to normal.</p>${modeHTML()}</section>
-
-    </div><div>
-      <section class="panel red" id="emergPanel"><div class="ph"><h2>Emergency Tools</h2><span class="sub">IF ANYTHING GOES WRONG</span></div>
-        <div class="relist">
-          <div class="reitem"><div class="t">A screen is stuck or out of date<small>Reloads every phone, the projector and the invitation</small></div><button class="btn sm" id="emReload">FORCE REFRESH ALL</button></div>
-          <div class="reitem"><div class="t">Unfreeze the room<small>Lifts lockdown and clears the current alert</small></div><button class="btn sm" id="emLift">LIFT ALL</button></div>
-          <div class="reitem"><div class="t">Let everyone back in<small>Unseals dossiers and restores every revoked player</small></div><button class="btn sm" id="emAccess">RESTORE ALL ACCESS</button></div>
-          <div class="reitem"><div class="t">Start the voting over<small>Clears every accusation and the verdict</small></div><button class="btn sm" id="emVotes">CLEAR VOTES</button></div>
-        </div>
-      </section>
     </div></div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div data-pane="tools">
-    <div class="jumps">${[['pePanel', 'Invitation page'], ['roomsPanel', 'Rooms'], ['tplPanel', 'Messages'], ['recapPanel', 'Case files'], ['backupPanel', 'Backups & reset'], ['logPanel', 'Activity log']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div>
+    <div class="pane-h">Settings <small>the invitation page, rooms, messages, case files and backups</small></div>
     <div class="grid2"><div>
       <section class="panel gold" id="pePanel" data-fold="pe"><div class="ph"><h2>Live Page Editor</h2><span class="sub">INVITATION · UPDATES INSTANTLY</span></div>
         <div class="fgrid">
@@ -2350,7 +2356,7 @@ function printModal() {
     ['signs', 'Signs', 'Welcome sign, room door signs, SEALED crime-scene signs, direction arrows, coat check, charging, how-to-scan', false],
     ['welcome', 'Welcome Poster', 'A "Welcome to The Last Toast" poster for the door: a navy-and-gold version and an ink-saver light version', false],
     ['inspector', "Inspector's Lines", 'Every line the Inspector reads, to rehearse (the ending is left out)', true],
-    ['awards', 'Award Certificates', 'Best Performance, Best Dressed, Best Detective and Best Liar. Names are filled in from Tools → Case Files if you have typed them, otherwise left blank to write by hand', false],
+    ['awards', 'Award Certificates', 'Best Performance, Best Dressed, Best Detective and Best Liar. Names are filled in from Setup → Case Files if you have typed them, otherwise left blank to write by hand', false],
     ['toast', "Alex's Toast Card", 'Her toast in large print, with stage directions, for Alex\'s player to hold', true],
     ['sheets', 'Player Backup Sheets', 'One page per player with their own dossier, brief and code word, and no spoilers. Hand them out if the site goes down. Cast players only, with their names on', false],
     ['notebook', "Detective's Notebook", 'A two-page handout for every guest: suspect grid, timeline and evidence log. Print one per player', false],
@@ -2398,14 +2404,15 @@ function bindAdmin() {
   bindLogout();
   const setTab = t => {
     ui.tab = t; store.set('hostTab2', t);
-    $$('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+    $$('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === TAB_OF(t)));
+    $$('.seg2 [data-gotab]').forEach(b => b.classList.toggle('on', b.dataset.gotab === t));
     $$('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t));
     renderAdmin(true);
   };
   ui.setTab = setTab;
   $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { setTab(b.dataset.tab); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
   ui.tab = store.get('hostTab2') || 'control';
-  setTab(TABS.some(t => t[0] === ui.tab) ? ui.tab : 'control');
+  setTab(TABS.some(t => t[0] === ui.tab) || ui.tab === 'characters' ? ui.tab : 'control');
   // jump straight to a panel (opening it if it's folded) and flash it so the eye lands on it
   const jumpTo = id => {
     const el = document.getElementById(id); if (!el) return;
@@ -2761,7 +2768,7 @@ function roleMessage(name, c, backups) {
   const costume = c.brief && c.brief.costume ? `\n\nCostume idea (only a suggestion, make the character your own): ${c.brief.costume}` : '';
   return `Hi ${name}! Your role for ${(P.title || 'The Last Toast').toUpperCase()}:\n\n${c.name}\n${c.occ || ''}\n\nYour secret code word: ${c.code}\n\nOpen ${siteBase()}database.html and enter it. "My File" is your dossier (who you are). "Brief" is how to play tonight: your goal, what to share, what to keep until someone asks, and your timeline. Keep your code word to yourself, and don't show your screen to anyone!${costume}${backups && backups.length ? `\n\nIf your character doesn't survive the night, stay logged in: your phone will give you a new role.` : ''}`;
 }
-/* message templates: the host can reword these in Tools → Message Templates (saved in the locked assignments) */
+/* message templates: the host can reword these in Setup → Message Templates (saved in the locked assignments) */
 const TPL = {
   invite: `Hi {first}!\n\nThank you so much for joining us for {title} on {date}.\n\nYour role is ready, and it's sealed just for you. Open your private invitation to find out who you'll be:\n{link}\n\nYou can accept the role there or ask for a different one. Once you accept, you'll get your secret code word and can step into the Kane Oil Database to read your dossier and brief.\n\nThis link is only for you, so please don't share it.\n\n{from}`,
   reminder: `You're invited to {title}, and it's almost here!\n\n{date} · {time}\n{venue}, {address}\nDress: {dress}\n\nBefore you come:\n• Log in at {database} with your code word and read your dossier (My File) and your Brief.\n• Plan your costume. The costume idea in your role email is only a suggestion.\n• Charge your phone. You'll use it all night.\n\nArrive on time: the story starts the moment the doors open.\n\nGot a question about anything (your character, your costume, how the night works)? Just reply to this email. We're happy to answer any of your questions!\n\n{hosts}`,
@@ -3274,7 +3281,7 @@ function renderControl(who) {
   const sparesLeft = HOST.all.filter(c => c.spare && !((S.site.spares || {})[c.id])).length;
   if (sparesLeft && (st.openRoles === 0 || st.people >= cap)) add('red', '＋', "You're out of roles", `${sparesLeft} spare ${sparesLeft === 1 ? 'character is' : 'characters are'} ready. Tap to unlock one.`, go('characters') + ' data-jumpto="sparePanel"');
   const must = HOST.list.filter(c => c.mustCast && !who[c.id]); if (must.length) add('red', '★', `${pl(must.length, 'must-cast role has', 'must-cast roles have')} no player`, must.map(c => esc(c.name)).join(', '), go('players', 'needs'));
-  if (st.people > cap) add('red', '▲', `Over capacity: ${st.people} coming for ${cap} roles`, 'Raise the capacity in Tools → Live Page Editor, or close RSVPs.', go('tools'));
+  if (st.people > cap) add('red', '▲', `Over capacity: ${st.people} coming for ${cap} roles`, 'Raise the capacity in Setup → Live Page Editor, or close RSVPs.', go('tools'));
   const dec = keys('declined'); if (dec.length) add('red', '✕', `${pl(dec.length, 'guest', 'guests')} declined their role`, esN(dec), go('players', 'declined'));
   const sw = keys('swap'); if (sw.length) add('', '↺', `${pl(sw.length, 'guest wants', 'guests want')} a different role`, esN(sw), go('players', 'swap'));
   const need = keys('needs'); if (need.length) add('', '◇', `${pl(need.length, 'guest needs', 'guests need')} a role`, esN(need), go('players', 'needs'));
@@ -3286,7 +3293,7 @@ function renderControl(who) {
   if (st.maybes.length) add('blue', '?', `${pl(st.maybes.length, 'guest said', 'guests said')} maybe`, st.maybes.slice(0, 5).map(([, r]) => esc(r.name)).join(', '), go('players'));
   const lockedN = Object.values(HOST.rsvpSec).filter(s => s && s.err).length; if (lockedN) add('red', '⚿', `${pl(lockedN, 'RSVP was', 'RSVPs were')} sent with an old key`, "Their contact details can't be opened. Edit them by hand, or ask them to reply again.", go('players'));
   const rv = Object.keys(S.revoked); if (rv.length) add('', '⛔', `${pl(rv.length, 'dossier is', 'dossiers are')} revoked`, rv.map(id => esc(rname(id))).join(', '), go('characters'));
-  if (P.rsvpOpen === false) add('blue', '■', 'RSVPs are closed on the invitation page', 'Turn them back on in Tools → Live Page Editor.', go('tools'));
+  if (P.rsvpOpen === false) add('blue', '■', 'RSVPs are closed on the invitation page', 'Turn them back on in Setup → Live Page Editor.', go('tools'));
   const reds = al.filter(h => h.includes('<button class="alrt red')).length;
   if (!al.length) add('ok', '✓', 'All clear', hiddenN ? 'Nothing new. Dismissed items are hidden.' : 'Nothing needs you right now.');
   $('#crAlertSub').textContent = reds ? `${reds} URGENT · ${al.length} IN ALL` : al[0].includes('alrt ok') ? 'ALL CLEAR' : `${al.length} ITEM${al.length > 1 ? 'S' : ''}`;
@@ -3370,7 +3377,7 @@ function castModal(cid) {
     const key = $('#castSel').value; if (!key) { toast('PICK A GUEST', 'Choose who will play this role.', 'err'); return; }
     go.disabled = true; HOST.assign.map[key] = cid; delete HOST.assign.sent[key]; delete (HOST.assign.nudged || {})[key]; (HOST.assign.seen = HOST.assign.seen || {})[key.split('#')[0]] = 1;
     await saveAssign(); closeModal(); log(`${guestName(key)} cast as ${c.name}`);
-    toast('ROLE ASSIGNED', `${guestName(key)} will play ${c.name}. Send their invitation from Players.`, 'ok');
+    toast('ROLE ASSIGNED', `${guestName(key)} will play ${c.name}. Send their invitation from People.`, 'ok');
   };
 }
 /* after the host password changes: re-lock the saved roles (and photos you added) with the new password */
@@ -3438,7 +3445,7 @@ function trashRsvp(id, r) {
   Object.keys(t).sort((a, b) => t[b].at - t[a].at).slice(30).forEach(x => delete t[x]);
 }
 function downloadRsvpBackup(tag) {
-  const data = { kind: 'rsvp-backup', game: CONFIG.GAME_ID, saved: new Date().toISOString(), note: 'RSVPs for The Last Toast. Contact details stay locked: only the host terminal can open them. To restore: Tools → Emergency Tools → IMPORT.', rsvps: RAW.rsvps || {}, assign: RAW.assign || null, invites: RAW.invites || null, inviteStatus: RAW.inviteStatus || null, hostPhotos: RAW.hostPhotos || null };
+  const data = { kind: 'rsvp-backup', game: CONFIG.GAME_ID, saved: new Date().toISOString(), note: 'RSVPs for The Last Toast. Contact details stay locked: only the host terminal can open them. To restore: Setup → Emergency Tools → IMPORT.', rsvps: RAW.rsvps || {}, assign: RAW.assign || null, invites: RAW.invites || null, inviteStatus: RAW.inviteStatus || null, hostPhotos: RAW.hostPhotos || null };
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
   a.download = `last-toast-rsvps-${tag ? tag + '-' : ''}${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.json`; document.body.appendChild(a); a.click(); a.remove();
