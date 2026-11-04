@@ -1484,6 +1484,27 @@ const nightSwitches = () => [['killerKnows', 'red', 'Killer knows the truth', 'U
   ['voting', '', 'Voting', 'Opens the accusation form on every phone.'],
   ['sealed', 'red', 'Seal all dossiers', 'Locks every player out until you turn it off.']]
   .map(([f, cls, t, d]) => `<div class="ctl"><div class="txt"><b>${t}</b><small>${d}</small></div><span class="state" id="st-${f}"></span><button class="toggle ${cls}" data-flag="${f}" aria-label="${t}"></button></div>`).join('');
+/* Website mode: manual overrides for the two automatic switches (RSVPs closing at "Doors open", the crash when the case files go out) */
+const MODES = {
+  inviteMode: ['Invitation page', [['', 'Automatic'], ['pre', 'RSVPs open'], ['live', 'Game night']]],
+  crashMode: ['Company shutdown', [['', 'Automatic'], ['off', 'Keep running'], ['on', 'Crash now']]]
+};
+const modeHTML = () => Object.entries(MODES).map(([k, [t, opts]]) => `<div class="ctl"><div class="txt"><b>${t}</b><small id="md-${k}"></small></div><div class="row-gap" style="flex:none">${opts.map(([v, l]) => `<button class="btn sm ghost" data-mode="${k}" data-v="${v}">${l}</button>`).join('')}</div></div>`).join('');
+function renderModes() {
+  const inv = S.site.inviteMode || '', cr = S.site.crashMode || '', live = gameStarted(S), down = companyClosed(S);
+  $$('[data-mode]').forEach(b => { const on = (S.site[b.dataset.mode] || '') === b.dataset.v; b.classList.toggle('gold', on); b.classList.toggle('ghost', !on); b.setAttribute('aria-pressed', on); });
+  const iv = $('#md-inviteMode'), cv = $('#md-crashMode'); if (!iv || !cv) return;
+  iv.textContent = (live ? 'Now: game night. RSVPs are closed and the page only says "Enter the database".' : 'Now: normal invitation with RSVPs open.') + (inv ? ' (Set by hand.)' : ' Automatic switches when "Doors open" starts.');
+  cv.textContent = (down ? 'Now: crashed. The invitation and every guest database are down; only the case files work.' : 'Now: running normally.') + (cr ? ' (Set by hand.)' : ' Automatic crashes when you publish the case files.');
+}
+function bindModes() {
+  $$('[data-mode]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.mode, v = b.dataset.v, go = async () => { await backend.set('site/' + k, v || null); log(`Website mode: ${MODES[k][0]} → ${b.textContent}`); toast('WEBSITE MODE', `${MODES[k][0]}: ${b.textContent}`, 'ok'); };
+    if (k === 'crashMode' && v === 'on') return confirmModal('Crash the website now?', `The invitation shows "no longer in business" and every guest's database turns to the corrupted screen, right now.${S.site.recap ? '' : '<br><br><b style="color:var(--red2)">The case files aren\'t published yet,</b> so the "see what happened" button will only show "sealed". Publish them in Settings → Case Files first.'} You can switch back any time.`, 'CRASH IT', go, true);
+    if (k === 'inviteMode' && v === 'live') return confirmModal('Switch the invitation to game night?', 'RSVPs close and the invitation only shows "Enter the database". You can switch back any time.', 'SWITCH', go, false);
+    go();
+  }));
+}
 function adminShellHTML() {
   return `${topbar('MASTER CONTROL TERMINAL', `<button class="iconbtn" id="guestViewBtn">GUEST VIEW</button><button class="iconbtn" id="printBtn">PRINT</button><button class="iconbtn" id="notesBtn">NOTES</button>`)}
   <nav class="tabs" id="tabs">${TABS.map(([k, l]) => `<button class="tab" data-tab="${k}">${TAB_ICON[k] || ''}<span>${l}</span><span class="badge hidden" id="badge-${k}"></span></button>`).join('')}</nav>
@@ -1562,7 +1583,7 @@ function adminShellHTML() {
       <div class="stat"><b><span id="n-ev">0</span><em> / ${HOST.evidence.length}</em></b><span>Evidence revealed</span></div>
       <div class="stat"><b><span id="n-votes">0</span></b><span>Accusations</span></div>
     </div>
-    <div class="jumps">${[['phasePanel', 'The night'], ['quickPanel', 'Lockdown & announcements'], ['roomPanel', 'Rooms'], ['evPanel', 'Evidence'], ['hintPanel', 'Hints'], ['deathPanel', 'Deaths'], ['projPanel', 'Projector'], ['switchPanel', 'Switches'], ['emergPanel', 'Emergency']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div>
+    <div class="jumps">${[['phasePanel', 'The night'], ['quickPanel', 'Lockdown & announcements'], ['roomPanel', 'Rooms'], ['evPanel', 'Evidence'], ['hintPanel', 'Hints'], ['deathPanel', 'Deaths'], ['projPanel', 'Projector'], ['switchPanel', 'Switches'], ['modePanel', 'Website mode'], ['emergPanel', 'Emergency']].map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</div>
     <div class="grid2"><div>
       <section class="panel gold" id="phasePanel"><div class="ph"><h2>The Night</h2><span class="sub" id="phaseSub"></span></div>
         <div class="progress"><i id="phaseBar" style="width:0"></i></div>
@@ -1591,6 +1612,7 @@ function adminShellHTML() {
         <div class="row-gap"><input class="input" id="msgIn" maxlength="300" placeholder="Custom message for the big screen…" style="flex:1;min-width:180px"><button class="btn sm" id="msgBtn">SHOW</button></div>
       </section>
       <section class="panel" id="switchPanel" data-fold="switches"><div class="ph"><h2>Manual Switches</h2><span class="sub">NEXT DOES THESE FOR YOU</span></div>${nightSwitches()}</section>
+      <section class="panel gold" id="modePanel" data-fold="modes"><div class="ph"><h2>Website Mode</h2><span class="sub">AUTOMATIC · OR FORCE IT</span></div><p class="note" style="margin:0 0 10px">Both of these happen by themselves. Use these buttons if one doesn't, or to undo it. "Automatic" goes back to normal.</p>${modeHTML()}</section>
     </div><div>
       <section class="panel red" id="emergPanel"><div class="ph"><h2>Emergency Tools</h2><span class="sub">IF ANYTHING GOES WRONG</span></div>
         <div class="relist">
@@ -2215,6 +2237,7 @@ function bindAdmin() {
   $('#lockBtn').onclick = () => A.flag('lockdown', !S.flags.lockdown);
   $('#bcBtn').onclick = () => { const t = $('#bcIn').value.trim(); if (!t) return; A.broadcast(t); $('#bcIn').value = ''; toast('SENT', t, 'ok'); };
   $$('[data-flag]').forEach(b => b.addEventListener('click', () => { A.flag(b.dataset.flag, !S.flags[b.dataset.flag]); }));
+  bindModes();
 
   // players
   const sc = $('#showCodes'); sc.checked = store.get('showCodes') !== '0'; sc.onchange = () => { store.set('showCodes', sc.checked ? '1' : '0'); renderAdmin(true); };
@@ -2661,6 +2684,7 @@ function renderAdmin(force) {
   if (!HOST.assign.seenInit) initSeen();
   const cast = Object.values(HOST.assign.map);
   animateNum($('#n-in'), cast.filter(cid => S.checkins[cid]).length); animateNum($('#n-cast'), cast.length);
+  renderModes();
   Object.keys(FLAGS).forEach(f => {
     $$(`[data-flag="${f}"]`).forEach(t => t.setAttribute('aria-pressed', !!S.flags[f]));
     const st = $('#st-' + f); if (st) { const on = !!S.flags[f]; st.textContent = on ? 'ON' : 'OFF'; st.className = 'state' + (on ? ' on' + (['killer', 'killerKnows', 'sealed', 'lockdown'].includes(f) ? ' r' : '') : ''); }
