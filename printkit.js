@@ -155,6 +155,17 @@ tr{break-inside:avoid}
 .tshot{margin:0;width:3.2in;text-align:left}.tshot img{display:block;width:100%;border-radius:12pt;border:1pt solid #c9ccd3;box-shadow:0 2pt 8pt rgba(0,0,0,.12)}
 .tshot.wide{width:5.4in}.tshot.wide img{border-radius:6pt}
 .tshot figcaption{font:10pt/1.45 'Segoe UI',Arial,sans-serif;color:#3a3f4b;margin-top:7pt}.tshot figcaption b{display:block;font-size:11.5pt;color:#0c1220;margin-bottom:2pt}
+/* paper edition */
+.run .runrow{display:grid;grid-template-columns:.75in 1fr;gap:10pt;border-top:1pt solid #e2ddd0;padding:8pt 0;break-inside:avoid}
+.run .rt b{display:block;font:700 18pt 'Cormorant Garamond',Georgia,serif;color:var(--gold)}.run .rt span{font:8.5pt 'Segoe UI',Arial,sans-serif;color:var(--muted)}
+.run h3{margin:0 0 3pt}.run .say{border-left:2pt solid var(--gold);padding:2pt 0 2pt 9pt;margin:6pt 0;font-style:italic}.run .say b{display:block;font:700 7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;color:var(--gold);font-style:normal}
+.envgroup{break-inside:auto;margin:10pt 0 0}.envgroup h3{margin:12pt 0 6pt;border-bottom:1.5pt solid var(--gold);padding-bottom:2pt}.envgroup h3 small{font:9pt 'Segoe UI',Arial,sans-serif;color:var(--muted);margin-left:6pt}
+.envgrid{display:grid;grid-template-columns:1fr 1fr;gap:10pt}
+.envcard{border:1.2pt dashed #9aa0ab;border-radius:6pt;break-inside:avoid;font-size:9.5pt;line-height:1.4;overflow:hidden}
+.envlab{background:#f6f1e3;border-bottom:1.2pt dashed #9aa0ab;padding:5pt 8pt}.envlab span{display:block;font:7pt 'Segoe UI',Arial,sans-serif;color:var(--muted)}.envlab b{display:block;font:700 10.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.06em}.envlab i{display:block;font:italic 9pt Georgia,serif;color:#5b4a1e}
+.envbody{padding:7pt 9pt}.envbody p{margin:0 0 4pt}.envbody h4{margin:0}
+.envcard.death .envbody{text-align:center;padding:14pt 10pt}.envcard.death h3{color:var(--red);letter-spacing:.08em;margin:4pt 0}.dk{font:700 7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.24em;color:var(--gold)}
+.ballots{display:grid;grid-template-columns:1fr 1fr;gap:10pt}.ballot{border:1.2pt dashed #9aa0ab;border-radius:6pt;padding:9pt 10pt;break-inside:avoid;font-size:10pt;line-height:2}.ballot p{margin:0}
 .kitsheet{break-after:page}.kitsheet h3{margin:12pt 0 4pt}
 /* the welcome poster: an art-deco showpiece for the door (dark, plus an ink-saver light version) */
 @page welcome{size:Letter landscape;margin:.35in}
@@ -514,6 +525,78 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
         pages.map(p => `<div style="break-before:page"></div>${p}`).join('');
     };
 
+    /* ---------------- PAPER EDITION: the whole game with no website ---------------- */
+    // strip the venue and the phone/database from any text
+    const generic = t => String(t || '')
+      .replace(/Conway Hall · /g, '').replace(/Conway Hall/g, 'the venue').replace(/Dickinson College/g, 'your campus')
+      .replace(/Room \d+ \(([^)]*)\)/g, 'a separate room').replace(/1st-floor common room/g, 'the main room')
+      .replace(/RA Jacob &amp; Alex|RA Jacob & Alex/g, 'your hosts').replace(/\bJacob\b/g, 'the host')
+      .replace(/The projector shows the order \(anyone not here tonight is skipped\)\./g, 'The host will call the order (anyone not here tonight is skipped).').replace(/and your phone won't either until the very end/g, 'and nobody will until the very end').replace(/Watch your phone\./g, 'Watch for your envelopes.').replace(/Your phone will tell you when you're dead\./g, 'The host will hand you a death card.').replace(/When your phone says you're dead/g, 'When the host hands you your death card').replace(/your phone will show your first lines/g, 'open your envelope of lines for \u0022The Last Toast\u0022').replace(/the Database says/g, 'the host says').replace(/the Kane Oil Database/g, 'the host').replace(/on your phone/g, 'in your envelopes');
+    const PAPER_CUES = {
+      prep: ['Set up each room (Host Book, "Setting the Stage").', 'Place every evidence prop where the Host Book says. Ignore the QR codes on them: on paper, finding the prop is finding the evidence.', 'Close the sealed rooms and hang their SEALED signs.', 'Make one role packet per player: their Character Sheet plus all of their envelopes (Envelope Kit, sorted by character). Seal it and write their character name on the front.', 'Keep with you: the official report envelopes, the death cards, the ballots, a ballot box, the hint cards and a bell.'],
+      arrive: ['Hand each guest their role packet and name badge.', 'Tell everyone: open only the envelopes you\'re told to, when you\'re told to.', 'At 8:00 sharp, say: "Everyone, open your 8:00 envelope." (Every character has one. Only the killer\'s says anything important.)'],
+      welcome: ['Gather everyone and read the welcome below.'],
+      act1: ['Let the room mingle in character for about 30 minutes.', 'Alex opens her "Act I" envelope: it has her toast.', 'At about 8:55, make sure Alex has a glass in hand, then nod to her to begin.'],
+      toast: ['The moment Alex collapses: ring the bell (or flick the lights). Lockdown: everyone freezes.', 'Read the announcement below.', 'The Inspector opens their envelope for this phase and takes charge.'],
+      gordonSetup: ['Gordon opens his instruction envelope: it sends him to the Study.'],
+      gordonDeath: ['Once Gordon is in position: ring the bell. Read the announcement below.', 'Hand Gordon\'s player the death card.'],
+      killerPhase: ['The killer\'s 8:00 envelope told them to choose a third victim now and slip the name to you, privately. Wait for it.'],
+      thirdBody: ['Hand the chosen victim a death card, quietly. When they\'ve "died," ring the bell and announce that they have been found dead.'],
+      accuse: ['Hand every living player a ballot. Collect them in the ballot box. (The Inspector doesn\'t vote.)'],
+      results: ['Count the ballots (you or the Inspector) and announce the top three.'],
+      accused: ['Name the accused: the top vote. If it\'s a tie, the Inspector decides.'],
+      confess: ['Call each character in the confession order below. Each one opens their Confession envelope and reads it aloud.'],
+      truth: ['The Inspector opens their final envelope and reads the truth.'],
+      curtain: ['Hand out the award certificates. Take the group photo.']
+    };
+    const PAPER_SAY = {
+      arrive: `Welcome to the Kane Oil Annual Gala. Grab your name badge, grab a glass, and take your role packet. From the moment you walk through that door, you're in character.`,
+      welcome: `Good evening, everyone, and welcome to the Annual Gala of Kane Oil & Energy!\n\nFor those of you new to the family, a little history. Fourteen years ago our founder, Richard Kane, died suddenly, right here at the estate. His heart, they said. His daughter Alexandra, just eighteen, took the company he built and made it something he could only have dreamed of. Tonight is her night, and a little bird tells me she's planning an announcement at the toast that will, and I quote, "change everything." So keep your glasses close.\n\nTonight you are all guests of Kane Oil & Energy, and every one of you has something to hide. A few house rules.\n\nStay in character from now until the final curtain. Never show anyone your character sheet. You can dodge, deflect and bargain, but only the killer may lie about the murder itself.\n\nYour packet holds sealed envelopes. Each one says when to open it. Open it then, and not before.\n\nSome doors are closed. Treat a closed door as a sealed room: don't go in until we say it's open.\n\nEvidence is hidden in these rooms. If you find something, it's your choice whether to share it now or keep it to yourself, for now.\n\nIf you hear the bell, stop and look up. Something has happened.\n\nThe toast is at nine. Until then: eat, drink, mingle, and trust no one. Welcome to The Last Toast.`
+    };
+    const paperWhen = w => { w = w || {}; if (w.phase) { const s = show.find(x => x.id === w.phase); return s ? `when the host announces "${s.title}"` : 'when the host says'; } if (w.evidence) return `as soon as you see or hear about the "${(EV[w.evidence] || {}).title || w.evidence}"`; if (w.death) return `when ${nm(w.death)} dies`; if (w.killer) return 'at 8:00 (Doors open)'; return 'when the host says'; };
+    const env = (forWho, when, kind, body) => `<div class="envcard"><div class="envlab"><span>✂ Cut off this label and tape it to a small envelope</span><b>FOR: ${esc(forWho)}</b><i>${esc(kind)} · OPEN ${esc(when)}</i></div><div class="envbody">${paras(generic(body))}</div></div>`;
+    const paper = () => {
+      const notKiller = `You are not the killer.\n\nYou don't have to do anything with this card. Keep playing your character. Everyone in the room opened one of these at the same time, so nobody can tell who got the important one.`;
+      const confessOrder = (S.confessOrder || []).filter(id => CH[id]);
+      // every player's envelopes, in the order they'll open them
+      const envelopes = chars.filter(c => !c.spare).map(c => {
+        const list = [];
+        if (c.tier === 'core' && !c.inspector) list.push(env(c.name, 'at 8:00 (Doors open)', 'Envelope', c.killer ? [...(c.killer.reveal || []).map(l => '> ' + l), '', ...memOf(c).filter(m => m.when && m.when.killer).map(m => m.text), '', (c.brief && c.brief.secret) || '', '', `When the host announces "The Doubt," choose ONE of these people as your next victim: ${(c.killer.shortlist || []).map(t => nm(t.id) + ' (' + t.why + ')').join(' · ')}. Write the name on a slip of paper and hand it to the host, privately.`].join('\n') : notKiller));
+        memOf(c).filter(m => !m.when || !m.when.killer).forEach(m => list.push(env(c.name, paperWhen(m.when), m.cue ? 'Instruction' : 'Memory', m.text)));
+        if (c.inspector) show.filter(s => s.inspector).forEach(s => list.push(env(c.name, `when the host announces "${s.title}"`, 'Your lines', blank(s.inspector).replace(/\(Read ([^)]*?) on your phone aloud, then (press )?RELEASE TO ALL\.?\)/g, '(Read $1 aloud from the envelope the host hands you, then pin it to the Investigation Board.)'))));
+        return list.length ? `<div class="envgroup"><h3>${esc(c.name)} <small>${list.length} envelope${list.length > 1 ? 's' : ''}</small></h3><div class="envgrid">${list.join('')}</div></div>` : '';
+      }).join('');
+      const reports = official.map(e => `<div class="envcard"><div class="envlab"><span>✂ Cut off this label and tape it to an envelope</span><b>FOR: THE INSPECTOR</b><i>Official report · the host hands it over at ${esc(deliverAt(e))}</i></div><div class="envbody"><h4>${esc(e.title)}</h4><p class="small muted">${esc(e.src || '')}</p>${paras(e.body)}</div></div>`).join('');
+      const deaths = chars.filter(c => c.scriptedDeath).map(c => `<div class="envcard death"><div class="envbody"><div class="dk">KANE OIL &amp; ENERGY · PERSONNEL STATUS</div><h3>YOU HAVE BEEN MURDERED</h3><p>${esc(c.name)}: play it out, then stay in character as the body. The dead can listen, but can't share clues.</p><p class="small"><b>The host announces:</b> “${esc(generic(c.deathAlert || ''))}”</p></div></div>`).join('') +
+        Array.from({ length: 2 }, () => `<div class="envcard death"><div class="envbody"><div class="dk">KANE OIL &amp; ENERGY · PERSONNEL STATUS</div><h3>YOU HAVE BEEN MURDERED</h3><p>The killer chose you. Wait a moment, then die dramatically wherever you are, and stay in character as the body.</p><p class="small"><b>The host announces:</b> “_____________ has been found dead. All personnel remain where you are.”</p></div></div>`).join('');
+      const ballots = Array.from({ length: 8 }, () => `<div class="ballot"><div class="dk">KANE OIL &amp; ENERGY · OFFICIAL ACCUSATION</div><p>My name: ______________________</p><p>I accuse: ______________________</p><p>Because: _____________________________________________<br>_______________________________________________________</p></div>`).join('');
+      const run = show.map((s, i) => {
+        const acts = (s.actions || []).map(a => a.do === 'room' ? `Take down the SEALED sign: <b>${esc(room(a.id))}</b> is open.` : a.do === 'deliver' ? `Hand the Inspector the sealed <b>${esc((EV[a.id] || {}).title || a.id)}</b> envelope.` : a.do === 'flag' && a.flag === 'lockdown' && a.value ? 'Ring the bell: lockdown, everyone looks up.' : '').filter(Boolean);
+        const cues = (PAPER_CUES[s.id] || []).concat(acts);
+        const say = PAPER_SAY[s.id] || (s.host && !/phone|database|screen|projector|code word/i.test(s.host) ? s.host : '');
+        const dead = (s.actions || []).filter(a => a.do === 'death').map(a => CH[a.id] && CH[a.id].deathAlert).filter(Boolean);
+        return `<div class="runrow"><div class="rt"><b>${String(i + 1).padStart(2, '0')}</b><span>${esc(s.time || '')}</span></div><div class="rb"><h3>${esc(s.title)}</h3>${cues.length ? `<ul class="tight">${cues.map(c => `<li>${c}</li>`).join('')}</ul>` : '<p class="muted">Let the room play. Keep the Inspector moving.</p>'}
+          ${dead.map(t => `<div class="say"><b>ANNOUNCE</b>${esc(generic(t))}</div>`).join('')}${say ? `<div class="say"><b>YOU SAY</b>${paras(generic(blank(say)))}</div>` : ''}
+          ${s.id === 'confess' ? `<p><b>Confession order:</b> ${confessOrder.map((id, n) => (n + 1) + '. ' + esc(nm(id))).join(' · ')} (skip anyone not there; the killer goes last, and lies).</p>` : ''}</div></div>`;
+      }).join('');
+      return cover('Paper Edition', 'The whole game, no website needed', 'CONFIDENTIAL · FOR THE HOST', ' · © 2026 Jacob Frederick · Licensed for one non-commercial event. Do not copy or redistribute.').replace(esc(hosted) + '<br>', '') +
+        part('Part 1', 'How it works on paper') +
+        `<p>This edition runs the whole murder mystery with paper and envelopes. Nothing needs a phone.</p>
+        <ul class="tight"><li><b>Role packets.</b> Each player gets a sealed packet at the door: their <b>Character Sheet</b> (Part 6) and a stack of small envelopes (Part 3). Each envelope is labeled with <i>when</i> to open it. The players handle their own envelopes; you just announce each phase.</li>
+        <li><b>The 8:00 envelope.</b> Every principal character has one. At 8:00 everyone opens it at the same moment. The killer's tells them who they really are; everyone else's says "You are not the killer." Nobody can tell who got the important one.</li>
+        <li><b>Memories.</b> Many envelopes open "as soon as you see or hear about" a piece of evidence. That's how the clues reach the right people at the right time.</li>
+        <li><b>Evidence.</b> Print the Evidence Props and hide them where the Host Book says. Ignore the QR codes: finding the prop is finding the evidence. Players can keep a find to themselves or share it. Shared evidence goes on the Investigation Board.</li>
+        <li><b>Official reports.</b> Three sealed envelopes (Part 4) you hand to the Inspector at the right phase. They read them aloud and pin them to the board.</li>
+        <li><b>Deaths, lockdowns, voting.</b> A bell, the death cards (Part 4), and paper ballots (Part 5).</li>
+        <li><b>Rooms and places.</b> The story uses four spaces: the Gala Hall (the main room), Alex's Office, the Archive Lounge, and Gordon's Study (a corner of the main room, behind a screen or paper wall). Use any rooms you have. Change the room names on the signs to match.</li>
+        <li><b>You'll also want:</b> the Host Book (setup, puzzles and the solution), the Evidence Props, Signs, Name Badges, the Detective's Notebook and the Award Certificates. They're website editions, so skip anything about phones, code words or QR codes.</li></ul>` +
+        part('Part 2', 'The run sheet') + `<div class="run">${run}</div>` +
+        part('Part 3', 'The Envelope Kit · sorted by character') + `<p class="small muted">Print, cut each card out, cut off its label, fold the card, put it in a small envelope and tape the label on the outside. Bundle each character's envelopes into their role packet.</p>${envelopes}` +
+        part('Part 4', 'For the host: official reports & death cards') + `<div class="envgrid">${reports}</div><div class="envgrid" style="margin-top:12pt">${deaths}</div>` +
+        part('Part 5', 'Ballots & hints') + `<div class="ballots">${ballots}</div>${(hints || []).length ? `<h3>Hint cards (read one aloud when the room is stuck)</h3><ol>${hints.map(h => `<li>${esc(generic(h.text || h))}</li>`).join('')}</ol>` : ''}` +
+        part('Part 6', 'Character Sheets') + `<p class="small muted">One per player, in their role packet. Spoiler-free.</p><div style="break-before:page"></div>` + sheets(true);
+    };
+
     /* ---------------- NAME BADGES ---------------- */
     const badges = () => {
       const players = opts.players || {};
@@ -607,7 +690,7 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
       return `<div class="brief"><div class="lbl">Their Brief (its own tab on their phone)</div>${b.goal ? `<p><b>Goal tonight:</b> ${esc(b.goal)}</p>` : ''}
         ${ul('Share tonight', b.share)}${ul('Only if someone asks directly', b.ifAsked)}${ul('Timeline', b.timeline)}
         ${b.secret ? `<div class="lbl" style="color:var(--red)">Sealed until they learn the truth</div><p>${esc(b.secret)}</p>` : ''}
-        ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(b.costume)}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(b.note)}</i></p>` : ''}
+        ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(G(b.costume))}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(G(b.note))}</i></p>` : ''}
         ${c.confession ? `<div class="lbl">Their confession${c.killer ? ' <span class="tag red">A lie</span>' : ''}</div><p><i>“${esc(c.confession)}”</i></p>` : ''}</div>`;
     };
     const dossier = c => {
@@ -629,29 +712,30 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
       chars.map(dossier).join('');
 
     /* ---------------- PLAYER BACKUP SHEETS (one per player, no spoilers: only what their own phone would show before the night) ---------------- */
-    const sheets = () => {
-      const who = opts.players || {}, cast = Object.keys(who).length ? chars.filter(c => who[c.id]) : chars;
+    const sheets = (paperEd) => {
+      const P2 = paperEd === true, G = P2 ? generic : (x => x);
+      const who = P2 ? {} : (opts.players || {}), cast = Object.keys(who).length ? chars.filter(c => who[c.id]) : chars.filter(c => !P2 || !c.spare);
       const first = n => String(n || '').trim().split(/\s+/)[0];
-      const li = arr => (arr || []).map(x => `<li>${esc(x)}</li>`).join('');
+      const li = arr => (arr || []).map(x => `<li>${esc(G(x))}</li>`).join('');
       return cast.map((c, i) => {
         const d = DIR[c.id] || {}, b = c.brief || {};
         // what the player sees before the night: no host-only notes, sealed text only in its sealed form, no secret classification,
         // and no "Motive read" (it says who is NOT the killer, which paper can leak to the person sitting next to them)
-        const secs = c.sections.filter(s => !s.hostOnly && s.sealed !== true && !/^motive read/i.test(s.h)).map(s => `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h4>${esc(s.h)}</h4>${paras(typeof s.sealed === 'string' ? s.sealed : s.t)}</div>`).join('');
+        const secs = c.sections.filter(s => !s.hostOnly && s.sealed !== true && !/^motive read/i.test(s.h)).map(s => `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h4>${esc(P2 && s.h === 'How it works on your phone' ? 'How it works tonight' : s.h)}</h4>${paras(G(P2 && s.h === 'How it works on your phone' ? 'Your role packet holds an envelope of YOUR LINES for each part of the night. Open each one when the host announces that phase, and read it aloud, in your own words if you like. Official reports (toxicology, the coroner\'s file, a court record) reach you as sealed envelopes from the host: read them to the room, then pin them to the Investigation Board. Evidence is found by the guests, not by you: push them to search and to share.' : typeof s.sealed === 'string' ? s.sealed : s.t))}</div>`).join('');
         // the longest files get smaller type so every sheet stays on one page
         const size = secs.replace(/<[^>]+>/g, '').length + JSON.stringify(b).length;
         const fit = size > 4150 ? ' tight tighter' : size > 3250 ? ' tight' : '';
         return `<section class="dossier pbs${fit}" data-size="${size}" ${i ? 'style="break-before:page"' : ''}>
           <div class="dos-head"><div><div class="file">KANE OIL &amp; ENERGY · PERSONNEL FILE ${esc(c.file || '')}${who[c.id] ? ' · FOR ' + esc(first(who[c.id]).toUpperCase()) : ''}</div><h2>${esc(c.name)}</h2>
-            <div class="muted">${esc(d.title || c.occ || '')}</div></div><div class="code">${esc(c.code)}</div></div>
+            <div class="muted">${esc(d.title || c.occ || '')}</div></div>${P2 ? '' : `<div class="code">${esc(c.code)}</div>`}</div>
           <div class="kv"><b>Classification</b><span>${esc(c.cls || 'SUBJECT')}</span><b>Age</b><span>${esc(c.age)}</span><b>Occupation</b><span>${esc(c.occ)}</span></div>
           <div class="secs">${secs}
-          ${c.brief ? `<div class="brief"><div class="lbl">Your Brief: how to play tonight</div>${b.goal ? `<p><b>Your goal:</b> ${esc(b.goal)}</p>` : ''}
+          ${c.brief ? `<div class="brief"><div class="lbl">Your Brief: how to play tonight</div>${b.goal ? `<p><b>Your goal:</b> ${esc(G(b.goal))}</p>` : ''}
             ${(b.share || []).length ? `<div class="lbl">Share these tonight</div><ul>${li(b.share)}</ul>` : ''}
             ${(b.ifAsked || []).length ? `<div class="lbl">Only if someone asks you directly</div><ul>${li(b.ifAsked)}</ul>` : ''}
             ${(b.timeline || []).length ? `<div class="lbl">Your day, before the gala</div><ul>${li(b.timeline)}</ul>` : ''}
-            ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(b.costume)}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(b.note)}</i></p>` : ''}</div>` : ''}</div>
-          <p class="small muted" style="margin:6pt 0 0;border-top:1pt solid #ddd;padding-top:4pt">Backup copy, in case the Kane Oil Database goes down. Your code word is in the box above. This page is for your eyes only: don't show it to anyone. More will come to you during the night.</p></section>`;
+            ${b.costume ? `<div class="lbl">Costume idea (only a suggestion)</div><p>${esc(G(b.costume))}</p>` : ''}${b.note ? `<p class="muted"><i>${esc(G(b.note))}</i></p>` : ''}</div>` : ''}</div>
+          <p class="small muted" style="margin:6pt 0 0;border-top:1pt solid #ddd;padding-top:4pt">${P2 ? 'Your character sheet. For your eyes only: don&#39;t show it to anyone. Your sealed envelopes say when to open them. The Last Toast © 2026 Jacob Frederick.' : 'Backup copy, in case the Kane Oil Database goes down. Your code word is in the box above. This page is for your eyes only: don&#39;t show it to anyone. More will come to you during the night.'}</p></section>`;
       }).join('');
     };
 
@@ -733,10 +817,10 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
         <div class="to">is hereby presented to</div><div class="nm">${esc(aw[k] || '')}</div><div class="why">${why}</div>
         <div class="foot"><div class="sig">${esc(signers[0])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div><div class="seal">${SEAL(i)}</div><div class="sig">${esc(signers[1])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div>${when ? `<div class="dt">${when}</div>` : ''}</div></section>`).join('');
     };
-    return { tour, kit, rooms: () => rooms.map(r => ({ id: r.id, name: r.name })), host, tags, props, badges, signs, welcome, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
+    return { paper, tour, kit, rooms: () => rooms.map(r => ({ id: r.id, name: r.name })), host, tags, props, badges, signs, welcome, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', welcome: 'WELCOME POSTER', tour: 'WEBSITE TOUR', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', welcome: 'WELCOME POSTER', tour: 'WEBSITE TOUR', paper: 'PAPER EDITION · CONFIDENTIAL', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {

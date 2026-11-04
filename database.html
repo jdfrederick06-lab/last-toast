@@ -1933,10 +1933,30 @@ async function syncCastList() {
     if (Object.keys(inPlay).length && JSON.stringify(Object.keys(inPlay).sort()) !== JSON.stringify(Object.keys(S.site.cast || {}).sort())) await backend.update({ 'site/cast': inPlay });
   } catch (e) { console.warn('cast list', e); }
 }
+/* Alex's co-host inbox: while her desk is on, this host device keeps an encrypted copy of each guest question
+   for her (locked with a key made from her code word). Only what she needs to answer: no emails or phones. */
+const COHOST_ID = 'alex';
+async function syncCohostInbox() {
+  const on = S.site.cohost === true, mirror = (RAW.cohost && RAW.cohost.asks) || {};
+  if (!on) { if (Object.keys(mirror).length) await backend.set('cohost', null); return; }
+  const ch = HOST.chars[COHOST_ID]; if (!ch || !ch.code) return;
+  HOST.cohostKey = HOST.cohostKey || await _stableKey(ch.code, 'cohost');
+  await syncAsks();
+  const upd = {};
+  for (const [id, c] of Object.entries(HOST.asks)) {
+    const a = S.asks[id]; if (!a || !c || !c.d || c.err) continue;
+    if (mirror[id] && mirror[id].v === c.iv) continue;
+    const d = c.d, slim = { name: d.name || '', cname: d.cname || '', cid: d.cid || '', topic: d.topic || '', text: d.text || '', where: d.where || '', k: d.k || '' };
+    upd['cohost/asks/' + id] = Object.assign(await encryptJSON(HOST.cohostKey, slim), { v: c.iv });
+  }
+  for (const id of Object.keys(mirror)) if (!S.asks[id]) upd['cohost/asks/' + id] = null;
+  if (Object.keys(upd).length) await backend.update(upd);
+}
 async function hostJobs() {
   if (!HOST || !ready || ui.jobBusy) return;
   ui.jobBusy = true;
   try {
+    await syncCohostInbox();
     // hint voting: unlock the next hint once a majority asks for it
     if (S.flags.hints) { const hs = hintStatus(S, isOnline); if (hs.left > 0 && hs.eligible > 0 && hs.votes >= hs.needed && !S.hintsOpen[hs.round]) A.unlockHint(); }
     // backup roles: when a character dies, hand their player the next free backup
