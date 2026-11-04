@@ -151,6 +151,11 @@ tr{break-inside:avoid}
 .poster.one h2{font-size:46pt;line-height:1.05;margin:0 0 6pt;max-width:6.3in}
 .poster.one .orn{color:var(--gold);font-size:14pt;margin:4pt 0 16pt}
 .poster.one p{font:21pt/1.5 Georgia,serif;color:#2a3140;margin:0;max-width:6.2in}
+.tpage{display:flex;gap:.3in;justify-content:center;align-items:flex-start;height:9.2in}.tpage.col{flex-direction:column;align-items:center;gap:.25in}
+.tshot{margin:0;width:3.2in;text-align:left}.tshot img{display:block;width:100%;border-radius:12pt;border:1pt solid #c9ccd3;box-shadow:0 2pt 8pt rgba(0,0,0,.12)}
+.tshot.wide{width:5.4in}.tshot.wide img{border-radius:6pt}
+.tshot figcaption{font:10pt/1.45 'Segoe UI',Arial,sans-serif;color:#3a3f4b;margin-top:7pt}.tshot figcaption b{display:block;font-size:11.5pt;color:#0c1220;margin-bottom:2pt}
+.kitsheet{break-after:page}.kitsheet h3{margin:12pt 0 4pt}
 /* the welcome poster: an art-deco showpiece for the door (dark, plus an ink-saver light version) */
 @page welcome{size:Letter landscape;margin:.35in}
 .wp{page:welcome;break-after:page;width:10.3in;height:7.8in;box-sizing:border-box;position:relative;overflow:hidden;border-radius:6pt;padding:.46in .95in .44in;text-align:center;display:flex;flex-direction:column;align-items:center;background:var(--bg);color:var(--tx)}
@@ -184,7 +189,7 @@ tr{break-inside:avoid}
 .wp .wf small{display:block;font:8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.16em;color:var(--mut);margin-top:3pt}
 /* PNG export: one poster filling the whole window, no margins */
 body.png{background:transparent}body.png .sheet{margin:0;padding:0;max-width:none;box-shadow:none;background:transparent}body.png .toolbar{display:none}
-body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
+body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-after:auto}
 .poster .ft{position:absolute;left:0;right:0;bottom:.3in;text-align:center;font:8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
 .sign .arrow{font:700 120pt/1 'Segoe UI',Arial,sans-serif;color:var(--gold);margin:-10pt 0 0}
 .sign .qr img{width:1.6in;height:1.6in;image-rendering:pixelated}
@@ -241,6 +246,7 @@ body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
 .pbs .secs{column-count:2;column-gap:16pt}.pbs .sec{margin:0 0 4pt}.pbs .sec h4{margin-top:4pt}.pbs .sec.key{margin:4pt 0;padding:3pt 7pt 4pt}
 .pbs .brief{padding:6pt 10pt;margin:6pt 0 0;break-inside:auto}.pbs .brief p,.pbs .brief li{font-size:8.3pt}.pbs .brief .lbl{margin:4pt 0 1pt}
 .pbs.tight{font-size:7.9pt;line-height:1.28}.pbs.tight .brief p,.pbs.tight .brief li{font-size:7.7pt}
+.pbs.tighter{font-size:7.4pt;line-height:1.24}.pbs.tighter .brief p,.pbs.tighter .brief li{font-size:7.2pt}.pbs.tighter .sec h4{margin-top:2pt}
 .brief ul{margin:0 0 4pt;padding-left:16pt}
 .puz{border:1.5pt solid var(--gold);border-radius:8pt;padding:10pt 14pt;margin:12pt 0;break-inside:avoid}
 .puz .ans{font:700 18pt Consolas,monospace;letter-spacing:.2em;color:var(--red)}
@@ -259,20 +265,31 @@ body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
 .nb .al i{flex:1;border-bottom:1px solid #9aa0ab;height:16pt}
 /* award certificates: one landscape page each */
 @page cert{size:Letter landscape;margin:.4in;@bottom-left{content:none}@bottom-right{content:none}}
-.cert{page:cert;break-after:page;height:7.6in;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:.55in .9in;background:#fffdf7;border:3pt solid #94701f}
-.cert::before{content:"";position:absolute;inset:9pt;border:1pt solid #c9a75c;pointer-events:none}
-.cert .lg{width:.75in;height:.75in;margin-bottom:6pt}
-.cert .k{font:600 10pt 'Segoe UI',Arial,sans-serif;letter-spacing:.34em;color:#94701f;text-transform:uppercase}
-.cert .ttl{font:italic 600 20pt 'Cormorant Garamond',Georgia,serif;color:#5b6170;margin-top:10pt}
-.cert .award{font:700 50pt/1.05 'Cormorant Garamond',Georgia,serif;color:#154236;margin:2pt 0 10pt}
-.cert .to{font:italic 16pt 'Cormorant Garamond',Georgia,serif;color:#3a3f4b}
-.cert .nm{font:700 34pt 'Cormorant Garamond',Georgia,serif;color:#1b1d22;min-width:5.2in;border-bottom:1pt solid #94701f;padding:0 12pt 2pt;margin:6pt 0 12pt;min-height:46pt}
-.cert .why{font:italic 15pt/1.45 'Cormorant Garamond',Georgia,serif;color:#3a3f4b;max-width:6.6in}
-.cert .sigs{display:flex;gap:1.1in;margin-top:26pt;align-items:flex-end}
-.cert .sig{width:2.1in;border-top:1pt solid #1b1d22;padding-top:4pt;font:600 9pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#5b6170;text-transform:uppercase}
-.cert .seal{position:absolute;right:.75in;bottom:.62in;width:1.05in;height:1.05in;border-radius:50%;background:radial-gradient(circle at 38% 34%,#d9b866,#94701f 72%);display:grid;place-items:center;box-shadow:0 0 0 3pt #fffdf7,0 0 0 4pt #c9a75c}
-.cert .seal svg{width:58%;height:58%}
-.cert .dt{position:absolute;left:.75in;bottom:.68in;font:italic 12pt 'Cormorant Garamond',Georgia,serif;color:#5b6170;text-align:left}
+.cert{page:cert;break-after:page;height:7.6in;box-sizing:border-box;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;padding:.5in 1.05in .42in;background:radial-gradient(ellipse 75% 60% at 50% 42%,#fffefa 0,#fbf6e8 100%);color:#0c1220;border:3.5pt solid #94701f;border-radius:4pt}
+.cert .fr{position:absolute;inset:.13in;border:.8pt solid #c9a75c;border-radius:2pt;pointer-events:none}
+.cert .fr2{position:absolute;inset:.19in;border:1.6pt solid #94701f;border-radius:2pt;pointer-events:none}
+.cert .wc{position:absolute;width:1.05in;height:1.05in;color:#94701f}
+.cert .wc svg{width:100%;height:100%;display:block}
+.cert .wc.tl{top:.19in;left:.19in}.cert .wc.tr{top:.19in;right:.19in;transform:scaleX(-1)}.cert .wc.bl{bottom:.19in;left:.19in;transform:scaleY(-1)}.cert .wc.br{bottom:.19in;right:.19in;transform:scale(-1,-1)}
+.cert .wm{position:absolute;left:50%;top:50%;width:4.6in;height:4.6in;transform:translate(-50%,-52%);opacity:.035;pointer-events:none}
+.cert>*:not(.fr):not(.fr2):not(.wc):not(.wm){position:relative}
+.cert .lg{width:.55in;height:.55in;margin:0 0 4pt}
+.cert .k{font:700 9.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.42em;color:#94701f;text-transform:uppercase;padding-left:.42em}
+.cert .ttl{display:flex;align-items:center;gap:12pt;margin:12pt 0 0;font:700 12pt 'Segoe UI',Arial,sans-serif;letter-spacing:.5em;color:#0c1220;text-transform:uppercase;padding-left:.5em}
+.cert .ttl i{display:block;width:.9in;height:5pt;border-top:1pt solid #94701f;border-bottom:1pt solid #94701f}
+.cert .award{font:700 74pt/1 'Cormorant Garamond',Georgia,serif;color:#0c1220;margin:8pt 0 0;letter-spacing:-.005em}
+.cert .award.blank{width:5.4in;height:62pt;border-bottom:1.2pt solid #94701f}
+.cert .orn{width:3.4in;height:.3in;color:#94701f;margin:10pt 0 10pt}
+.cert .orn svg{width:100%;height:100%;display:block}
+.cert .to{font:italic 500 20pt 'Cormorant Garamond',Georgia,serif;color:#5b6170}
+.cert .nm{font:700 52pt/1.05 'Cormorant Garamond',Georgia,serif;color:#7a5b14;width:6.8in;min-height:80pt;border-bottom:1.2pt solid #94701f;padding:0 10pt 4pt;margin:4pt 0 16pt;display:flex;align-items:flex-end;justify-content:center}
+.cert .why{font:italic 500 19pt/1.4 'Cormorant Garamond',Georgia,serif;color:#2a3140;max-width:6.8in}
+.cert .foot{display:grid;grid-template-columns:1fr 1.6in 1fr;align-items:end;gap:.35in;width:100%;margin:auto 0 0}
+.cert .sig{border-top:1pt solid #0c1220;padding-top:5pt;font:700 9pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;color:#0c1220;text-transform:uppercase}
+.cert .sig small{display:block;font:500 8pt 'Segoe UI',Arial,sans-serif;letter-spacing:.16em;color:#5b6170;margin-top:2pt}
+.cert .seal{width:1.6in;height:1.87in;margin:0 auto -.08in}
+.cert .seal svg{width:100%;height:100%;display:block;overflow:visible}
+.cert .dt{font:italic 500 12.5pt 'Cormorant Garamond',Georgia,serif;color:#5b6170;margin-top:6pt;grid-column:1 / -1}
 .err{background:#fde8e8;border:1px solid var(--red);color:var(--red);padding:12pt;border-radius:6pt;font:11pt 'Segoe UI',Arial,sans-serif}
 `;
 
@@ -466,6 +483,37 @@ body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
       <li>Official reports have no QR code: they're paper copies for the Inspector to read from (optional).</li>
       <li>Printing on cream or ivory paper for the legal documents makes them look expensive.</li></ul></div>` + ev.map(propPage).join('');
 
+    /* ---------------- ROOM KITS: everything for one room in one stack ---------------- */
+    const kit = rid => {
+      const r = rooms.find(x => x.id === rid); if (!r) return '<p>Unknown room.</p>';
+      const g = r.guide || {}, inRoom = ev.filter(e => e.room === rid && !e.official), tagged = inRoom.filter(e => e.qr);
+      const sign = (cls, k, big, mid, sm) => `<section class="sign ${cls}"><div class="lg">${LOGOSM(cls === 'dark' ? '#f3d990' : '#94701f')}</div><div class="k">${k}</div><div class="big">${big}</div>${mid ? `<div class="mid">${mid}</div>` : ''}${sm ? `<div class="sm">${sm}</div>` : ''}</section>`;
+      const qtag = e => `<div class="qtag"><div class="brand">KANE OIL &amp; ENERGY</div><div class="ttl">EVIDENCE</div>${qrFor(e)}<div class="num">${tagNum(e.id)}</div><div class="hint">Scan with your phone camera</div></div>`;
+      const sheet = `<section class="kitsheet"><div class="part-kicker">Room kit · Host only</div><h1 style="margin:2pt 0 0">${esc(r.name)}</h1><p class="muted" style="margin:2pt 0 10pt">${esc(r.place || '')} · ${esc(roomOpens(r))}</p>
+        <h3>In this stack</h3><ul class="check"><li>This setup sheet</li><li>Door sign${r.alwaysOpen ? '' : ' and red SEALED sign (take the SEALED sign down when the room opens)'}</li>${inRoom.length ? `<li>${inRoom.length} evidence prop${inRoom.length > 1 ? 's' : ''}, with QR codes already printed on them</li>` : ''}${tagged.length ? '<li>Spare QR tags for this room (cut along the dashed lines)</li>' : ''}</ul>
+        ${inRoom.length ? `<h3>Where each piece goes</h3><table><tr><th>Tag</th><th>Evidence</th><th>Where to hide it</th><th>Scannable</th></tr>${inRoom.map(e => `<tr><td class="mono"><b>${e.qr ? tagNum(e.id) : '—'}</b></td><td>${esc(e.title)}</td><td>${esc(e.place || '')}</td><td>${e.after ? 'From ' + esc(phaseT(e.after)) : 'Once the room opens'}</td></tr>`).join('')}</table>` : ''}
+        ${g.layout ? `<h3>Layout</h3>${list(g.layout)}` : ''}${g.decor ? `<h3>Decorating</h3>${list(g.decor)}` : ''}${g.props ? `<h3>Props to bring</h3>${list(g.props)}` : ''}${g.atmosphere ? `<h3>Atmosphere</h3>${list(g.atmosphere)}` : ''}
+        <h3>Before guests arrive</h3><ul class="check"><li>Every prop placed${tagged.length ? ' and test-scanned (logged in as host: "✓ This tag works")' : ''}</li><li>A phone photo of each hiding spot</li>${r.alwaysOpen ? '' : '<li>Door closed, SEALED sign up</li>'}</ul></section>`;
+      return sheet +
+        sign(r.alwaysOpen ? 'dark' : '', esc(r.sign || 'Kane Oil & Energy'), esc(r.name), '', esc(r.alwaysOpen ? 'Welcome. Find the Investigation Board, the coat check and the charging station inside.' : (r.desc || 'Private.'))) +
+        (r.alwaysOpen ? '' : sign('sealed', 'Kane Oil Security', 'SEALED', esc(r.sealedName || r.name), 'Do not enter until the Kane Oil Database on your phone shows this room as <b>OPEN</b>.')) +
+        inRoom.map(propPage).join('') +
+        (tagged.length ? `<div style="break-before:page"><p class="small muted sans" style="margin:0 0 8pt">Spare tags for ${esc(r.name)}. Cut along the dashed lines.</p><div class="tags">${tagged.map(qtag).join('')}</div></div>` : '');
+    };
+
+    /* ---------------- WEBSITE TOUR (screenshots; only the offline print packet supplies them) ---------------- */
+    const tour = () => {
+      const T = opts.tour || []; if (!T.length) return '<p>The Website Tour screenshots are only in the offline print packet (private/print.html).</p>';
+      const phones = T.filter(t => !t.wide), wides = T.filter(t => t.wide);
+      const fig = t => `<figure class="tshot ${t.wide ? 'wide' : ''}"><img src="${esc(t.src)}" alt=""><figcaption><b>${esc(t.title)}</b>${esc(t.caption)}</figcaption></figure>`;
+      const pages = [];
+      for (let i = 0; i < phones.length; i += 2) pages.push(`<div class="tpage">${phones.slice(i, i + 2).map(fig).join('')}</div>`);
+      for (let i = 0; i < wides.length; i += 2) pages.push(`<div class="tpage col">${wides.slice(i, i + 2).map(fig).join('')}</div>`);
+      return cover('Website Tour', 'What the Kane Oil Database looked like on the night', '', ' · Screenshots from a test copy with sample data') +
+        `<p>Every guest used the website on their own phone: the invitation and RSVP, a personal role invitation, and then the Kane Oil Database, unlocked with their secret code word. The host ran the whole night from the host portal: phases, rooms, evidence, deaths, the projector and voting.</p>` +
+        pages.map(p => `<div style="break-before:page"></div>${p}`).join('');
+    };
+
     /* ---------------- NAME BADGES ---------------- */
     const badges = () => {
       const players = opts.players || {};
@@ -590,8 +638,10 @@ body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
         // what the player sees before the night: no host-only notes, sealed text only in its sealed form, no secret classification,
         // and no "Motive read" (it says who is NOT the killer, which paper can leak to the person sitting next to them)
         const secs = c.sections.filter(s => !s.hostOnly && s.sealed !== true && !/^motive read/i.test(s.h)).map(s => `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}"><h4>${esc(s.h)}</h4>${paras(typeof s.sealed === 'string' ? s.sealed : s.t)}</div>`).join('');
-        const long = secs.replace(/<[^>]+>/g, '').length + JSON.stringify(b).length > 3500;   // the longest files get smaller type to stay on one page
-        return `<section class="dossier pbs${long ? ' tight' : ''}" ${i ? 'style="break-before:page"' : ''}>
+        // the longest files get smaller type so every sheet stays on one page
+        const size = secs.replace(/<[^>]+>/g, '').length + JSON.stringify(b).length;
+        const fit = size > 4150 ? ' tight tighter' : size > 3250 ? ' tight' : '';
+        return `<section class="dossier pbs${fit}" data-size="${size}" ${i ? 'style="break-before:page"' : ''}>
           <div class="dos-head"><div><div class="file">KANE OIL &amp; ENERGY · PERSONNEL FILE ${esc(c.file || '')}${who[c.id] ? ' · FOR ' + esc(first(who[c.id]).toUpperCase()) : ''}</div><h2>${esc(c.name)}</h2>
             <div class="muted">${esc(d.title || c.occ || '')}</div></div><div class="code">${esc(c.code)}</div></div>
           <div class="kv"><b>Classification</b><span>${esc(c.cls || 'SUBJECT')}</span><b>Age</b><span>${esc(c.age)}</span><b>Occupation</b><span>${esc(c.occ)}</span></div>
@@ -659,27 +709,50 @@ body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
         ['liar', 'Best Liar', 'For lying beautifully, convincingly and entirely without remorse.'],
         ['', '', 'For distinguished service to Kane Oil &amp; Energy on the night of the Annual Gala.']
       ];
-      const seal = `<svg viewBox="0 0 96 96" fill="none" stroke="#fffdf7" stroke-linecap="round"><circle cx="48" cy="48" r="42" stroke-width="2.5"/><path d="M40 30 V66 M40 50 L58 30 M44 46 L60 66" stroke-width="5"/></svg>`;
-      return list.map(([k, title, why]) => `<section class="cert"><div class="lg">${LOGOSM()}</div><div class="k">Kane Oil &amp; Energy · ${esc(P.title || 'The Last Toast')}</div>
-        <div class="ttl">Certificate of Distinction</div>${title ? `<div class="award">${esc(title)}</div>` : '<div class="award" style="min-width:4.6in;height:52pt;border-bottom:1pt solid #c9a75c"></div>'}
+      const st = 'stroke="currentColor" fill="none" stroke-linecap="round"';
+      const fan = [15, 30, 45, 60, 75].map(a => { const r = a * Math.PI / 180; return `<path d="M8 8 L${(8 + 58 * Math.cos(r)).toFixed(1)} ${(8 + 58 * Math.sin(r)).toFixed(1)}" stroke-width="1"/>`; }).join('');
+      const CORNER = `<svg viewBox="0 0 100 100" ${st}><path d="M8 38 A30 30 0 0 1 38 8" stroke-width="1.6"/><path d="M8 54 A46 46 0 0 1 54 8" stroke-width=".9"/>${fan}<path d="M8 8 l5 5" stroke-width="2.4"/><circle cx="8" cy="8" r="3" fill="currentColor" stroke="none"/></svg>`;
+      const ORN = `<svg viewBox="0 0 320 28" ${st}><path d="M6 14 H128" stroke-width="1"/><path d="M192 14 H314" stroke-width="1"/><path d="M160 4 l10 10 -10 10 -10 -10z" fill="currentColor" stroke="none"/><path d="M138 14 l5 -5 5 5 -5 5z" fill="currentColor" stroke="none"/><path d="M172 14 l5 -5 5 5 -5 5z" fill="currentColor" stroke="none"/></svg>`;
+      // the gold rosette: scalloped medal with ribbon tails and the company name around the rim
+      const scallop = Array.from({ length: 64 }, (_, i) => { const a = i / 64 * Math.PI * 2, r = i % 2 ? 44 : 48; return `${(60 + r * Math.cos(a)).toFixed(2)},${(58 + r * Math.sin(a)).toFixed(2)}`; }).join(' ');
+      const SEAL = id => `<svg viewBox="0 0 120 140"><defs><linearGradient id="sg${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9cf86"/><stop offset=".5" stop-color="#b48a2e"/><stop offset="1" stop-color="#7a5b14"/></linearGradient>
+        <linearGradient id="rb${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1220"/><stop offset="1" stop-color="#1d2a44"/></linearGradient><path id="ring${id}" d="M60 58 m-31 0 a31 31 0 1 1 62 0 a31 31 0 1 1 -62 0"/></defs>
+        <path d="M40 88 L26 136 L38 128 L46 139 L58 94z" fill="url(#rb${id})"/><path d="M80 88 L94 136 L82 128 L74 139 L62 94z" fill="url(#rb${id})"/>
+        <path d="M44 92 L33 128 M76 92 L87 128" stroke="#c9a75c" stroke-width=".8"/>
+        <polygon points="${scallop}" fill="url(#sg${id})"/><circle cx="60" cy="58" r="39" fill="none" stroke="#fffdf7" stroke-width="1.2" opacity=".85"/><circle cx="60" cy="58" r="24" fill="none" stroke="#fffdf7" stroke-width="1" opacity=".85"/>
+        <text font-family="Segoe UI,Arial,sans-serif" font-size="7" font-weight="700" fill="#fffdf7"><textPath href="#ring${id}" startOffset="0" textLength="190" lengthAdjust="spacing">KANE OIL &amp; ENERGY ✦ ANNUAL GALA ✦</textPath></text>
+        <g transform="translate(46 44) scale(.44)" fill="none" stroke="#fffdf7"><path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" stroke-width="3.4"/><path d="M25 20v24M25 32l11-12M28.5 29 38 44" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>`;
+      const signers = (hosts.length ? hosts : ['Host', 'Host']).slice(0, 2);
+      while (signers.length < 2) signers.push('Host');
+      const when = [P.venue, P.date].filter(Boolean).map(esc).join(' · ');
+      return list.map(([k, title, why], i) => `<section class="cert"><div class="fr"></div><div class="fr2"></div>${['tl', 'tr', 'bl', 'br'].map(p => `<div class="wc ${p}">${CORNER}</div>`).join('')}<div class="wm">${LOGOSM('#94701f')}</div>
+        <div class="lg">${LOGOSM()}</div><div class="k">Kane Oil &amp; Energy · Annual Gala</div>
+        <div class="ttl"><i></i>Certificate of Distinction<i></i></div>
+        ${title ? `<div class="award">${esc(title)}</div>` : '<div class="award blank"></div>'}
+        <div class="orn">${ORN}</div>
         <div class="to">is hereby presented to</div><div class="nm">${esc(aw[k] || '')}</div><div class="why">${why}</div>
-        <div class="sigs">${(hosts.length ? hosts : ['Host', 'Host']).slice(0, 2).map(h => `<div class="sig">${esc(h)} · Host</div>`).join('')}</div>
-        <div class="dt">${esc(P.date || '')}</div><div class="seal">${seal}</div></section>`).join('');
+        <div class="foot"><div class="sig">${esc(signers[0])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div><div class="seal">${SEAL(i)}</div><div class="sig">${esc(signers[1])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div>${when ? `<div class="dt">${when}</div>` : ''}</div></section>`).join('');
     };
-
-    return { host, tags, props, badges, signs, welcome, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
+    return { tour, kit, rooms: () => rooms.map(r => ({ id: r.id, name: r.name })), host, tags, props, badges, signs, welcome, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', welcome: 'WELCOME POSTER', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', welcome: 'WELCOME POSTER', tour: 'WEBSITE TOUR', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {
     const d = build(S, P, opts);
     const order = ['host', 'tags', 'props', 'badges', 'signs', 'welcome', 'inspector', 'toast', 'notebook', 'awards', 'dossiers', 'invite'];
-    const html = which === 'all' ? order.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + d[k]()).join('') : (d[which] || d.host)();
-    const label = LABELS[which] || LABELS.host;
+    // which: one key, 'all', 'kit-<room id>', or a list like 'tags*2,badges,kit-office' (*n = copies)
+    const one = k => k.startsWith('kit-') ? d.kit(k.slice(4)) : (d[k] || d.host)();
+    const keys = (which === 'all' ? order : String(which || 'host').split(',')).filter(Boolean)
+      .flatMap(k => { const [kk, n] = k.split('*'); return Array.from({ length: Math.min(20, Math.max(1, +n || 1)) }, () => kk); });
+    const html = keys.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + one(k)).join('');
+    const roomName = k => ((d.rooms().find(r => 'kit-' + r.id === k) || {}).name || '').toUpperCase();
+    const label = which === 'all' ? LABELS.all : keys.length > 1 && new Set(keys).size > 1 ? 'PRINT PACKET' : keys[0].startsWith('kit-') ? 'ROOM KIT · ' + roomName(keys[0]) : (LABELS[keys[0]] || LABELS.host);
     const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST · ${label}";font:7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;
     return { html, label, pageCSS };
   }
-  return { CSS, FONTS, render, LABELS };
+  /* what to print each document on */
+  const PAPER = { host: 'Plain paper, double-sided', tags: 'Cardstock or sticker paper. Cut along the dashed lines', props: 'Cream or ivory paper for the legal papers; cardstock for the number board', badges: 'Cardstock. Cut along the dashed lines to fit 3×4 in badge holders', signs: 'Plain paper (cardstock for anything taped to a door)', welcome: 'Cardstock or glossy. A print shop can do 11×17 from the PNG', inspector: 'Plain paper', toast: 'Cardstock, so it doesn\'t shake in Alex\'s hand', notebook: 'Plain paper, double-sided', awards: 'Cream or ivory cardstock', dossiers: 'Plain paper', invite: 'Plain paper', sheets: 'Plain paper, one per player (fold in half)', kit: 'Mixed: see each item' };
+  return { CSS, FONTS, render, LABELS, PAPER, roomsOf: S => (S.rooms || []).map(r => ({ id: r.id, name: r.name })) };
 })();

@@ -29,9 +29,31 @@
 .loading{min-height:60vh;display:grid;place-items:center;font-family:var(--mono);letter-spacing:.2em;color:var(--cyan);font-size:12px}
 
 /* ---------- player navigation ---------- */
-.pnav{position:sticky;top:76px;z-index:19;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:5px;margin:-6px 0 16px;border:1px solid var(--line);border-radius:22px;background:rgba(18,17,23,.62);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)}
+.nsec{margin:0 0 18px}.nsec h3{font:600 12px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);margin:0 0 6px}
+.nhelp{font-size:13px;color:var(--muted);margin:0 0 10px}
+.nsus{border:1px solid var(--line);border-radius:12px;margin:0 0 6px;background:rgba(255,255,255,.02)}
+.nsus summary{display:flex;align-items:center;gap:8px;padding:9px 10px;cursor:pointer;list-style:none}.nsus summary::-webkit-details-marker{display:none}
+.nsus .nn{flex:1;min-width:0}.nsus .nn b{display:block;font-size:14.5px}.nsus .nn small{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nsus textarea{margin:0 10px 10px;width:calc(100% - 20px)}
+.nsus.star{border-color:rgba(212,162,76,.6);background:rgba(212,162,76,.07)}.nsus.out{opacity:.5}.nsus.out .nn b{text-decoration:line-through}
+.nbtn{flex:none;width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:15px;cursor:pointer}
+.nbtn.on[data-nstar]{color:var(--gold2);border-color:rgba(212,162,76,.6)}.nbtn.on[data-nout]{color:var(--red2);border-color:rgba(255,77,94,.5)}
+.ndot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none}
+.pc-h{font:600 12px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);margin:14px 0 8px}.pc-h small{font:12px var(--sans);letter-spacing:0;text-transform:none;color:var(--muted);margin-left:6px}
+.pc-kits{display:flex;flex-wrap:wrap;gap:6px}.pc-list{display:grid;gap:6px}
+.pc-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:rgba(255,255,255,.02)}
+.pc-pick{flex:1;display:flex;align-items:flex-start;gap:8px;cursor:pointer;min-width:0}.pc-pick input{margin-top:3px;flex:none}.pc-pick .t{min-width:0}.pc-pick .t b{display:block}.pc-pick small{display:block;font-family:var(--sans);font-size:12px;color:var(--muted)}.pc-pick .pc-paper{color:var(--cyan);margin-top:2px}
+.pc-n{display:flex;align-items:center;gap:2px;font:12px var(--mono);color:var(--muted)}.pc-n input{width:46px;padding:5px;border-radius:8px;border:1px solid var(--line);background:transparent;color:inherit;font:inherit}
+.pc-go{position:sticky;bottom:-1px;background:var(--bg,#121117);padding:12px 0 2px;margin-top:10px;align-items:center}
+.desk-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.desk-kpis div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.desk-kpis b{display:block;font-size:17px;color:var(--gold2)}.desk-kpis span{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.desk-list{display:grid;gap:6px}.desk-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);color:inherit;padding:9px 10px;cursor:pointer;font:inherit}
+.desk-row .nn{flex:1;min-width:0}.desk-row .nn b{display:block;font-size:14.5px}.desk-row .nn small{display:block;font-size:11.5px;color:var(--muted)}.desk-row.in{opacity:.65}
+.desk-row .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}.desk-row .dot.on{background:var(--green)}
+.nev{margin:0 0 10px}.nev b{display:block;font-size:13.5px;margin:0 0 4px}
+.pnav{position:sticky;top:76px;z-index:19;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:5px;margin:-6px 0 16px;border:1px solid var(--line);border-radius:22px;background:rgba(18,17,23,.62);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)}
 .pnav button{position:relative;border:0;background:transparent;border-radius:17px;padding:9px 4px 8px;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;transition:.25s}
 .pnav button svg{width:19px;height:19px;transition:transform .25s}
+@media (max-width:460px){.pnav{gap:2px;padding:4px}.pnav button{font-size:8.5px;letter-spacing:.04em;padding:8px 1px 7px}.pnav button span:not(.nb){white-space:nowrap}}
 .pnav button.on{color:var(--gold2);background:linear-gradient(180deg,rgba(212,162,76,.2),rgba(212,162,76,.07));box-shadow:inset 0 0 0 1px rgba(212,162,76,.38),0 6px 18px rgba(212,162,76,.12)}
 .pnav button.on svg{transform:translateY(-1px) scale(1.08)}
 .pnav .nb{position:absolute;top:5px;right:calc(50% - 20px);min-width:16px;height:16px;border-radius:999px;background:var(--red);color:#fff;font-size:9.5px;letter-spacing:0;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 10px rgba(255,77,94,.6);animation:pop .3s ease}
@@ -92,7 +114,7 @@
 .sec{padding:18px 0;border-top:1px solid var(--line);animation:rise .4s ease both}
 .sec:first-child{border-top:0}
 .sec h3{margin:0 0 8px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;display:flex;gap:8px;align-items:center}
-.sec p{margin:0;font-size:16.5px;line-height:1.7;color:#ece6da;max-width:72ch}
+.sec p{margin:0;font-size:16.5px;line-height:1.7;color:#ece6da;max-width:72ch;white-space:pre-line}
 .sec.key{background:linear-gradient(90deg,rgba(212,162,76,.1),transparent 80%);border-left:2px solid var(--gold);padding-left:16px;border-top:0;border-radius:0 16px 16px 0}
 .sec.key h3{color:var(--gold2)}
 .sec.role p{font-style:italic;color:var(--muted)}
@@ -307,6 +329,10 @@ details.more>summary::-webkit-details-marker{display:none}
 .nextbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:30;width:min(1148px,calc(100% - 24px));display:flex;gap:12px;align-items:center;padding:10px 10px 10px 18px;border:1px solid rgba(212,162,76,.45);border-radius:24px;background:rgba(22,19,16,.72);-webkit-backdrop-filter:var(--blur);box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 30px rgba(212,162,76,.15),inset 0 1px 0 rgba(255,255,255,.07);backdrop-filter:var(--blur);animation:barIn .5s cubic-bezier(.2,.8,.3,1.1) both}
 @keyframes barIn{from{transform:translate(-50%,120%)}}
 .nextbar .nx{flex:1;min-width:0}
+.nb-glance{display:flex;flex-direction:column;gap:4px;flex:none}
+.nb-glance button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:10px;padding:4px 9px;font:600 10.5px var(--mono);letter-spacing:.1em;cursor:pointer;white-space:nowrap}
+.nb-glance button.hot{color:#fff;border-color:rgba(255,77,94,.7);background:rgba(255,77,94,.22);animation:pulse 1.6s ease-in-out infinite}
+.getready{margin-top:10px;opacity:.85}
 .nextbar .nx small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--gold)}
 .nextbar .nx b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nextbar .nx span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -633,6 +659,7 @@ const ICON = {
   ev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>',
   people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>',
   file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+  notes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6M9 17h3"/><path d="m15.5 17.5 4-4"/></svg>',
   brief: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>'
 };
 
@@ -664,7 +691,7 @@ setInterval(() => {
 }, 20000);
 
 const ui = { built: null, bypass: false, drafts: {}, openCards: new Set(),selTarget: null, seenEvidence: null, tab: store.get('hostTab') || 'game', msgCache: {}, msgKey: null, loggedOpen: null, castFilter: '', scan: null, finds: {},
-  view: (() => { try { return sessionStorage.getItem('kane:view') || 'now'; } catch (e) { return 'now'; } })(), dirFilter: '', directory: [], evSeenCount: +(store.get('evSeen') || 0), succ: null };
+  view: (() => { const m = location.hash.match(/[#&]v=(\w+)/); if (m) return m[1]; try { return sessionStorage.getItem('kane:view') || 'now'; } catch (e) { return 'now'; } })(), dirFilter: '', directory: [], evSeenCount: +(store.get('evSeen') || 0), succ: null };
 const isHostDevice = () => store.get('hostDevice') === '1';
 const dead = () => deathsOf(S);
 const log = (t, k) => backend && !PREVIEW && logEvent(backend, t, k);
@@ -1061,9 +1088,10 @@ function dossierHTML(c, host = false) {
   const red = (rv && c.killer) || isDead;
   const secs = c.sections.map((s, i) => {
     if (s.hostOnly && !host) return '';
+    // before the killer learns the truth, their file must look like anyone else's: no sealed markers at all
     if (s.sealed && !rv) {
-      if (s.sealed === true) return `<div class="sec"><h3>${esc(s.h)}</h3>${sealedBlock()}</div>`;
-      return `<div class="sec ${s.role ? 'role' : ''}"><h3>${esc(s.h)}</h3><p>${esc(s.sealed)}</p><div style="margin-top:10px">${sealedBlock('ADDITIONAL RECORDS SEALED', [80])}</div></div>`;
+      if (s.sealed === true) return host ? `<div class="sec"><h3>${esc(s.h)}</h3>${sealedBlock()}</div>` : '';
+      return `<div class="sec ${s.role ? 'role' : ''}"><h3>${esc(s.h)}</h3><p>${esc(s.sealed)}</p>${host ? `<div style="margin-top:10px">${sealedBlock('ADDITIONAL RECORDS SEALED', [80])}</div>` : ''}</div>`;
     }
     const tag = s.hostOnly ? '<span class="pill gold">HOST ONLY</span>' : '';
     return `<div class="sec ${s.key ? 'key' : ''} ${s.role ? 'role' : ''}" style="animation-delay:${Math.min(i, 10) * 40}ms"><h3>${esc(s.h)} ${tag}</h3><p>${esc(s.t)}</p></div>`;
@@ -1118,10 +1146,81 @@ function directoryHTML(meId, filter) {
   }).join('')}</div>`).join('') || `<div class="empty">NO MATCHES</div>`;
 }
 
+/* ---------------- detective's notebook (the Notes tab) ----------------
+   Private to the player: saved on this phone, plus an encrypted copy on the player's own record
+   (locked with a key made from their code word) so a reload or a new phone gets it back. */
+const NOTES = { d: null, key: null, timer: 0 };
+const notesLocalKey = () => 'notes:' + (S.epoch || 0) + ':' + (ME && ME.c ? ME.c.id : '');
+async function loadNotes() {
+  if (!ME || ME.type !== 'player') return;
+  let d = null; try { d = JSON.parse(store.get(notesLocalKey()) || 'null'); } catch (e) { }
+  try { NOTES.key = await _stableKey(session.code, 'notes'); } catch (e) { NOTES.key = null; }
+  if (!d && NOTES.key) { const blob = (playerRec(ME.c.id) || {}).notes; if (blob && blob.ct) { try { d = await decryptJSON(NOTES.key, blob); } catch (e) { } } }
+  NOTES.d = Object.assign({ s: {}, tl: '', ev: {}, th: '' }, d || {});
+  ui.notesSig = null; renderNotes();
+}
+function saveNotes() {
+  if (!NOTES.d || !ME) return;
+  try { store.set(notesLocalKey(), JSON.stringify(NOTES.d)); } catch (e) { }
+  const st = $('#notesSaved'); if (st) st.textContent = 'SAVED';
+  clearTimeout(NOTES.timer);
+  if (PREVIEW || !backend) return;
+  NOTES.timer = setTimeout(async () => { if (!NOTES.key || !ME || ME.type !== 'player') return; try { await backend.update({ [PL(ME.c.id) + '/notes']: await encryptJSON(NOTES.key, NOTES.d) }); } catch (e) { console.warn('notes sync', e); } }, 2500);
+}
+function notesHTML() {
+  const c = ME.c, dd = dead(), N = NOTES.d, sus = id => N.s[id] || {};
+  const people = ui.directory.filter(d => d.id !== c.id && !spareLocked(S, d.id) && !castHidden(S, d.id)).map(dirEntry)
+    .sort((a, b) => (!!sus(b.id).f - !!sus(a.id).f) || (!!sus(a.id).x - !!sus(b.id).x));
+  const rel = releasedEvidence(S), relIds = new Set(rel.map(e => e.id));
+  const evs = rel.map(e => ({ id: e.id, title: e.title })).concat(Object.values(ui.finds).filter(f => !relIds.has(f.e.id)).map(f => ({ id: f.e.id, title: f.e.title, mine: true })));
+  const ta = (attr, val, ph, rows) => `<textarea class="input" ${attr} rows="${rows || 3}" maxlength="3000" placeholder="${esc(ph)}">${esc(val || '')}</textarea>`;
+  return `<p class="note" style="margin:0 0 14px">Your private notebook. Only you can read it, and it saves as you type. <span class="pill green" id="notesSaved" style="margin-left:4px">READY</span></p>
+    <div class="nsec"><h3>Suspects</h3><p class="nhelp">Tap a name to write what you've learned. ★ marks someone you suspect; ✕ rules them out.</p>
+      ${people.map(d => { const s = sus(d.id); return `<details class="nsus ${s.x ? 'out' : ''} ${s.f ? 'star' : ''}" ${s.t ? '' : ''}><summary><span class="nn"><b>${esc(d.name)}</b><small>${esc(d.title || '')}${d.id in dd ? ' · DECEASED' : ''}</small></span>${s.t ? '<span class="ndot" title="Has notes"></span>' : ''}<button type="button" class="nbtn ${s.f ? 'on' : ''}" data-nstar="${esc(d.id)}" aria-label="Suspect ${esc(d.name)}">★</button><button type="button" class="nbtn ${s.x ? 'on' : ''}" data-nout="${esc(d.id)}" aria-label="Rule out ${esc(d.name)}">✕</button></summary>
+        ${ta(`data-nsus="${esc(d.id)}"`, s.t, 'Motive? Where were they? What did they tell you?')}</details>`; }).join('') || '<div class="empty">THE DIRECTORY IS UNAVAILABLE ON THIS DEVICE</div>'}</div>
+    <div class="nsec"><h3>Timeline of the night</h3>${ta('data-nf="tl"', N.tl, '8:30 · Who was where? 8:55 · Who carried the glasses?', 6)}</div>
+    <div class="nsec"><h3>Evidence log</h3>${evs.length ? evs.map(e => `<div class="nev"><b>${esc(e.title)}${e.mine ? ' <span class="pill gold">ONLY YOU</span>' : ''}</b>${ta(`data-nev="${esc(e.id)}"`, N.ev[e.id], 'What does it mean? Who does it point to?', 2)}</div>`).join('') : '<p class="nhelp">Evidence appears here as it\'s found or revealed.</p>'}</div>
+    <div class="nsec"><h3>My theory</h3>${ta('data-nf="th"', N.th, 'The killer is ___ because ___', 4)}
+      ${S.flags.voting && !c.inspector && !(c.id in dd) ? '<button type="button" class="btn gold sm" id="useTheory" style="margin-top:10px">USE THIS IN MY ACCUSATION</button>' : ''}</div>`;
+}
+function renderNotes() {
+  const box = $('#notesBody'); if (!box || !ME || ME.type !== 'player') return;
+  if (!NOTES.d) { if (!box.innerHTML) box.innerHTML = '<div class="empty">OPENING YOUR NOTEBOOK…</div>'; return; }
+  if (box.contains(document.activeElement) && document.activeElement.tagName === 'TEXTAREA') return;   // never redraw under someone typing
+  const dd = dead(), N = NOTES.d;
+  const sig = JSON.stringify([ui.directory.length, S.unmasked, Object.keys(dd), S.site.spares || '', S.site.cast || '', S.site.castOnly, releasedEvidence(S).map(e => e.id), Object.keys(ui.finds), Object.entries(N.s).map(([k, v]) => k + (v.f ? 1 : 0) + (v.x ? 1 : 0) + (v.t ? 1 : 0)), !!S.flags.voting]);
+  if (sig === ui.notesSig) return;
+  const open = new Set([...box.querySelectorAll('details.nsus[open] [data-nsus]')].map(t => t.dataset.nsus));
+  ui.notesSig = sig; box.innerHTML = notesHTML();
+  open.forEach(id => { const t = box.querySelector(`[data-nsus="${CSS.escape(id)}"]`); if (t) t.closest('details').open = true; });
+}
+function bindNotes() {
+  const box = $('#notesBody'); if (!box) return;
+  box.addEventListener('input', e => {
+    const t = e.target; if (!NOTES.d) return;
+    if (t.dataset.nsus) NOTES.d.s[t.dataset.nsus] = Object.assign({}, NOTES.d.s[t.dataset.nsus], { t: t.value });
+    else if (t.dataset.nev) NOTES.d.ev[t.dataset.nev] = t.value;
+    else if (t.dataset.nf) NOTES.d[t.dataset.nf] = t.value;
+    else return;
+    saveNotes();
+  });
+  box.addEventListener('focusout', () => setTimeout(renderNotes, 50));
+  box.addEventListener('click', e => {
+    const st = e.target.closest('[data-nstar]'), ot = e.target.closest('[data-nout]');
+    if ((st || ot) && NOTES.d) {
+      e.preventDefault(); e.stopPropagation();
+      const id = (st || ot).dataset[st ? 'nstar' : 'nout'], cur = NOTES.d.s[id] || {};
+      NOTES.d.s[id] = Object.assign({}, cur, st ? { f: !cur.f, x: cur.f ? cur.x : false } : { x: !cur.x, f: cur.x ? cur.f : false });
+      saveNotes(); ui.notesSig = null; renderNotes(); return;
+    }
+    if (e.target.closest('#useTheory')) { const s = $('#stmtIn'); if (s) s.value = NOTES.d.th || ''; goView('now', 'votePanel'); toast('THEORY COPIED', 'Your theory is in the accusation form. Pick your suspect and submit.', 'ok'); }
+  });
+}
+
 /* ---------------- player view ---------------- */
 const mapHTML = () => `<div class="rooms">${ROOMS.map(r => { const o = roomOpen(S, r.id); return `<div class="room ${o ? 'open' : 'closed'} ${ui.freshRooms && ui.freshRooms.has(r.id) ? 'fresh' : ''}" title="${esc((!o && r.sealedDesc) || r.desc || '')}"><span class="ico">${o ? '◉' : '✕'}</span><span><b>${esc(roomLabel(S, r.id))}</b><small>${esc(r.place || '')}</small><span class="st">${r.alwaysOpen ? 'OPEN' : o ? 'OPEN FOR INVESTIGATION' : 'SEALED · DO NOT ENTER'}</span></span></div>`; }).join('')}</div>`;
 function playerShellHTML() {
-  const views = [['now', 'Now', ICON.now], ['brief', 'Brief', ICON.brief], ['evidence', 'Evidence', ICON.ev], ['people', "Who's Who", ICON.people], ['file', 'My File', ICON.file]];
+  const views = [['now', 'Now', ICON.now], ['brief', 'Brief', ICON.brief], ['evidence', 'Evidence', ICON.ev], ['notes', 'Notes', ICON.notes], ['people', "Who's Who", ICON.people], ['file', 'My File', ICON.file]];
   return `${topbar(ME.c.inspector ? 'INVESTIGATOR ACCESS' : 'SECURE PERSONNEL DOSSIER', `<button class="iconbtn askbtn" id="helpBtn">ASK HOSTS<span class="hnb hidden" id="helpNb"></span></button>`)}
     <nav class="pnav" id="pnav">${views.map(([k, l, ic]) => `<button data-view="${k}">${ic}<span>${l}</span><span class="nb hidden" id="nb-${k}"></span></button>`).join('')}</nav>
     <div class="view" data-v="now">
@@ -1147,6 +1246,9 @@ function playerShellHTML() {
     <div class="view hidden" data-v="evidence">
       <section class="panel" id="evidencePanel"><div class="ph"><h2>Evidence Locker</h2><span class="sub" id="evCount"></span></div><div id="evList"></div></section>
     </div>
+    <div class="view hidden" data-v="notes">
+      <section class="panel"><div class="ph"><h2>Detective's Notebook</h2><span class="sub">PRIVATE · ONLY YOU</span></div><div id="notesBody"></div></section>
+    </div>
     <div class="view hidden" data-v="people">
       <section class="panel gold"><div class="ph"><h2>Who's Who</h2><span class="sub">KANE OIL · GALA DIRECTORY</span></div>
         <div class="dir-tools"><input class="input" id="dirFilter" placeholder="Search names, titles, departments…"></div>
@@ -1156,6 +1258,7 @@ function playerShellHTML() {
       <section class="panel gold"><div class="ph"><h2>Your Brief</h2><span class="sub">HOW TO PLAY YOUR CHARACTER TONIGHT</span></div><div id="briefBody"></div></section>
     </div>
     <div class="view hidden" data-v="file">
+      <section class="panel gold hidden" id="deskPanel"></section>
       <section class="panel"><div class="ph"><h2>Personnel Dossier</h2><span class="sub">EYES ONLY</span></div><div id="dossierBody"></div></section>
     </div>`;
 }
@@ -1174,7 +1277,14 @@ function bindPlayer() {
   $('#checkinBox').addEventListener('click', e => { if (e.target.closest('#checkinBtn')) checkIn(); });
   $('#helpBtn').onclick = () => helpModal();
   ui.replySig = null; checkReplies();
-  goView(['now', 'brief', 'evidence', 'people', 'file'].includes(ui.view) ? ui.view : 'now');
+  NOTES.d = null; bindNotes(); loadNotes();
+  $('#deskPanel').addEventListener('click', async e => {
+    const b = e.target.closest('[data-deskin]'); if (!b || ME.c.id !== 'alex' || S.site.cohost !== true) return;
+    const cid = b.dataset.deskin, on = !S.checkins[cid];
+    try { await backend.update({ ['live/checkins/' + cid]: on ? backend.TS() : null }); log(on ? `${rname(cid)} checked in by Alex (co-host)` : `Check-in undone by Alex: ${rname(cid)}`, 'player'); }
+    catch (err) { toast('NOT ALLOWED', 'The host needs to switch your desk on (and update the database rules).', 'err'); }
+  });
+  goView(['now', 'brief', 'evidence', 'notes', 'people', 'file'].includes(ui.view) ? ui.view : 'now');
   $('#briefBody').addEventListener('change', e => { const cb = e.target.closest('[data-shared]'); if (cb) { store.set(sharedKey(cb.dataset.shared), cb.checked ? '1' : '0'); renderPlayer(); } });
   $('#dirFilter').addEventListener('input', e => { ui.dirFilter = e.target.value.toLowerCase(); renderPlayer(); });
   $('#voteForm').addEventListener('submit', e => {
@@ -1405,6 +1515,21 @@ function renderPlayer() {
   }).join('') : `<div class="empty">NOTHING REVEALED YET. SEARCH THE OPEN ROOMS FOR EVIDENCE TAGS.</div>`);
   if (ui.view === 'evidence') { ui.evSeenCount = evs.length; store.set('evSeen', String(evs.length)); }
 
+  renderNotes();
+
+  // Alex's co-host desk (only when the host switches it on)
+  const desk = $('#deskPanel'), deskOn = c.id === 'alex' && S.site.cohost === true;
+  desk.classList.toggle('hidden', !deskOn);
+  if (deskOn) {
+    const ppl = ui.directory.filter(d => !spareLocked(S, d.id) && !castHidden(S, d.id)).map(dirEntry).sort((a, b) => (!!S.checkins[a.id] - !!S.checkins[b.id]) || a.name.localeCompare(b.name));
+    const inN = ppl.filter(d => S.checkins[d.id]).length, onN = ppl.filter(d => isOnline(d.id)).length;
+    patch(desk, JSON.stringify([ppl.map(d => [d.id, S.checkins[d.id] || 0, isOnline(d.id), d.id in dd]), S.phase]),
+      `<div class="ph"><h2>Co-host Desk</h2><span class="sub">SWITCHED ON BY THE HOST</span></div>
+      <div class="desk-kpis"><div><b>${S.phase && S.phase.i >= 0 ? 'Phase ' + (S.phase.i + 1) : 'Not started'}</b><span>${S.phase && S.phase.ts ? 'since ' + fmtTime(S.phase.ts) : 'the night'}</span></div><div><b>${inN} / ${ppl.length}</b><span>checked in</span></div><div><b>${onN}</b><span>online now</span></div></div>
+      <p class="note" style="margin:10px 0">Tap a name to check that guest in. Ask which character they're playing. Tap again to undo.</p>
+      <div class="desk-list">${ppl.map(d => { const at = S.checkins[d.id]; return `<button type="button" class="desk-row ${at ? 'in' : ''}" data-deskin="${esc(d.id)}"><span class="dot ${isOnline(d.id) ? 'on' : ''}"></span><span class="nn"><b>${esc(d.name)}</b><small>${esc(d.title || '')}</small></span><span class="pill ${at ? 'green' : 'gold'}">${at ? '✓ ' + esc(fmtTime(at)) : 'CHECK IN'}</span></button>`; }).join('')}</div>`);
+  }
+
   // nav badges
   setNB('evidence', Math.max(0, evs.length - ui.evSeenCount));
   setNB('now', (S.flags.voting && !c.inspector && !iAmDead && !(playerRec(c.id) && playerRec(c.id).vote) ? 1 : 0) + (canVoteHint && !myHintVote ? 1 : 0));
@@ -1620,6 +1745,9 @@ function adminShellHTML() {
       </section>
       <section class="panel" id="switchPanel" data-fold="switches"><div class="ph"><h2>Manual Switches</h2><span class="sub">NEXT DOES THESE FOR YOU</span></div>${nightSwitches()}</section>
       <section class="panel gold" id="modePanel" data-fold="modes"><div class="ph"><h2>Website Mode</h2><span class="sub">AUTOMATIC · OR FORCE IT</span></div><p class="note" style="margin:0 0 10px">Both of these happen by themselves. Use these buttons if one doesn't, or to undo it. "Automatic" goes back to normal.</p>${modeHTML()}</section>
+      <section class="panel" id="cohostPanel"><div class="ph"><h2>Alex's Co-host Desk</h2><span class="sub" id="cohostSub">OFF</span></div>
+        <p class="note" style="margin:0 0 10px">Adds a small desk to the top of Alex's own dossier (My File) on her phone: she can <b>check guests in</b> and see the night at a glance (phase, who's online, who hasn't arrived). Nothing else. Anyone logged in as Alex gets it, so switch it off when you don't need it.</p>
+        <button class="btn" id="cohostBtn">TURN ON ALEX'S DESK</button></section>
     </div><div>
       <section class="panel red" id="emergPanel"><div class="ph"><h2>Emergency Tools</h2><span class="sub">IF ANYTHING GOES WRONG</span></div>
         <div class="relist">
@@ -1907,12 +2035,16 @@ function renderNextBar() {
   document.body.classList.toggle('has-nextbar', !!on);
   if (!on) { root.innerHTML = ''; root._sig = null; return; }
   const cur = S.phase && typeof S.phase.i === 'number' ? S.phase.i : -1, nx = HOST.show[cur + 1];
-  const sig = 'nb' + cur + (nx ? nx.id : '');
+  // at-a-glance on the bar: who's checked in, and open help flags (tap either to jump there)
+  const cast = [...new Set(Object.values(HOST.assign.map))], inN = cast.filter(cid => S.checkins[cid]).length;
+  const helpN = Object.values(S.asks).filter(a => a && !a.done && a.kind === 'help').length;
+  const glance = `<div class="nb-glance"><button type="button" data-gotab="players" data-gfilter="all" title="Checked in">✓ ${inN}/${cast.length} IN</button>${helpN ? `<button type="button" class="hot" data-gotab="inbox" data-inboxf="help" title="Open help flags">🚩 ${helpN} HELP</button>` : ''}</div>`;
+  const sig = 'nb' + cur + (nx ? nx.id : '') + '|' + inN + '/' + cast.length + '|' + helpN;
   if (root._sig === sig) return; root._sig = sig;
-  if (!nx) { root.innerHTML = `<div class="nextbar"><div class="nx"><small>THE END</small><b>That was the final phase.</b><span>Thank everyone, take the photo.</span></div></div>`; return; }
+  if (!nx) { root.innerHTML = `<div class="nextbar"><div class="nx"><small>THE END</small><b>That was the final phase.</b><span>Thank everyone, take the photo.</span></div>${glance}</div>`; return; }
   const needsAcc = (nx.actions || []).some(a => a.do === 'verdict' && a.stage === 'accuse');
   const acts = (nx.actions || []).map(actLabel).concat(phaseMemories(nx));
-  root.innerHTML = `<div class="nextbar"><div class="nx"><small>NEXT · ${esc(nx.time || '')}${nx.skippable ? ' · SKIPPABLE' : ''}</small><b>${esc(nx.title)}</b><span title="${esc(acts.join(' · '))}">${esc(acts.join(' · ') || 'No automatic actions')}</span></div>
+  root.innerHTML = `<div class="nextbar"><div class="nx"><small>NEXT · ${esc(nx.time || '')}${nx.skippable ? ' · SKIPPABLE' : ''}</small><b>${esc(nx.title)}</b><span title="${esc(acts.join(' · '))}">${esc(acts.join(' · ') || 'No automatic actions')}</span></div>${glance}
     <button class="hold" id="holdBtn" aria-label="Press and hold to start ${esc(nx.title)}"><span class="fill"></span><span class="lbl2">${needsAcc ? '⚖ CHOOSE ACCUSED<small>TAP</small>' : '▶ START<small>PRESS &amp; HOLD</small>'}</span></button></div>`;
   const b = $('#holdBtn'), fill = b.querySelector('.fill');
   if (needsAcc) { b.onclick = () => accusedPicker(cur + 1); return; }
@@ -1940,7 +2072,8 @@ function renderGame() {
       ${now.cue ? `<div class="cue"><b>YOUR CUE</b>${esc(now.cue)}</div>` : ''}
       ${now.host ? `<div class="say"><b>YOU SAY</b>${esc(fillLines(now.host))}</div>` : ''}
       ${now.script ? `<details class="more"><summary>▸ ${esc(now.scriptTitle || 'SCRIPT')}</summary><div class="say"><b>${esc(now.scriptTitle || 'SCRIPT')}</b>${esc(now.script)}</div></details>` : ''}
-      ${now.inspector ? `<details class="more"><summary>▸ THE INSPECTOR IS READING THIS</summary><div class="say"><b>INSPECTOR</b>${esc(fillLines(now.inspector))}</div></details>` : ''}</div>`
+      ${now.inspector ? `<details class="more"><summary>▸ THE INSPECTOR IS READING THIS</summary><div class="say"><b>INSPECTOR</b>${esc(fillLines(now.inspector))}</div></details>` : ''}
+      ${steps[cur + 1] && steps[cur + 1].cue ? `<details class="more getready"><summary>▸ GET READY FOR NEXT · ${esc(steps[cur + 1].title)}</summary><div class="cue"><b>NEXT CUE</b>${esc(steps[cur + 1].cue)}</div></details>` : ''}</div>`
     : `<div class="phase-now"><div class="k">NOT STARTED</div><h3>Ready when you are</h3><p class="note" style="margin:0">Press and hold <b>START</b> on the bar at the bottom of the screen. Each phase does everything it needs by itself: rooms, reports, deaths, the projector.</p></div>`)) { ui.flashPhase = false; tickTimer(); }
   patch($('#phaseList'), 'pl' + cur, steps.map((st, i) => `<div class="ph-row ${i < cur ? 'done' : i === cur ? 'cur' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="tm">${esc(st.time || '')}</span><span class="t">${esc(st.title)}${st.skippable ? ' <span class="pill">SKIPPABLE</span>' : ''}</span><button class="btn sm ghost" data-runphase="${i}">${i <= cur ? 'RE-RUN' : 'JUMP'}</button></div>`).join(''));
   renderNextBar();
@@ -2139,19 +2272,31 @@ function printModal() {
     ['invite', 'Invitation & Rules', 'Everything guests read. No spoilers', false],
     ['all', 'Everything', 'All of the above in one file', true]
   ];
-  openModal(`<div class="ph"><h2>Print the game</h2><span class="sub">OPENS IN A NEW TAB</span></div>
-    <p class="note" style="margin:0 0 12px">Built from the live story, your role assignments and your page edits. In the new tab, press <b>Print</b> or choose <b>Save as PDF</b>.</p>
-    <div class="relist">${docs.map(([k, t, d, secret]) => `<button class="reitem" style="text-align:left;cursor:pointer" data-print="${k}"><span class="pill ${secret ? 'red' : 'green'}">${secret ? 'SPOILERS' : 'SAFE'}</span><span class="t"><b>${t}</b><small style="font-family:var(--sans);font-size:12px">${d}</small></span></button>`).join('')}</div>`, true);
-  $$('[data-print]').forEach(b => b.onclick = () => { openPrint(b.dataset.print); closeModal(); });
+  const PAPER = (window.PrintKit && PrintKit.PAPER) || {}, kits = (HOST.rooms || []).map(r => ({ id: r.id, name: r.name }));
+  const row = ([k, t, d, secret]) => `<div class="pc-row"><label class="pc-pick"><input type="checkbox" data-pcpick="${k}"><span class="pill ${secret ? 'red' : 'green'}">${secret ? 'SPOILERS' : 'SAFE'}</span><span class="t"><b>${t}</b><small>${d}</small>${PAPER[k] ? `<small class="pc-paper">🖨 ${esc(PAPER[k])}</small>` : ''}</span></label>
+    ${k === 'all' ? '' : `<label class="pc-n" title="Copies">×<input type="number" min="1" max="20" value="1" data-pcn="${k}" aria-label="Copies of ${esc(t)}"></label>`}<button class="btn sm ghost" data-print="${k}">OPEN</button></div>`;
+  openModal(`<div class="ph"><h2>Print Center</h2><span class="sub">OPENS IN A NEW TAB</span></div>
+    <p class="note" style="margin:0 0 12px">Built from the live story, your role assignments and your page edits. Tick what you need, set copies, and press <b>PRINT SELECTED</b> for one combined file, or <b>OPEN</b> for a single document. In the new tab, press <b>Print</b> or choose <b>Save as PDF</b>.</p>
+    <h3 class="pc-h">Room kits <small>everything for one room, in one stack</small></h3>
+    <div class="pc-kits">${kits.map(r => `<button class="btn sm" data-print="kit-${esc(r.id)}">${esc(r.name)}</button>`).join('')}</div>
+    <h3 class="pc-h">Documents</h3>
+    <div class="pc-list">${docs.map(row).join('')}</div>
+    <div class="row-gap pc-go"><button class="btn gold" id="pcGo" disabled>PRINT SELECTED</button><span class="muted" id="pcSum" style="font-size:13px">Nothing ticked yet</span></div>`, true);
+  const sel = () => $$('[data-pcpick]').filter(c => c.checked).map(c => { const n = +(($(`[data-pcn="${c.dataset.pcpick}"]`) || {}).value || 1); return c.dataset.pcpick + (n > 1 ? '*' + Math.min(20, n) : ''); });
+  const upd = () => { const s = sel(); $('#pcGo').disabled = !s.length; $('#pcSum').textContent = s.length ? `${s.length} document${s.length > 1 ? 's' : ''} in one file` : 'Nothing ticked yet'; };
+  $$('[data-pcpick],[data-pcn]').forEach(el => el.addEventListener('input', upd));
+  $('#pcGo').onclick = () => { const s = sel(); if (s.length) { openPrint(s.includes('all') ? 'all' : s.join(',')); closeModal(); } };
+  $$('[data-print]').forEach(b => b.onclick = () => { const k = b.dataset.print, n = +(($(`[data-pcn="${k}"]`) || {}).value || 1); openPrint(k + (n > 1 ? '*' + Math.min(20, n) : '')); closeModal(); });
 }
 async function openPrint(which) {
   if (!window.PrintKit) { toast('PRINT UNAVAILABLE', 'printkit.js is missing from the site. Upload it next to database.html.', 'err'); return; }
   const w = window.open('', '_blank');
   if (!w) { toast('POP-UP BLOCKED', 'Allow pop-ups for this site, then press PRINT again.', 'err'); return; }
   w.document.write('<p style="font:16px sans-serif;padding:20px">Preparing…</p>');
-  if (['tags', 'props', 'signs', 'all'].includes(which)) { try { await loadQR(); } catch (e) { } }
+  const parts = String(which).split(',').map(k => k.split('*')[0]);
+  if (parts.some(k => ['tags', 'props', 'signs', 'all'].includes(k) || k.startsWith('kit-'))) { try { await loadQR(); } catch (e) { } }
   const qr = window.qrcode ? (text => { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createImgTag(5, 0); }) : null;
-  const played = new Set(Object.values(HOST.assign.map)), trim = ['badges', 'notebook'].includes(which) && S.site.castOnly !== false && played.size;
+  const played = new Set(Object.values(HOST.assign.map)), trim = parts.every(k => ['badges', 'notebook'].includes(k)) && S.site.castOnly !== false && played.size;
   const story = { characters: trim ? HOST.list.filter(c => played.has(c.id)) : HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId, hints: HOST.hints, directory: HOST.directory, puzzles: HOST.puzzles };
   const awards = {}; ['best', 'dressed', 'detective', 'liar'].forEach(k => { const el = $('#rc-' + k), v = el ? el.value.trim() : ((S.site.recap || {}).awards || {})[k]; if (v) awards[k] = v; });
   const r = PrintKit.render(story, party(), which, { qr, base: siteBase(), players: guestFor(), awards });
@@ -2459,6 +2604,9 @@ function bindAdmin() {
     await saveAssign(); log('Message templates updated'); toast('TEMPLATES SAVED', 'EMAIL INVITE, COPY INVITE and the reminders now use them.', 'ok');
   };
   $('#tplReset').onclick = () => confirmModal('Reset all the templates?', 'Goes back to the original wording.', 'RESET', async () => { HOST.assign.tpl = {}; await saveAssign(); fillTpl(); }, false);
+
+  // Alex's co-host desk
+  $('#cohostBtn').onclick = async () => { const on = S.site.cohost !== true; await backend.set('site/cohost', on ? true : null); log(on ? "Alex's co-host desk switched on" : "Alex's co-host desk switched off"); toast(on ? 'ALEX’S DESK ON' : 'ALEX’S DESK OFF', on ? 'It appears at the top of her My File tab.' : 'It disappears from her phone.', 'ok'); };
 
   // tools: emergency
   $('#emReload').onclick = () => confirmModal('Force refresh every device?', 'Every open phone, the projector and the invitation page reload. Everyone stays logged in.', 'REFRESH ALL', async () => { log('Forced refresh of all devices'); await backend.set('ctl/reload', Date.now()); }, false);
@@ -2954,6 +3102,8 @@ function renderGuests(who) {
     shown.length ? shown.map(card).join('') : rs.length ? `<div class="empty">NOBODY MATCHES THIS FILTER.</div>` : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
 }
 function renderTools() {
+  const chOn = S.site.cohost === true, chb = $('#cohostBtn');
+  if (chb) { chb.textContent = chOn ? "TURN OFF ALEX'S DESK" : "TURN ON ALEX'S DESK"; chb.className = 'btn ' + (chOn ? 'ghost' : 'gold'); $('#cohostSub').textContent = chOn ? 'ON · SHOWING ON HER PHONE' : 'OFF'; }
   const ps = projectorState(S);
   $('#projNow').textContent = 'NOW SHOWING · ' + ({ lockdown: 'LOCKDOWN', incident: 'DEATH ALERT', notice: 'ANNOUNCEMENT' }[ps.kind] || (SCENES[ps.kind] || ps.kind).toUpperCase());
   $$('#scenes [data-scene]').forEach(b => b.classList.toggle('on', b.dataset.scene === ps.kind));
