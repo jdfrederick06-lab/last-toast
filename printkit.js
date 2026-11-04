@@ -127,6 +127,31 @@ tr{break-inside:avoid}
 .sign.sealed{background:repeating-linear-gradient(-45deg,#fff 0 40pt,#fbe7ea 40pt 80pt);border-color:var(--red)}
 .sign.sealed::before{border-color:var(--red)}
 .sign.sealed .big{color:var(--red);font-family:'Segoe UI',Arial,sans-serif;letter-spacing:.12em;font-size:64pt}
+/* check-in table: the steps beside a big QR code to the database */
+.sign .ci{display:flex;align-items:center;gap:.45in;margin-top:10pt;text-align:left}
+.sign .ci ol{margin:0;padding-left:30pt;font:600 18pt/1.55 'Segoe UI',Arial,sans-serif;color:#2a3140}
+.sign .ci ol b{color:#94701f}
+.sign .ci .q{text-align:center;font:700 9pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+.sign .ci .q img{display:block;width:2in;height:2in;margin:0 auto 6pt;image-rendering:pixelated}
+/* the rules of the night, as a portrait poster for the bulletin board */
+@page poster{size:Letter;margin:.4in}
+.poster{page:poster;break-after:page;height:10.1in;box-sizing:border-box;border:3pt solid #0c1220;border-radius:10pt;padding:.42in .5in .6in;position:relative;background:#fff}
+.poster::before{content:"";position:absolute;inset:8pt;border:1pt solid var(--gold);border-radius:6pt;pointer-events:none}
+.poster .lg{width:.7in;height:.7in;margin:0 auto 4pt;display:block}
+.poster .k{font:700 10.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;text-align:center}
+.poster h2{font:700 40pt/1.02 'Cormorant Garamond',Georgia,serif;text-align:center;margin:4pt 0 2pt;color:#0c1220}
+.poster .sub{text-align:center;font:italic 12.5pt Georgia,serif;color:var(--muted);margin:0 0 12pt}
+.poster ol{list-style:none;padding:0;margin:0}
+.poster li{display:grid;grid-template-columns:.55in 1fr;gap:10pt;padding:12pt 0;border-top:1pt solid #e6dfcf;break-inside:avoid}
+.poster li i{font:700 32pt/1 'Cormorant Garamond',Georgia,serif;font-style:normal;color:var(--gold);text-align:right}
+.poster li b{display:block;font:700 16pt 'Segoe UI',Arial,sans-serif;color:#0c1220;margin-bottom:3pt}
+.poster li span{font-size:13pt;line-height:1.45;color:#2a3140}
+.poster.one{display:flex;flex-direction:column;align-items:center;text-align:center;padding:.6in .7in .8in}
+.poster.one .num{font:700 150pt/1 'Cormorant Garamond',Georgia,serif;color:var(--gold);margin:.35in 0 .1in}
+.poster.one h2{font-size:46pt;line-height:1.05;margin:0 0 6pt;max-width:6.3in}
+.poster.one .orn{color:var(--gold);font-size:14pt;margin:4pt 0 16pt}
+.poster.one p{font:21pt/1.5 Georgia,serif;color:#2a3140;margin:0;max-width:6.2in}
+.poster .ft{position:absolute;left:0;right:0;bottom:.3in;text-align:center;font:8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
 .sign .arrow{font:700 120pt/1 'Segoe UI',Arial,sans-serif;color:var(--gold);margin:-10pt 0 0}
 .sign .qr img{width:1.6in;height:1.6in;image-rendering:pixelated}
 /* evidence props: one per page */
@@ -426,15 +451,28 @@ tr{break-inside:avoid}
       const gala = rooms.find(r => r.alwaysOpen) || rooms[0] || { name: 'The Gala Hall' };
       const out = [];
       out.push(sign('dark', 'Kane Oil &amp; Energy · Annual Gala', esc(P.title || 'The Last Toast'), esc(P.subtitle || 'A Murder Mystery Evening'), `${esc(hosted)}<br>${esc(P.date || '')}${P.time ? ' · ' + esc(P.time) : ''}`));
-      out.push(sign('', 'This way to the gala', esc(gala.name), '', '', `<div class="arrow">→</div>`));
-      out.push(sign('', 'This way to the gala', esc(gala.name), '', '', `<div class="arrow">←</div>`));
+      // check-in table: what to do the moment you arrive, with a QR code straight into the database
+      const dbQR = opts.qr ? opts.qr((opts.base || '') + 'database.html') : '';
+      out.push(sign('', 'Kane Oil &amp; Energy · Annual Gala', 'Check-In', '', 'Lost your code word? Ask at this table.', `<div class="ci"><ol><li>Give your name to a host</li><li>Collect your <b>name badge</b></li><li>Scan the code and enter <b>your code word</b></li><li>Tap <b>I'VE ARRIVED</b> on your phone</li></ol>${dbQR ? `<div class="q">${dbQR}Kane Oil Database</div>` : ''}</div>`));
+      // directions to every room: right, left and straight ahead, plus "up the stairs" for rooms off the 1st floor.
+      // The study gets none: it's behind the paper wall in the Gala Hall, and a sign would give the plot away.
+      rooms.filter(r => !r.sealedName).forEach(r => {
+        const upstairs = !/1st[- ]floor|ground/i.test(r.place || ''), where = esc((r.place || '').replace(/^Conway Hall · /, ''));
+        [['→', ''], ['←', ''], ['↑', '']].concat(upstairs ? [['↑', 'Up the stairs']] : []).forEach(([a, m]) => out.push(sign(r.alwaysOpen ? 'dark' : '', r.alwaysOpen ? 'This way to the gala' : 'This way to', esc(r.name), m, where, `<div class="arrow">${a}</div>`)));
+      });
       rooms.forEach(r => out.push(sign(r.alwaysOpen ? 'dark' : '', esc(r.sign || 'Kane Oil & Energy'), esc(r.name), '', esc(r.alwaysOpen ? 'Welcome. Find the Investigation Board, the coat check and the charging station inside.' : (r.desc || 'Private.')))));
       rooms.filter(r => !r.alwaysOpen).forEach(r => out.push(sign('sealed', 'Kane Oil Security', 'SEALED', esc(r.sealedName || r.name),'Do not enter until the Kane Oil Database on your phone shows this room as <b>OPEN</b>.')));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Evidence Tags', 'Found a Kane Oil evidence tag?', 'Scan it with your phone camera, then log in if asked. You decide whether to reveal it to everyone or keep it for now. <b>Please leave the tag where you found it.</b>'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'The Investigation Board', 'Pin revealed evidence here', 'Found something? Once it\'s revealed, add a copy to the board so everyone can connect the dots.'));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Coat Check', '', 'Please leave coats and bags here. Kane Oil & Energy is not responsible for anything you find in them.'));
+      ['→', '←', '↑'].forEach(a => out.push(sign('', 'Kane Oil &amp; Energy', 'Restrooms', '', '', `<div class="arrow">${a}</div>`)));
       out.push(sign('', 'Kane Oil &amp; Energy', 'Charging Station', 'Keep your terminal alive', 'Your phone is your dossier, your evidence scanner and your vote. Charge it here.'));
       out.push(sign('', 'Guest Wi-Fi', 'Wi-Fi', '', '<span style="font-size:20pt;line-height:2">Network: ______________________<br>Password: ______________________</span><br>Then open the Kane Oil Database from your role text.'));
+      // the rules of the night: one poster per rule, for the bulletin board
+      const rules = P.rules || [];
+      rules.forEach((r, i) => out.push(`<section class="poster one"><div class="lg">${LOGOSM('#94701f')}</div><div class="k">Rules of the Night · ${i + 1} of ${rules.length}</div>
+        <div class="num">${i + 1}</div><h2>${esc(r.title)}</h2><div class="orn">✦</div><p>${esc(r.text)}</p>
+        <div class="ft">Kane Oil &amp; Energy · ${esc(P.title || 'The Last Toast')}</div></section>`));
       out.push(sign('dark', 'Private event in progress', esc(P.title || 'The Last Toast'), 'A Kane Oil murder mystery', `${esc(hosted)}. Please keep hallway noise down. Thank you!`));
       return out.join('');
     };

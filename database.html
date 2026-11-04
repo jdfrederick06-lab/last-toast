@@ -492,6 +492,12 @@ body.has-nextbar #app{padding-bottom:120px}
 /* ---------- host: guests ---------- */
 .pill.new{border-color:rgba(247,220,154,.8);color:#1b1206;background:var(--gold-grad);box-shadow:0 0 12px rgba(212,162,76,.5);cursor:pointer;font-family:inherit}
 .pill.roll{border-color:rgba(201,184,255,.6);color:var(--cyan);background:rgba(201,184,255,.1)}
+.pill.nudged{border-color:rgba(201,184,255,.45);color:var(--cyan)}
+.nudgebar{border:1px solid rgba(201,184,255,.45);background:rgba(201,184,255,.06);border-radius:10px;padding:12px 14px;margin:0 0 14px}
+.nudgebar h3{margin:0 0 4px;font-size:13px;letter-spacing:.14em;color:var(--cyan)}
+.nudgebar p{margin:0 0 10px;font-size:13px;line-height:1.5;color:var(--muted)}
+.nudgebar .prog{height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;margin:0 0 10px}
+.nudgebar .prog i{display:block;height:100%;background:var(--cyan)}
 .pill.spare{border-color:rgba(95,227,168,.5);color:var(--green)}
 .pstats button.hot{border-color:rgba(212,162,76,.7);box-shadow:0 0 14px rgba(212,162,76,.25)}
 .guest .top{cursor:pointer}
@@ -747,7 +753,7 @@ async function adopt(b) {
   setTimeout(syncPhotos, 0);
 }
 /* the host's locked assignments: roles, invites, backups, photo vetoes, plus deleted RSVPs (trash) and message templates (tpl) */
-const blankAssign = () => ({ map: {}, sent: {}, chain: {}, nophoto: {}, invites: {}, trash: {}, tpl: {} });
+const blankAssign = () => ({ map: {}, sent: {}, chain: {}, nophoto: {}, invites: {}, trash: {}, tpl: {}, nudged: {} });
 async function syncAssign() {
   if (!HOST) return;
   const blob = S.assign, ct = blob ? blob.ct : '';
@@ -1547,6 +1553,7 @@ function adminShellHTML() {
         <div class="row-gap" style="margin-top:10px"><button class="btn sm" id="copyAllInvites">COPY ALL INVITE LINKS</button><button class="btn sm" id="copyContacts">COPY CONTACT LIST</button><button class="btn sm" id="emailReminder">EMAIL REMINDER TO ALL</button><button class="btn sm ghost" id="copyReminder">COPY REMINDER</button><button class="btn sm ghost" data-cract="backup">⤓ BACKUP RSVPS</button></div>
         <p class="note" style="margin:8px 0 0">Spreadsheet-ready lists. Only this host terminal can read them.</p></details>
       <p class="note" style="margin:0 0 12px">Tap a guest to open their card. Give each guest a character, then send their <b>personal invitation</b>: they accept, decline or ask for a different role, and their code word appears once they accept. <span class="pill must">★ MUST CAST</span> roles carry the solution, so fill them first. <span class="pill new">NEW</span> is a reply you haven't looked at yet; <span class="pill roll">ROLLING</span> came in after the reply-by date.</p>
+      <div id="nudgeBar"></div>
       <div id="openRoles"></div>
       <div id="rsvpList"></div>
     </section>
@@ -1663,6 +1670,12 @@ function adminShellHTML() {
         <div style="height:10px"></div>
         <label class="lbl" for="tpl-reminder">Reminder to everyone coming</label>
         <textarea class="input" id="tpl-reminder" style="min-height:190px"></textarea>
+        <div style="height:10px"></div>
+        <label class="lbl" for="tpl-nudgeOpen">Reminder: hasn't opened their invitation (Guests → Not opened)</label>
+        <textarea class="input" id="tpl-nudgeOpen" style="min-height:190px"></textarea>
+        <div style="height:10px"></div>
+        <label class="lbl" for="tpl-nudgeReply">Reminder: opened it but hasn't replied (Guests → No reply)</label>
+        <textarea class="input" id="tpl-nudgeReply" style="min-height:190px"></textarea>
         <div class="row-gap" style="margin-top:10px"><button class="btn gold" id="tplSave">SAVE TEMPLATES</button><button class="btn ghost" id="tplReset">RESET TO DEFAULT</button></div>
       </section>
     </div><div>
@@ -2135,7 +2148,7 @@ async function openPrint(which) {
   const w = window.open('', '_blank');
   if (!w) { toast('POP-UP BLOCKED', 'Allow pop-ups for this site, then press PRINT again.', 'err'); return; }
   w.document.write('<p style="font:16px sans-serif;padding:20px">Preparing…</p>');
-  if (['tags', 'props', 'all'].includes(which)) { try { await loadQR(); } catch (e) { } }
+  if (['tags', 'props', 'signs', 'all'].includes(which)) { try { await loadQR(); } catch (e) { } }
   const qr = window.qrcode ? (text => { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createImgTag(5, 0); }) : null;
   const played = new Set(Object.values(HOST.assign.map)), trim = ['badges', 'notebook'].includes(which) && S.site.castOnly !== false && played.size;
   const story = { characters: trim ? HOST.list.filter(c => played.has(c.id)) : HOST.list, evidence: HOST.evidence, show: HOST.show, rooms: HOST.rooms, solution: HOST.solution, hostNotes: HOST.notes, inspectorId: HOST.inspectorId, hints: HOST.hints, directory: HOST.directory, puzzles: HOST.puzzles };
@@ -2261,7 +2274,7 @@ function bindAdmin() {
       const key = s.dataset.assign, prev = HOST.assign.map[key] || '';
       if (s.value) HOST.assign.map[key] = s.value; else delete HOST.assign.map[key];
       (HOST.assign.seen = HOST.assign.seen || {})[key.split('#')[0]] = 1;
-      if (prev !== s.value) { delete HOST.assign.sent[key]; if ((HOST.assign.invites || {})[key]) await revokeInvite(key, true); }
+      if (prev !== s.value) { delete HOST.assign.sent[key]; delete (HOST.assign.nudged || {})[key]; if ((HOST.assign.invites || {})[key]) await revokeInvite(key, true); }
       await saveAssign(); return;
     }
     const bk = e.target.closest('[data-addbackup]');
@@ -2303,7 +2316,14 @@ function bindAdmin() {
     const ok = await copyText(rows.map(r => r.join('\t')).join('\n'));
     toast(ok ? 'COPIED' : 'COPY FAILED', ok ? `${rows.length - 1} guests. Paste into Google Sheets or Excel.` : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err');
   });
+  $('#nudgeBar').addEventListener('click', async e => {
+    const nf = e.target.closest('[data-nudgefilter]'); if (nf) { ui.guestStatus = nf.dataset.nudgefilter; renderAdmin(true); return; }
+    const nn = e.target.closest('[data-nudgenext]');
+    if (nn) { const key = ui.nudgeNext; if (!key) return; nn.disabled = true; await sendNudge(key, emailOf(key)); }
+  });
   $('#rsvpList').addEventListener('click', async e => {
+    const ne = e.target.closest('[data-nudgeemail]'); if (ne) { await sendNudge(ne.dataset.nudgeemail, ne.dataset.email); return; }
+    const nm = e.target.closest('[data-nudgemsg]'); if (nm) { await copyNudge(nm.dataset.nudgemsg); return; }
     const rb = e.target.closest('[data-rmbackup]');
     if (rb) { const [key, idx] = rb.dataset.rmbackup.split('|'); (HOST.assign.chain[key] || []).splice(+idx, 1); await saveAssign(); return; }
     const ie = e.target.closest('[data-invemail]');
@@ -2428,14 +2448,16 @@ function bindAdmin() {
   $('#roomRevert').onclick = () => confirmModal("Use the story's rooms?", 'Removes your room names and locations and goes back to the ones in the story.', 'REVERT', async () => { await backend.set('site/rooms', null); log('Rooms reverted to the story'); }, false);
 
   // tools: message templates (kept inside the host's locked assignments)
-  const fillTpl = () => { const t = HOST.assign.tpl || {}; $('#tpl-invite').value = t.invite || TPL.invite; $('#tpl-reminder').value = t.reminder || TPL.reminder; };
+  const TPL_KEYS = ['invite', 'reminder', 'nudgeOpen', 'nudgeReply'];
+  const fillTpl = () => { const t = HOST.assign.tpl || {}; TPL_KEYS.forEach(k => { $('#tpl-' + k).value = t[k] || TPL[k]; }); };
   $('#tplSave').onclick = async () => {
-    const inv = $('#tpl-invite').value.trim(), rem = $('#tpl-reminder').value.trim();
-    if (inv && !inv.includes('{link}')) { toast('ADD {link}', 'The invitation needs {link} somewhere, or guests will have no way to open their role.', 'err'); return; }
-    HOST.assign.tpl = { invite: inv && inv !== TPL.invite ? inv : '', reminder: rem && rem !== TPL.reminder ? rem : '' };
+    const v = Object.fromEntries(TPL_KEYS.map(k => [k, $('#tpl-' + k).value.trim()]));
+    const noLink = ['invite', 'nudgeOpen', 'nudgeReply'].find(k => v[k] && !v[k].includes('{link}'));
+    if (noLink) { toast('ADD {link}', (noLink === 'invite' ? 'The invitation' : 'That reminder') + ' needs {link} somewhere, or guests will have no way to open their role.', 'err'); return; }
+    HOST.assign.tpl = Object.fromEntries(TPL_KEYS.map(k => [k, v[k] && v[k] !== TPL[k] ? v[k] : '']));
     await saveAssign(); log('Message templates updated'); toast('TEMPLATES SAVED', 'EMAIL INVITE, COPY INVITE and the reminders now use them.', 'ok');
   };
-  $('#tplReset').onclick = () => confirmModal('Reset both templates?', 'Goes back to the original wording.', 'RESET', async () => { HOST.assign.tpl = {}; await saveAssign(); fillTpl(); }, false);
+  $('#tplReset').onclick = () => confirmModal('Reset all the templates?', 'Goes back to the original wording.', 'RESET', async () => { HOST.assign.tpl = {}; await saveAssign(); fillTpl(); }, false);
 
   // tools: emergency
   $('#emReload').onclick = () => confirmModal('Force refresh every device?', 'Every open phone, the projector and the invitation page reload. Everyone stays logged in.', 'REFRESH ALL', async () => { log('Forced refresh of all devices'); await backend.set('ctl/reload', Date.now()); }, false);
@@ -2502,8 +2524,53 @@ function roleMessage(name, c, backups) {
 /* message templates: the host can reword these in Tools → Message Templates (saved in the locked assignments) */
 const TPL = {
   invite: `Hi {first}!\n\nThank you so much for joining us for {title} on {date}.\n\nYour role is ready, and it's sealed just for you. Open your private invitation to find out who you'll be:\n{link}\n\nYou can accept the role there or ask for a different one. Once you accept, you'll get your secret code word and can step into the Kane Oil Database to read your dossier and brief.\n\nThis link is only for you, so please don't share it.\n\n{from}`,
-  reminder: `You're invited to {title}, and it's almost here!\n\n{date} · {time}\n{venue}, {address}\nDress: {dress}\n\nBefore you come:\n• Log in at {database} with your code word and read your dossier (My File) and your Brief.\n• Plan your costume. The costume idea in your role email is only a suggestion.\n• Charge your phone. You'll use it all night.\n\nArrive on time: the story starts the moment the doors open.\n\n{hosts}`
+  reminder: `You're invited to {title}, and it's almost here!\n\n{date} · {time}\n{venue}, {address}\nDress: {dress}\n\nBefore you come:\n• Log in at {database} with your code word and read your dossier (My File) and your Brief.\n• Plan your costume. The costume idea in your role email is only a suggestion.\n• Charge your phone. You'll use it all night.\n\nArrive on time: the story starts the moment the doors open.\n\nGot a question about anything (your character, your costume, how the night works)? Just reply to this email. We're happy to answer any of your questions!\n\n{hosts}`,
+  nudgeOpen: `Hi {first}!\n\nJust a quick reminder: your character for {title} is ready, and it's sealed just for you. You haven't opened it yet!\n\nThe party is {date}, {time}, in {venue}, so now's the perfect time to find out who you'll be and start planning your costume.\n\nOpen your private invitation here:\n{link}\n\nIt only takes a minute. You'll see your character and can accept the role, or ask for a different one if it's not quite right for you.\n\nGot any questions about your role, costumes or how the night works? Just reply to this email. We're happy to answer any of your questions!\n\nPlease don't share this link: it's only for you, and it unlocks your character's secrets.\n\nCan't wait to see you there!\n{from}`,
+  nudgeReply: `Hi {first}!\n\nWe saw you opened your role for {title}. We just need you to confirm it!\n\nOpen your invitation again here and tap Accept the role:\n{link}\n\nAs soon as you accept, you'll get your secret code word, which unlocks your dossier and your brief in the Kane Oil Database. That's where you'll find your character's secrets, your goals for the night, and costume ideas.\n\nIf you'd like a different character, or your plans have changed and you can't make it, you can tell us right there too. Totally fine either way, we just need to know so we can plan the night.\n\nNot sure about something? Just reply to this email. We're happy to answer any of your questions!\n\nThe party is {date}, {time}, in {venue}.\n\nSee you at the gala!\n{from}`
 };
+const NUDGE = { unopened: { tpl: 'nudgeOpen', subj: t => 'Your role for ' + t + ' is waiting', label: 'Not opened yet' }, waiting: { tpl: 'nudgeReply', subj: t => 'Quick question: are you in for ' + t + '?', label: 'Opened, no reply' } };
+/* which reminder a guest spot needs right now ('unopened' / 'waiting'), or '' */
+const nudgeKind = k => !k.cid || k.resp ? '' : k.opened ? 'waiting' : k.sent ? 'unopened' : '';
+const NUDGE_FRESH = 20 * 3600e3;   // a reminder sent in the last 20 hours counts as "done for today"
+const emailOf = key => ((HOST.rsvpSec[key.split('#')[0]] || {}).d || {}).email || '';
+/* the bar above the guest list: send this group's reminders one at a time (each one carries that guest's own link) */
+function nudgeBarHTML(spots, K, f) {
+  const group = kind => spots.filter(s => nudgeKind(K[s]) === kind);
+  if (!NUDGE[f]) {
+    const a = group('unopened').filter(s => !K[s].nudged).length, b = group('waiting').filter(s => !K[s].nudged).length;
+    if (!a && !b) return '';
+    return `<div class="nudgebar" style="padding:10px 14px"><div class="row-gap" style="align-items:center"><b style="color:var(--cyan);font-size:13px;letter-spacing:.1em">↻ REMINDERS TO SEND</b>${a ? `<button class="btn sm" data-nudgefilter="unopened">${a} haven't opened ▸</button>` : ''}${b ? `<button class="btn sm" data-nudgefilter="waiting">${b} haven't replied ▸</button>` : ''}</div></div>`;
+  }
+  const list = group(f), fresh = s => K[s].nudged && Date.now() - K[s].nudged < NUDGE_FRESH;
+  if (!list.length) return '';
+  const done = list.filter(fresh).length, todo = list.filter(s => !fresh(s)), mail = todo.filter(s => emailOf(s)), noMail = todo.filter(s => !emailOf(s));
+  ui.nudgeNext = mail[0] || '';
+  const nm = s => esc(guestName(s));
+  const head = f === 'unopened' ? "Reminders · haven't opened their invitation" : "Reminders · opened it, haven't replied";
+  return `<div class="nudgebar"><h3>${head.toUpperCase()}</h3>
+    <p>Each reminder has that guest's <b>personal link</b> in it, so they go one at a time. Press the button, hit <b>Send</b> in your email app, then come back for the next one. Every reminder tells them you're happy to answer any of their questions.</p>
+    <div class="prog"><i style="width:${Math.round(done / list.length * 100)}%"></i></div>
+    <div class="row-gap" style="align-items:center">${mail.length ? `<button class="btn sm gold" data-nudgenext="${f}">✉ EMAIL NEXT: ${nm(mail[0])}${mail.length > 1 ? ` (${mail.length} left)` : ''}</button>` : `<span class="pill green">✓ ${done === list.length ? 'EVERYONE HERE WAS REMINDED TODAY' : 'EVERY EMAIL REMINDER IS SENT'}</span>`}<span class="muted" style="font-size:12px">${done} of ${list.length} reminded today</span><span class="sp"></span><button class="btn sm ghost" data-gotab="tools" data-jumpto="tplPanel">EDIT THE WORDING</button></div>
+    ${noMail.length ? `<p style="margin:10px 0 0">No email on file for ${noMail.map(nm).join(', ')}. Use <b>COPY REMINDER</b> on their card and text it to them.</p>` : ''}</div>`;
+}
+async function sendNudge(key, email) {
+  const kind = nudgeKind(keyStatus(key)); if (!kind) { toast('NO REMINDER NEEDED', `${firstName(guestName(key))} has already answered.`, 'ok'); return; }
+  const inv = await ensureInvite(key); if (!inv) { toast('NO ROLE YET', 'Assign a character first.', 'err'); return; }
+  const P = party(), t = P.title || 'The Last Toast', plus = key.includes('#');
+  location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(NUDGE[kind].subj(t) + (plus ? ' (for ' + firstName(guestName(key)) + ')' : '')) + '&body=' + encodeURIComponent(nudgeMessage(key, inviteLink(inv), kind));
+  (HOST.assign.nudged = HOST.assign.nudged || {})[key] = Date.now(); await saveAssign(); log(`Reminder emailed to ${guestName(key)} (${NUDGE[kind].label.toLowerCase()})`);
+}
+async function copyNudge(key) {
+  const kind = nudgeKind(keyStatus(key)); if (!kind) { toast('NO REMINDER NEEDED', `${firstName(guestName(key))} has already answered.`, 'ok'); return; }
+  const inv = await ensureInvite(key); if (!inv) return;
+  const ok = await copyText(nudgeMessage(key, inviteLink(inv), kind));
+  if (ok) { (HOST.assign.nudged = HOST.assign.nudged || {})[key] = Date.now(); await saveAssign(); }
+  toast(ok ? 'REMINDER COPIED' : 'COPY FAILED', ok ? `Paste it into a private message to ${firstName(guestName(key))}. It has their personal link.` : 'Your browser blocked the clipboard.', ok ? 'ok' : 'err');
+}
+function nudgeMessage(key, link, kind) {
+  const name = guestName(key), plus = key.includes('#'), t = NUDGE[kind].tpl;
+  return `${plus ? "(This is a reminder for your plus-one. Please forward it to them privately.)\n\n" : ''}${fillTemplate((HOST.assign.tpl || {})[t] || TPL[t], { first: firstName(name), name, link })}`;
+}
 function fillTemplate(t, extra) {
   const P = party(), v = Object.assign({ title: P.title || 'The Last Toast', date: P.date || '', time: P.time || '', venue: P.venue || '', address: P.address || '', dress: P.dress || '', database: siteBase() + 'database.html', from: hostSign(),
     hosts: [P.host ? 'Hosted by ' + P.host : '', P.sponsor ? 'Sponsored by ' + P.sponsor : ''].filter(Boolean).join(' · ') }, extra || {});
@@ -2551,7 +2618,7 @@ function inviteMessage(key, link) {
 function keyStatus(key) {
   const cid = HOST.assign.map[key] || null, inv = (HOST.assign.invites || {})[key] || null, st = inv && inv.cid === cid ? (S.inviteStatus[inv.id] || {}) : {};
   const rid = key.split('#')[0], r = S.rsvps[rid];
-  return { cid, inv, sent: HOST.assign.sent[key] || st.opened || 0, opened: st.opened || 0, resp: st.resp || '', note: st.note || '', at: st.at || 0, inAt: cid ? S.checkins[cid] || 0 : 0, photo: cid ? !!S.photos[cid] : false, isNew: isNewRsvp(rid), rolling: isRolling(r) };
+  return { cid, inv, sent: HOST.assign.sent[key] || st.opened || 0, opened: st.opened || 0, resp: st.resp || '', note: st.note || '', at: st.at || 0, inAt: cid ? S.checkins[cid] || 0 : 0, photo: cid ? !!S.photos[cid] : false, isNew: isNewRsvp(rid), rolling: isRolling(r), nudged: (HOST.assign.nudged || {})[key] || 0 };
 }
 /* ---------------- host: new and rolling RSVPs ----------------
    NEW = a reply the host hasn't looked at yet (synced across host devices in the locked assignments).
@@ -2578,6 +2645,7 @@ function statusPills(k) {
     k.sent ? pill('green', 'INVITE SENT ' + whenStr(k.sent)) : pill('gold', 'INVITE NOT SENT'),
     k.opened ? pill('green', 'OPENED ' + whenStr(k.opened)) : k.sent ? pill('', 'NOT OPENED YET') : '',
     k.resp === 'accepted' ? pill('green', '✓ ACCEPTED') : k.resp === 'declined' ? pill('red', 'DECLINED') : k.resp === 'swap' ? pill('gold', 'WANTS A DIFFERENT ROLE') : k.opened ? pill('', 'NO REPLY YET') : '',
+    k.nudged && nudgeKind(k) ? pill('nudged', '↻ REMINDED ' + whenStr(k.nudged)) : '',
     k.inAt ? pill('green', 'CHECKED IN ' + fmtTime(k.inAt)) : ''
   ].join('');
 }
@@ -2644,7 +2712,7 @@ function rsvpModal(id) {
       const rec = { name, attending: att, ts: (r && r.ts) || backend.TS(), plusOne: hasPlus, plusOneName: hasPlus ? $('#mrPlusName').value.trim() : '', pref: going ? $('#mrPref').value : '', sec: await sealForHost(priv), byHost: r ? !!r.byHost : true, ...(owner ? { uid: owner } : {}) };
       // a role whose guest is no longer coming goes back in the pool
       const drop = [...(going ? [] : [rid]), ...(hasPlus ? [] : [rid + '#p'])].filter(k => HOST.assign.map[k]);
-      for (const k of drop) { await revokeInvite(k, true); delete HOST.assign.map[k]; delete HOST.assign.sent[k]; delete (HOST.assign.chain || {})[k]; }
+      for (const k of drop) { await revokeInvite(k, true); delete HOST.assign.map[k]; delete HOST.assign.sent[k]; delete (HOST.assign.nudged || {})[k]; delete (HOST.assign.chain || {})[k]; }
       await backend.set('rsvps/' + rid, rec);
       if (drop.length) await saveAssign();
       log(`${r ? 'RSVP edited' : 'RSVP added'} by the host: ${name}`);
@@ -2820,6 +2888,7 @@ function renderGuests(who) {
   const f = ui.guestStatus || 'all', q = (ui.guestQ || '').toLowerCase();
   const fCount = k => k === 'all' ? allSpots.length : k === 'new' ? rs.filter(([id]) => isNewRsvp(id)).length : k === 'rolling' ? rs.filter(([, r]) => isRolling(r)).length : allSpots.filter(s => keyMatches(K[s], k)).length;
   patch($('#pstats'), JSON.stringify([K, f, rs.length]), STATUS_FILTERS.map(([k, l]) => { const n = fCount(k); return `<button data-gstat="${k}" class="${f === k ? 'on' : ''} ${k === 'new' && n ? 'hot' : ''}"><b>${n}</b><span>${l}</span></button>`; }).join(''));
+  patch($('#nudgeBar'), JSON.stringify([K, f, Object.keys(HOST.rsvpSec).map(k => k + !!(HOST.rsvpSec[k].d || {}).email)]), nudgeBarHTML(allSpots, K, f));
   const taken = {}; for (const [key, cid] of Object.entries(HOST.assign.map)) taken[cid] = key;
   const inChains = new Set(Object.values(HOST.assign.chain || {}).flat());
   const mustOpen = HOST.list.filter(c => c.mustCast && !who[c.id]), openCore = HOST.list.filter(c => c.tier !== 'ext' && !c.mustCast && !who[c.id]);
@@ -2857,10 +2926,12 @@ function renderGuests(who) {
     const assignRow = (key, name) => {
       const k = K[key], hp = hostPhotoFor(key), first = esc(firstName(name));
       const ch = k.cid ? HOST.chars[k.cid] : null, fit = key.includes('#') ? '' : fitWarn(r.pref, ch);
-      const send = !k.cid ? '' : d.email ? `<button class="btn sm ${k.sent ? 'ghost' : ''}" data-invemail="${esc(key)}" data-email="${esc(d.email)}">${k.sent ? 'EMAIL AGAIN' : 'EMAIL INVITE'}</button>` : `<button class="btn sm ${k.sent ? 'ghost' : ''}" data-invmsg="${esc(key)}">${k.sent ? 'COPY AGAIN' : 'COPY INVITE'}</button>`;
+      const nk = nudgeKind(k), again = k.nudged ? ' AGAIN' : '';
+      const remind = !nk ? '' : (d.email ? `<button class="btn sm ${k.nudged ? 'ghost' : ''}" data-nudgeemail="${esc(key)}" data-email="${esc(d.email)}" title="${esc(NUDGE[nk].label)}: sends the matching reminder with their personal link">✉ REMIND${again}</button>` : '') + `<button class="btn sm ghost" data-nudgemsg="${esc(key)}" title="Copy the reminder to paste into a text or DM">COPY REMINDER</button>`;
+      const send = !k.cid ? '' : nk ? remind : d.email ? `<button class="btn sm ${k.sent ? 'ghost' : ''}" data-invemail="${esc(key)}" data-email="${esc(d.email)}">${k.sent ? 'EMAIL AGAIN' : 'EMAIL INVITE'}</button>` : `<button class="btn sm ${k.sent ? 'ghost' : ''}" data-invmsg="${esc(key)}">${k.sent ? 'COPY AGAIN' : 'COPY INVITE'}</button>`;
       const checkin = k.cid ? `<button class="btn sm ${k.inAt ? 'ghost' : 'gold'}" data-checkin="${esc(key)}">${k.inAt ? 'UNDO CHECK-IN' : 'CHECK IN'}</button>` : '';
       const acts = !k.cid ? '' : open
-        ? `<button class="btn sm" data-invemail="${esc(key)}" ${d.email ? `data-email="${esc(d.email)}"` : 'disabled title="No email on file"'}>EMAIL INVITE</button><button class="btn sm" data-invmsg="${esc(key)}">COPY INVITE</button><button class="btn sm ghost" data-invlink="${esc(key)}">LINK</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button>${checkin}`
+        ? `${remind}<button class="btn sm ${nk ? 'ghost' : ''}" data-invemail="${esc(key)}" ${d.email ? `data-email="${esc(d.email)}"` : 'disabled title="No email on file"'}>EMAIL INVITE</button><button class="btn sm ${nk ? 'ghost' : ''}" data-invmsg="${esc(key)}">COPY INVITE</button><button class="btn sm ghost" data-invlink="${esc(key)}">LINK</button><button class="btn sm ghost" data-accessqr="${esc(key)}">QR</button>${checkin}`
         : (k.resp === 'accepted' ? '' : send) + (atDoor || k.inAt ? checkin : '');
       return `<div class="assign">${select(key)}<span class="who">${r.plusOne || open ? esc(name) : ''}${ch ? effortPill(ch) : ''}${fit ? `<span class="pill fit">⚠ ${fit}</span>` : ''}</span>${acts ? `<div class="row-gap" style="grid-column:1 / -1">${acts}</div>` : ''}
         <div class="invsteps">${statusPills(k)}</div>${k.note ? `<div class="invnote">${k.resp === 'swap' ? 'Wants instead: ' : 'Note: '}“${esc(k.note)}”</div>` : ''}
@@ -3046,7 +3117,7 @@ function castModal(cid) {
   const go = $('#castGo');
   if (go) go.onclick = async () => {
     const key = $('#castSel').value; if (!key) { toast('PICK A GUEST', 'Choose who will play this role.', 'err'); return; }
-    go.disabled = true; HOST.assign.map[key] = cid; delete HOST.assign.sent[key]; (HOST.assign.seen = HOST.assign.seen || {})[key.split('#')[0]] = 1;
+    go.disabled = true; HOST.assign.map[key] = cid; delete HOST.assign.sent[key]; delete (HOST.assign.nudged || {})[key]; (HOST.assign.seen = HOST.assign.seen || {})[key.split('#')[0]] = 1;
     await saveAssign(); closeModal(); log(`${guestName(key)} cast as ${c.name}`);
     toast('ROLE ASSIGNED', `${guestName(key)} will play ${c.name}. Send their invitation from Players.`, 'ok');
   };
