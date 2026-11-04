@@ -512,6 +512,8 @@ stage.addEventListener('click', e => { const b = e.target.closest('[data-go]'); 
   let first = true;
   backend.on(async raw => {
     S = normRoot(raw);
+    // Kane Oil has gone under: personal invitations lead to the same "site down" page as the invitation
+    if (companyClosed(S) && !PREVIEW) { location.replace('index.html'); return; }
     if (INV) renderThreads();
     if (!first) return; first = false;
     const blob = S.invites[ID];

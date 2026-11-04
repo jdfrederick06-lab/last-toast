@@ -246,6 +246,7 @@ function normRoot(r) {
     inviteStatus: r.inviteStatus || {}, // inviteId -> {opened, last, resp:'accepted'|'declined'|'swap', note, at}
     hostPhotos: r.hostPhotos || {}, // guestKey -> {iv,ct}  photos the host added for a guest (host-locked)
     asks: r.asks || {},             // askId -> {sec, ts, kind, replies:{id:{iv,ct,ts}}, done}  guest questions & help flags
+    survey: r.survey || {},         // id -> {sec, ts}  the exit interview, sealed so only the host can read it
     site: r.site || {},             // live edits to the public pages
     ctl: r.ctl || {}
   };
@@ -347,6 +348,10 @@ function roomOpen(S, roomId) {
 }
 const roomName = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).name || id || '';
 const roomPlace = id => ((window.STORY_ROOMS || []).find(x => x.id === id) || {}).place || '';
+/** The night has begun once the host starts "Doors open" (phase 2): RSVPs close and the invitation points everyone at the database. */
+const gameStarted = S => !!((S.phaseLog || {}).arrive || (S.phase && S.phase.i >= 1));
+/** After the host publishes the case files, Kane Oil "goes under": the invitation and the guest database crash, and only the case files stay up. */
+const companyClosed = S => !!(S.site && S.site.recap);
 /** The name guests see: a room can go by a neutral name (sealedName) until it opens, so it doesn't give the plot away. */
 function roomLabel(S, id) {
   const r = (window.STORY_ROOMS || []).find(x => x.id === id);

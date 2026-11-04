@@ -232,6 +232,86 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
 @keyframes gr{from{opacity:0;transform:translateX(70px) rotate(9deg)}70%{opacity:1;transform:translateX(-7px) rotate(-7deg)}to{opacity:1;transform:rotate(9deg)}}
 @keyframes spark{0%{opacity:0;transform:translate(0,0) scale(.2)}30%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.1)}}
 @media(prefers-reduced-motion:reduce){#intro{display:none}.hero>*,.glasses svg,.rv{opacity:1!important;transform:none!important}#embers{display:none}}
+/* ===== during the night: RSVPs are closed and the page points everyone at the database ===== */
+.livecard{text-align:center}
+.livecard .k{font-family:var(--caps);font-weight:300;font-size:11px;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px}
+.livecard .k .pulse-dot{background:var(--green);box-shadow:0 0 0 0 rgba(159,216,180,.6)}
+.livecard .btn{margin-top:6px;font-size:22px;padding:16px 26px}
+.livecard .hint{margin:14px 0 0;font-size:17px}
+.livecard .when{margin:14px 0 0;color:var(--muted);font-style:italic;font-size:18px}
+.livecard{border-color:rgba(232,207,154,.55)!important;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px rgba(232,207,154,.12),0 0 90px rgba(232,207,154,.10);padding-top:34px!important}
+.livecard .k{display:inline-flex;border:1px solid rgba(159,216,180,.4);background:rgba(159,216,180,.07);border-radius:999px;padding:7px 14px;color:var(--green)}
+.livecard .k .pulse-dot{animation:livePing 1.6s ease-out infinite}
+@keyframes livePing{0%{box-shadow:0 0 0 0 rgba(159,216,180,.7)}100%{box-shadow:0 0 0 10px rgba(159,216,180,0)}}
+.livecard h2.sh{font-size:clamp(34px,8vw,50px);margin-top:16px}
+.lsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0 22px;text-align:left}
+.lsteps div{border:1px solid var(--line);border-radius:18px;padding:14px;background:rgba(255,248,230,.03)}
+.lsteps b{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:26px;color:var(--gold);line-height:1}
+.lsteps span{display:block;margin-top:6px;font-size:16.5px;line-height:1.35;color:var(--text)}
+@media(max-width:560px){.lsteps{grid-template-columns:1fr}.lsteps div{display:flex;gap:12px;align-items:center}.lsteps span{margin:0}}
+.livecard .btn.gold{animation:liveGlow 2.6s ease-in-out infinite}
+@keyframes liveGlow{0%,100%{box-shadow:0 14px 40px rgba(232,207,154,.25)}50%{box-shadow:0 14px 56px rgba(232,207,154,.5)}}
+@media (prefers-reduced-motion:reduce){.livecard .k .pulse-dot,.livecard .btn.gold{animation:none}}
+body.mode-live #castingBar,body.mode-live #castCta,body.mode-live #rsvpNav,body.mode-live #rsvp,body.mode-live #aboutPair,body.mode-live #howPanel,body.mode-live #rulesPanel,body.mode-live #detailsPanel,body.mode-live #portalPanel,body.mode-live .scrollcue{display:none!important}
+body.mode-live .pair2{grid-template-columns:1fr}
+body.mode-live .hero{padding:2vh 0 1vh}
+body.mode-live .hero .inworld,body.mode-live .hero .by,body.mode-live .hero .orn,body.mode-live .hero .glasses{display:none}
+body.mode-live .hero h1{font-size:clamp(44px,11vw,80px)}
+/* ===== after the case files are published: Kane Oil has gone under and the site is "down" ===== */
+#crash{position:fixed;inset:0;z-index:200;overflow:auto;background:radial-gradient(90% 60% at 50% 0%,#1a0b0d 0%,#070707 60%,#030303 100%);color:#e9e6dc;font-family:var(--sans)}
+#crash.hidden{display:none}
+#crash::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+#crash::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(0,0,0,.75))}
+.cr-band{position:sticky;top:0;z-index:4;overflow:hidden;white-space:nowrap;background:repeating-linear-gradient(-45deg,#d9a520 0 22px,#111 22px 44px);padding:3px 0}
+.cr-band .trk{display:inline-flex;animation:crTape 28s linear infinite;background:#0b0b0b}
+.cr-band span{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.26em;color:#f1d27a;padding:9px 0;text-transform:uppercase}
+@keyframes crTape{to{transform:translateX(-50%)}}
+.cr{position:relative;z-index:2;max-width:660px;margin:0 auto;padding:7vh 22px 40px;text-align:center}
+.cr-top{display:inline-flex;align-items:center;gap:12px;font:500 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.22em;color:#8d8a80;text-transform:uppercase;border:1px solid rgba(226,66,79,.35);border-radius:999px;padding:7px 14px;background:rgba(226,66,79,.06)}
+.cr-top b{color:#ff5d6a;font-weight:600}
+.cr-top i{width:7px;height:7px;border-radius:50%;background:#ff4757;box-shadow:0 0 10px #ff4757;animation:crBlink 1.2s steps(2) infinite}
+@keyframes crBlink{50%{opacity:.15}}
+.cr-mark{display:block;width:132px;height:132px;margin:34px auto 6px;filter:drop-shadow(0 10px 40px rgba(226,66,79,.25))}
+.cr-mark .r{animation:crDrop 1.4s cubic-bezier(.3,1.6,.5,1) .3s both;transform-origin:60px 60px}
+@keyframes crDrop{from{transform:none}to{transform:translate(6px,5px) rotate(7deg)}}
+.cr-brand{font-family:var(--caps);font-weight:300;font-size:13px;letter-spacing:.5em;color:#a29d8e;text-transform:uppercase;margin-top:4px;position:relative;display:inline-block}
+.cr-brand::after{content:"";position:absolute;left:-6px;right:-6px;top:52%;height:1.5px;background:#e2424f;transform:scaleX(0);transform-origin:left;animation:crStrike .7s ease 1.2s forwards}
+@keyframes crStrike{to{transform:scaleX(1)}}
+.cr-years{font-family:var(--serif);font-style:italic;color:#6f6b62;font-size:17px;margin-top:6px}
+.cr h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,11vw,84px);line-height:.98;letter-spacing:-.01em;margin:26px 0 18px;color:#f6f2e6;position:relative}
+.cr h1 em{font-style:italic;color:#e9cf93}
+.cr h1.gl::before,.cr h1.gl::after{content:attr(data-t);position:absolute;inset:0;pointer-events:none}
+.cr h1.gl::before{color:#ff4757;clip-path:inset(0 0 58% 0);animation:crG1 3.2s steps(1) infinite;opacity:0}
+.cr h1.gl::after{color:#58dfe8;clip-path:inset(54% 0 0 0);animation:crG2 4.1s steps(1) infinite;opacity:0}
+@keyframes crG1{0%,88%,100%{opacity:0;transform:none}89%{opacity:.85;transform:translate(5px,-2px)}93%{opacity:.85;transform:translate(-4px,1px)}}
+@keyframes crG2{0%,80%,100%{opacity:0;transform:none}81%{opacity:.75;transform:translate(-6px,2px)}86%{opacity:.75;transform:translate(4px,0)}}
+.cr-lede{max-width:46ch;margin:0 auto;font-size:21px;line-height:1.6;color:#b8b3a6}
+.cr-panel{position:relative;margin:34px auto 0;text-align:left;border:1px solid rgba(255,255,255,.08);border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));box-shadow:0 30px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}
+.cr-tk{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding:18px 20px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.cr-tk b{font-size:13px;letter-spacing:.2em;color:#cfc9b8}
+.cr-tk .px{font-size:30px;color:#fff;letter-spacing:-.02em}
+.cr-tk .dn{font-size:14px;color:#ff5d6a}
+.cr-tk small{margin-left:auto;font-size:10.5px;letter-spacing:.22em;color:#ff5d6a;border:1px solid rgba(255,93,106,.45);border-radius:999px;padding:4px 10px;text-transform:uppercase}
+.cr-chart{display:block;width:100%;height:118px}
+.cr-chart .ln{fill:none;stroke:#ff4757;stroke-width:2.2;stroke-linejoin:round;stroke-dasharray:720;stroke-dashoffset:720;animation:crDraw 2.6s cubic-bezier(.6,0,.3,1) .5s forwards;filter:drop-shadow(0 0 6px rgba(255,71,87,.55))}
+.cr-chart .ar{fill:url(#crFill);opacity:0;animation:crFade 1s ease 2.6s forwards}
+@keyframes crDraw{to{stroke-dashoffset:0}}
+@keyframes crFade{to{opacity:1}}
+.cr-log{border-top:1px solid rgba(255,255,255,.07);padding:14px 20px 16px;font:12.5px/1.8 ui-monospace,Menlo,Consolas,monospace;color:#7d867f;white-space:pre-wrap;min-height:8.2em}
+.cr-log b{color:#ff5d6a;font-weight:500}
+.cr-log .c{display:inline-block;width:7px;height:13px;background:#9aa39c;vertical-align:-2px;animation:crBlink 1s steps(2) infinite}
+.cr-stamp{position:absolute;right:16px;top:58px;transform:rotate(-12deg);border:3px double #e2424f;color:#e2424f;border-radius:8px;padding:6px 12px;font:700 13px/1.15 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;text-align:center;opacity:0;animation:crStamp .45s cubic-bezier(.2,1.8,.4,1) 3.2s forwards;background:rgba(7,7,7,.6);mix-blend-mode:screen}
+.cr-stamp small{display:block;font-size:8.5px;letter-spacing:.2em;font-weight:500}
+@keyframes crStamp{from{opacity:0;transform:rotate(-12deg) scale(2.2)}to{opacity:.92;transform:rotate(-12deg) scale(1)}}
+.cr-go{display:inline-flex;align-items:center;gap:14px;margin-top:36px;border-radius:999px;padding:18px 32px;font-family:var(--sans);font-style:italic;font-weight:500;font-size:23px;color:#1b140a;text-decoration:none;background:var(--gold-grad);box-shadow:0 14px 44px rgba(232,207,154,.28),inset 0 1px 0 rgba(255,255,255,.6);transition:transform .2s,box-shadow .2s;animation:crPulse 2.8s ease-in-out 4s infinite}
+.cr-go:hover{transform:translateY(-2px);box-shadow:0 18px 54px rgba(232,207,154,.4)}
+.cr-go i{font-style:normal;transition:transform .2s}.cr-go:hover i{transform:translateX(4px)}
+@keyframes crPulse{0%,100%{box-shadow:0 14px 44px rgba(232,207,154,.28),0 0 0 0 rgba(232,207,154,.35)}50%{box-shadow:0 14px 44px rgba(232,207,154,.28),0 0 0 14px rgba(232,207,154,0)}}
+.cr-ex{display:block;margin-top:20px;font-size:18px;font-style:italic;color:#8d887c;text-decoration:none}
+.cr-ex u{color:#e9cf93;text-decoration-color:rgba(233,207,147,.4);text-underline-offset:4px}
+.cr-foot{position:relative;z-index:2;text-align:center;padding:0 0 30px;font:10.5px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.2em;color:#45443f;text-transform:uppercase}
+@media (max-width:520px){.cr-stamp{top:auto;bottom:118px;right:10px}.cr-tk small{margin-left:0}.cr-top{white-space:nowrap;font-size:9px;letter-spacing:.14em;gap:8px;padding:7px 12px}.cr{padding-top:5vh}}
+@media (prefers-reduced-motion:reduce){.cr-band .trk,.cr h1.gl::before,.cr h1.gl::after,.cr-go,.cr-top i{animation:none}.cr-chart .ln{animation:none;stroke-dashoffset:0}.cr-chart .ar,.cr-stamp{animation:none;opacity:.9}.cr-mark .r{animation:none;transform:translate(6px,5px) rotate(7deg)}.cr-brand::after{animation:none;transform:none}}
 </style>
 </head>
 <body>
@@ -269,12 +349,21 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
     <div class="by" id="hostBy"></div>
     <a class="scrollcue" href="#details" aria-label="Scroll down"><span>The details</span><i></i></a>
   </header>
+  <section class="panel gold livecard hidden" id="liveCard">
+    <div class="k"><span class="pulse-dot"></span>The gala is underway</div>
+    <h2 class="sh">Enter the Kane Oil Database</h2>
+    <p class="dbnote">Your dossier, your brief, the evidence and your vote are all inside.</p>
+    <div class="lsteps"><div><b>i.</b><span>Tap the button below</span></div><div><b>ii.</b><span>Type the code word from your role invitation</span></div><div><b>iii.</b><span>Keep your phone close: the night happens on it</span></div></div>
+    <a class="btn gold block" href="database.html">Enter the database →</a>
+    <p class="hint">Lost your code word? Find a host at the door.</p>
+    <p class="when" id="liveWhen"></p>
+  </section>
   <section class="panel gold rv" id="detailsPanel"><div class="details" id="details"></div><div class="cal hidden" id="calLinks"></div></section>
-  <div class="pair">
+  <div class="pair" id="aboutPair">
     <section class="panel rv"><h2 class="sh">The evening</h2><div class="prose" id="premise"></div></section>
     <section class="panel rv"><h2 class="sh">What to expect</h2><ul class="list" id="expect"></ul></section>
   </div>
-  <section class="panel rv"><h2 class="sh">The Kane Oil Database</h2><p class="dbnote">The night runs on a private web app that works on any phone. Nothing to install.</p><div class="steps" id="how"></div></section>
+  <section class="panel rv" id="howPanel"><h2 class="sh">The Kane Oil Database</h2><p class="dbnote">The night runs on a private web app that works on any phone. Nothing to install.</p><div class="steps" id="how"></div></section>
   <section class="panel rv hidden" id="rulesPanel"><h2 class="sh">Rules of the night</h2><ol class="rules" id="rules"></ol></section>
   <section class="panel gold rv rsvp" id="rsvp">
     <div class="rsvp-side">
@@ -346,6 +435,32 @@ body.go .sparks i{animation:spark 1s 1.45s ease-out forwards}
   <footer>Kane Oil &amp; Energy · Est. 1974 · A private event</footer>
   <a class="castcta hidden" id="castCta" href="#rsvp">Claim your role <span id="castCtaLeft"></span></a>
 </div>
+<div id="crash" class="hidden" role="main">
+  <div class="cr-band" aria-hidden="true"><div class="trk"><span>Notice · Kane Oil &amp; Energy has ceased operations · All systems offline · Accounts frozen by order of the court · Trading halted · Notice · Kane Oil &amp; Energy has ceased operations · All systems offline · Accounts frozen by order of the court · Trading halted · </span><span>Notice · Kane Oil &amp; Energy has ceased operations · All systems offline · Accounts frozen by order of the court · Trading halted · Notice · Kane Oil &amp; Energy has ceased operations · All systems offline · Accounts frozen by order of the court · Trading halted · </span></div></div>
+  <div class="cr">
+    <div class="cr-top"><i></i><b>Error 503</b><span>Service permanently unavailable</span></div>
+    <svg class="cr-mark" viewBox="0 0 120 120" aria-hidden="true"><defs>
+      <clipPath id="crL"><polygon points="0,0 63,0 55,38 67,61 51,120 0,120"/></clipPath><clipPath id="crR"><polygon points="63,0 120,0 120,120 51,120 67,61 55,38"/></clipPath>
+      <g id="crK"><circle cx="60" cy="60" r="54" fill="none" stroke="#e8cf9a" stroke-width="1.6"/><circle cx="60" cy="60" r="47" fill="none" stroke="#e8cf9a" stroke-width=".7" opacity=".6"/><path d="M50 37.5 V82.5 M50 62.5 L72.5 37.5 M55 57.5 L75 82.5" fill="none" stroke="#e8cf9a" stroke-width="4.5" stroke-linecap="round"/></g></defs>
+      <use href="#crK" clip-path="url(#crL)"/><g class="r"><use href="#crK" clip-path="url(#crR)"/></g>
+      <polyline points="63,0 55,38 67,61 51,120" fill="none" stroke="#e2424f" stroke-width="1.4" opacity=".85"/></svg>
+    <div class="cr-brand">Kane Oil &amp; Energy</div>
+    <div class="cr-years">1974 – 2026</div>
+    <h1 class="gl" data-t="No longer in business.">No longer in business.</h1>
+    <p class="cr-lede">Kane Oil &amp; Energy has ceased all operations. Its accounts are frozen, its offices are sealed, and every company system has been taken offline while the investigation continues.</p>
+    <div class="cr-panel">
+      <div class="cr-tk"><b>KOE</b><span class="px">$0.04</span><span class="dn">▼ 99.97% · $140.59</span><small>Trading halted</small></div>
+      <svg class="cr-chart" viewBox="0 0 600 118" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="crFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4757" stop-opacity=".28"/><stop offset="1" stop-color="#ff4757" stop-opacity="0"/></linearGradient></defs>
+        <path class="ar" d="M0 34 L60 30 L110 38 L160 26 L210 31 L260 22 L300 28 L340 24 L370 40 L392 36 L410 72 L430 66 L450 98 L480 104 L520 110 L600 113 L600 118 L0 118 Z"/>
+        <path class="ln" d="M0 34 L60 30 L110 38 L160 26 L210 31 L260 22 L300 28 L340 24 L370 40 L392 36 L410 72 L430 66 L450 98 L480 104 L520 110 L600 113"/></svg>
+      <div class="cr-log" id="crashLog"></div>
+      <div class="cr-stamp">Assets frozen<small>By order of the court</small></div>
+    </div>
+    <a class="cr-go" href="recap.html"><span>See what happened to the company</span><i>→</i></a>
+    <a class="cr-ex" href="recap.html#survey">Were you there that night? <u>Take the exit interview</u></a>
+  </div>
+  <div class="cr-foot">kane-oil-energy · domain suspended · case file #1106</div>
+</div>
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
 ['config.js', 'party.js', 'core.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
@@ -384,9 +499,25 @@ const mine = () => { try { return JSON.parse(store.get('myRsvpData') || 'null') 
 /* sections rise in as you scroll to them */
 const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }), { threshold: .12 }) : null;
 $$('.rv').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+/* ---------- the crash (after the case files are published) ---------- */
+let crashOn = false;
+function showCrash(on) {
+  $('#crash').classList.toggle('hidden', !on);
+  document.body.style.overflow = on ? 'hidden' : '';
+  if (on === crashOn) return; crashOn = on;
+  if (!on) return;
+  const intro = $('#intro'); if (intro) intro.remove(); document.body.classList.add('go');
+  document.title = 'Kane Oil & Energy · Service unavailable';
+  const lines = ['> connecting to kane-oil-energy …', '> <b>ERR 503</b> upstream servers unreachable', '> personnel.db … <b>CORRUPTED</b>', '> accounts … <b>FROZEN BY ORDER OF THE COURT</b>', '> last backup: Friday, November 6, 2026, 11:58 PM', '> one public record remains: CASE FILE #1106'];
+  const box = $('#crashLog'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { box.innerHTML = lines.join('\n'); return; }
+  box.innerHTML = ''; let i = 0;
+  const tick = () => { if (!crashOn) return; if (i >= lines.length) { box.innerHTML += ' <span class="c"></span>'; return; } box.innerHTML += (i ? '\n' : '') + lines[i++]; setTimeout(tick, 480); };
+  setTimeout(tick, 400);
+}
 /* ---------- page content: party.js plus any live edits the host publishes from the dashboard ---------- */
 function renderStatic() {
-  const sig = JSON.stringify(S.site || {}) + '|' + rolesLeft(mergeParty(window.PARTY, S.site)); if (sig === lastSite) return; lastSite = sig;
+  const sig = JSON.stringify(S.site || {}) + '|' + rolesLeft(mergeParty(window.PARTY, S.site)) + '|' + gameStarted(S); if (sig === lastSite) return; lastSite = sig;
   const P = mergeParty(window.PARTY, S.site);
   $('#tagline').textContent = P.tagline || 'An evening of candlelight, secrets & suspicion';
   $('#inWorld').textContent = P.inWorld || '';
@@ -397,6 +528,12 @@ function renderStatic() {
   $('#notice').classList.toggle('hidden', !P.notice);
   $('#noticeText').textContent = P.notice || '';
   const left = rolesLeft(P), rolling = P.rsvpRolling !== false;
+  // once the night begins the page is just a doorway into the database; once the case files are out, the company is gone
+  const closed = companyClosed(S), live = gameStarted(S) && !closed;
+  document.body.classList.toggle('mode-live', live);
+  $('#liveCard').classList.toggle('hidden', !live);
+  $('#liveWhen').textContent = live ? ['Tonight', P.venue].filter(Boolean).join(' · ') : '';
+  showCrash(closed);
   $('#details').innerHTML = [
     ['When', String(P.date || '').replace(/^\w+day,\s*/i, ''), [(String(P.date || '').match(/^(\w+day),/i) || [])[1], P.time].filter(Boolean).join(' · ')], ['Where', P.venue, P.address], ['Attire', String(P.dress || '').split(/(?<=\.)\s+/)[0], String(P.dress || '').split(/(?<=\.)\s+/).slice(1).join(' ')],
     rolling ? ['Replies', left > 0 ? 'Open now' : 'Waitlist', left > 0 ? `Until roles run out · ${left} left` : 'Every role is taken'] : ['Reply by', P.rsvpBy, '']
@@ -417,7 +554,7 @@ function renderStatic() {
   $('#replyBy').innerHTML = rolling
     ? ['Roles are cast on a<br>rolling basis', left > 0 ? `${left} role${left === 1 ? '' : 's'} left` : 'Waitlist open', P.date ? esc(P.date) : ''].filter(Boolean).join('<br><br>')
     : [P.rsvpBy ? 'Please reply by<br>' + esc(P.rsvpBy) : '', P.date ? esc(P.date) : ''].filter(Boolean).join('<br><br>');
-  const open = P.rsvpOpen !== false;
+  const open = P.rsvpOpen !== false && !gameStarted(S);
   $('#rsvpHead').textContent = rolling ? 'Claim your role' : 'Kindly reply';
   $('#castingBar').classList.toggle('hidden', !(open && rolling));
   $('#castingLeft').textContent = left > 0 ? `${left} role${left === 1 ? '' : 's'} left` : 'Waitlist open';
@@ -554,6 +691,7 @@ $('#rsvpForm').addEventListener('submit', async e => {
   e.preventDefault();
   if (PREVIEW) { toast('Preview', 'Guests reply from here. Nothing was sent.', 'ok'); return; }
   if (!backend) { toast('One moment', 'Still connecting. Try again in a second.', 'err'); return; }
+  if (gameStarted(S)) { toast('Replies are closed', 'The gala has already begun. Find a host at the door.', 'err'); return; }
   const name = $('#rName').value.trim(), email = $('#rEmail').value.trim(), phone = $('#rPhone').value.trim(), att = document.querySelector('input[name=att]:checked').value, going = att !== 'no';
   if (!name) { $('#rName').focus(); toast('Your name', 'Please tell us who you are.', 'err'); return; }
   if (!emailOk(email)) { $('#emailErr').classList.remove('hidden'); $('#rEmail').focus(); return; }

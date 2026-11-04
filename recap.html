@@ -105,6 +105,51 @@ details p{margin:8px 0 0;font-size:17px;line-height:1.6;color:#e3d9c0}
 .sealed a{display:inline-block;margin-top:26px;color:var(--gold2);font-style:italic;font-size:18px}
 footer{text-align:center;font-family:var(--caps);font-weight:300;font-size:9.5px;letter-spacing:.34em;color:var(--dim);padding:26px 0 10px;text-transform:uppercase}
 @media(min-width:900px){.panel{padding:40px 48px}}
+/* Kane Oil has gone under: this is the one record left */
+.defunct{text-align:center;font-family:var(--caps);font-weight:300;font-size:10.5px;letter-spacing:.3em;color:var(--red2);text-transform:uppercase;border:1px solid rgba(224,112,122,.4);border-radius:999px;padding:9px 16px;margin:4px auto 0;width:fit-content;max-width:100%}
+/* the exit interview */
+#survey{scroll-margin-top:72px}
+.sv .q{margin:0 0 22px}
+.sv .q > b{display:block;font-size:20px;font-weight:600;margin-bottom:10px}
+.sv .q > b em{font-weight:400;color:var(--muted);font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{cursor:pointer}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips span{display:inline-block;border:1px solid var(--line2);border-radius:999px;padding:9px 16px;font-size:17px;color:var(--text);background:rgba(255,248,230,.03);transition:background .2s,border-color .2s,color .2s}
+.chips input:checked + span{background:var(--gold-grad);color:#1b140a;border-color:transparent}
+.chips input:focus-visible + span{outline:2px solid var(--gold2);outline-offset:2px}
+.stars{display:flex;gap:6px}
+.stars label{cursor:pointer;font-size:34px;line-height:1;color:rgba(232,207,154,.28)}
+.stars input{position:absolute;opacity:0;pointer-events:none}
+.stars label.on{color:var(--gold2);text-shadow:0 0 14px rgba(232,207,154,.5)}
+.sv textarea,.sv input[type=text]{width:100%;box-sizing:border-box;border:1px solid var(--line2);border-radius:16px;background:rgba(0,0,0,.25);color:var(--text);font:18px var(--sans);padding:12px 14px}
+.sv textarea{min-height:92px;resize:vertical}
+.sv .send{border:0;cursor:pointer;width:100%;justify-content:center;margin-top:6px}
+.sv .err{color:var(--red2);font-style:italic;margin:10px 0 0;text-align:center}
+.sv .done{text-align:center;font-size:21px;font-style:italic;color:var(--gold2);line-height:1.6}
+/* the exit interview, dressed as Kane Oil's last piece of paperwork */
+.sv{position:relative;overflow:hidden;background:linear-gradient(180deg,#f4ecd9,#eadfc4);color:#2a2317;border-color:rgba(120,90,40,.35)!important;box-shadow:0 30px 70px rgba(0,0,0,.45),inset 0 0 0 6px rgba(255,255,255,.25)}
+.sv::before{display:none}
+.sv .form-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-family:var(--caps);font-size:10px;letter-spacing:.26em;color:#7a6545;text-transform:uppercase;border-bottom:1.5px solid #2a2317;padding-bottom:10px;margin-bottom:22px}
+.sv h2.sh{color:#2a2317;text-align:left;margin-bottom:6px}
+.sv h2.sh::after{display:none}
+.sv .note{color:#5d4f38;text-align:left;font-style:italic}
+.sv .stampc{position:absolute;right:26px;top:104px;transform:rotate(9deg);border:2.5px solid #a3242f;color:#a3242f;border-radius:6px;padding:5px 10px;font-family:var(--caps);font-size:11px;letter-spacing:.3em;opacity:.75}
+.sv .q{border-top:1px dashed rgba(42,35,23,.25);padding-top:16px}
+.sv .q > b{color:#2a2317}
+.sv .q > b .n{display:inline-block;min-width:30px;font-family:var(--caps);font-weight:400;font-size:12px;letter-spacing:.1em;color:#a3242f}
+.sv .q > b em{color:#7a6a50}
+.sv .chips span{border-color:rgba(42,35,23,.3);color:#2a2317;background:rgba(255,255,255,.45)}
+.sv .chips input:checked + span{background:#2a2317;color:#f4ecd9;border-color:#2a2317}
+.sv .stars label{color:rgba(42,35,23,.2)}
+.sv .stars label.on{color:#b8862f;text-shadow:none}
+.sv textarea,.sv input[type=text]{background:rgba(255,255,255,.55);border-color:rgba(42,35,23,.3);color:#2a2317}
+.sv textarea::placeholder,.sv input::placeholder{color:#9a8a6e}
+.sv .send{background:#2a2317!important;color:#f4ecd9!important;box-shadow:0 10px 24px rgba(42,35,23,.3)!important}
+.sv .err{color:#a3242f}
+.sv .done{color:#2a2317;text-align:center;padding:8px 0}
+.sv .recv{display:inline-block;margin:6px auto 14px;transform:rotate(-6deg);border:3px double #2f6b3c;color:#2f6b3c;border-radius:8px;padding:8px 16px;font-family:var(--caps);font-size:15px;letter-spacing:.32em;animation:svStamp .5s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes svStamp{from{opacity:0;transform:rotate(-6deg) scale(2)}to{opacity:1;transform:rotate(-6deg) scale(1)}}
 </style>
 </head>
 <body>
@@ -130,7 +175,7 @@ function page(R) {
   const tally = list(R.tally), max = tally.length ? tally[0][1] : 0, aw = R.awards || {}, sol = list(R.solvers);
   const honors = [['best', 'Best performance'], ['dressed', 'Best dressed'], ['detective', 'Best detective'], ['liar', 'Best liar']].filter(([k]) => aw[k]);
   const k = R.killer || {};
-  return `<header class="hero"><div class="k">Case closed</div><h1>${esc(R.title || 'The Last Toast')}</h1>${R.date ? `<div class="d">${esc(R.date)}</div>` : ''}<div class="orn"><i>✦</i></div></header>
+  return `<div class="defunct">Kane Oil &amp; Energy · ceased operations · the last public record</div><header class="hero"><div class="k">Case closed</div><h1>${esc(R.title || 'The Last Toast')}</h1>${R.date ? `<div class="d">${esc(R.date)}</div>` : ''}<div class="orn"><i>✦</i></div></header>
   <section class="panel killer"><div class="caps" style="font-size:11px;color:var(--red2)">The killer was</div>
     <div class="kn">${esc(k.name || 'Unknown')}</div>${k.alias ? `<div class="al">${esc(k.alias)}</div>` : ''}
     <div class="vl">${R.caught ? 'The room caught the killer.' : R.accused ? `The room accused ${esc(R.accused)}. The killer walked free.` : ''}</div>
@@ -149,11 +194,55 @@ function render(S) {
   const R = S.site && S.site.recap, sig = JSON.stringify(R || null);
   if (sig === lastSig) return; lastSig = sig;
   document.title = R ? (R.title || 'The Last Toast') + ' · Case Files' : 'The Case Files';
-  $('#out').innerHTML = R ? page(R) : sealed();
+  $('#out').innerHTML = R ? page(R) + surveyHTML() : sealed();
+  if (R) { bindSurvey(); if (location.hash === '#survey') setTimeout(() => { const s = $('#survey'); if (s) s.scrollIntoView({ block: 'start' }); }, 300); }
 }
+/* ---------- the exit interview: anonymous unless they add a name, sealed so only the hosts can read it ---------- */
+const SV_FAV = ['The story and the reveal', 'Playing my character', 'The phone database', 'Hunting for evidence', 'The decorations and atmosphere', 'Everyone in costume', 'The food and drinks'];
+const chips = (name, opts, multi) => `<div class="chips">${opts.map(o => `<label><input type="${multi ? 'checkbox' : 'radio'}" name="${name}" value="${esc(o)}"><span>${esc(o)}</span></label>`).join('')}</div>`;
+function surveyHTML() {
+  const top = `<div class="form-top"><span>Kane Oil &amp; Energy · Human Resources</span><span>Form HR-77 · Exit interview</span></div>`;
+  if (store.get('surveyDone')) return `<section class="panel sv" id="survey">${top}<div class="done"><div class="recv">Received</div><br>Thank you. Your answers went straight to your hosts.</div></section>`;
+  let qn = 0; const Q = (label, body) => `<div class="q"><b><span class="n">${String(++qn).padStart(2, '0')}</span>${label}</b>${body}</div>`;
+  return `<section class="panel sv" id="survey">${top}<div class="stampc">Confidential</div><h2 class="sh">Exit interview</h2>
+    <p class="note" style="margin:-6px 0 24px">Kane Oil &amp; Energy asks all former personnel to complete a short exit interview. Your hosts would love to know what worked and what didn't. It's anonymous unless you add your name.</p>
+    <form id="svForm" novalidate>
+      ${Q(`Overall, how was the night?`, `<div class="stars" id="svStars">${[1, 2, 3, 4, 5].map(n => `<label aria-label="${n} star${n > 1 ? 's' : ''}"><input type="radio" name="stars" value="${n}">★</label>`).join('')}</div>`)}
+      ${Q(`The mystery was…`, `${chips('hard', ['Too easy', 'Just right', 'Too hard'])}`)}
+      ${Q(`Your character had…`, `${chips('role', ['Too little to do', 'Just the right amount', 'Too much to do'])}`)}
+      ${Q(`Your favorite parts <em>(pick any)</em>`, `${chips('fav', SV_FAV, true)}`)}
+      ${Q(`What did you love?`, `<textarea name="loved" maxlength="1200" placeholder="The moment that got you…"></textarea>`)}
+      ${Q(`What should we change next time?`, `<textarea name="change" maxlength="1200" placeholder="Be honest, it helps."></textarea>`)}
+      ${Q(`Would you come to another one?`, `${chips('again', ['Absolutely', 'Maybe', 'Probably not'])}`)}
+      ${Q(`Your name <em>(optional)</em>`, `<input type="text" name="name" maxlength="60" autocomplete="name" placeholder="Leave blank to stay anonymous">`)}
+      <button class="btn gold send" type="submit" id="svBtn">Submit my exit interview</button>
+      <p class="err hidden" id="svErr"></p>
+    </form></section>`;
+}
+function bindSurvey() {
+  const f = $('#svForm'); if (!f) return;
+  const stars = $$('#svStars label');
+  const paint = n => stars.forEach((l, i) => l.classList.toggle('on', i < n));
+  stars.forEach((l, i) => l.addEventListener('click', () => paint(i + 1)));
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const val = n => (f.querySelector(`input[name="${n}"]:checked`) || {}).value || '';
+    const a = { stars: +val('stars') || 0, hard: val('hard'), role: val('role'), fav: [...f.querySelectorAll('input[name="fav"]:checked')].map(i => i.value), loved: f.loved.value.trim(), change: f.change.value.trim(), again: val('again'), name: f.name.value.trim() };
+    const err = $('#svErr'), btn = $('#svBtn');
+    if (!a.stars && !a.loved && !a.change && !a.hard && !a.fav.length) { err.textContent = 'Pick at least a star rating first.'; err.classList.remove('hidden'); return; }
+    btn.disabled = true; btn.textContent = 'Sending…'; err.classList.add('hidden');
+    try {
+      if (backend.ensureAuth && !backend.uid) await backend.ensureAuth();
+      await backend.setStrict('survey/' + uid('s'), { sec: await sealForHost(a), ts: backend.TS() });
+      store.set('surveyDone', '1'); lastSig = null; render(S);
+      $('#survey').scrollIntoView({ block: 'center' });
+    } catch (x) { console.warn(x); btn.disabled = false; btn.textContent = 'Submit my exit interview'; err.textContent = "That didn't send. Check your connection and try again."; err.classList.remove('hidden'); }
+  });
+}
+let backend, S = normRoot({});
 (async () => {
-  const backend = await connectBackend();
-  backend.on(raw => render(normRoot(raw)));
+  backend = await connectBackend();
+  backend.on(raw => { S = normRoot(raw); render(S); });
 })();
 </script>
 </body>
