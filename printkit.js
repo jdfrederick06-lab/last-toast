@@ -151,6 +151,40 @@ tr{break-inside:avoid}
 .poster.one h2{font-size:46pt;line-height:1.05;margin:0 0 6pt;max-width:6.3in}
 .poster.one .orn{color:var(--gold);font-size:14pt;margin:4pt 0 16pt}
 .poster.one p{font:21pt/1.5 Georgia,serif;color:#2a3140;margin:0;max-width:6.2in}
+/* the welcome poster: an art-deco showpiece for the door (dark, plus an ink-saver light version) */
+@page welcome{size:Letter landscape;margin:.35in}
+.wp{page:welcome;break-after:page;width:10.3in;height:7.8in;box-sizing:border-box;position:relative;overflow:hidden;border-radius:6pt;padding:.46in .95in .44in;text-align:center;display:flex;flex-direction:column;align-items:center;background:var(--bg);color:var(--tx)}
+.wp.dark{--bg:#0c1220;--tx:#e8eefa;--g:#c9a45a;--g2:#f3d990;--mut:#9fb0cc;background:radial-gradient(ellipse 70% 55% at 50% 34%,#1d2a44 0,#0c1220 72%)}
+.wp.light{--bg:#fff;--tx:#0c1220;--g:#94701f;--g2:#7a5b14;--mut:#5b6170;border:3pt solid #0c1220}
+.wp .fr{position:absolute;inset:.22in;border:1.5pt solid var(--g);border-radius:4pt;pointer-events:none}
+.wp .fr2{position:absolute;inset:.3in;border:.6pt solid var(--g);border-radius:3pt;pointer-events:none;opacity:.7}
+.wp .wc{position:absolute;width:1.1in;height:1.1in;color:var(--g)}
+.wp .wc svg{width:100%;height:100%;display:block}
+.wp .wc.tl{top:.3in;left:.3in}.wp .wc.tr{top:.3in;right:.3in;transform:scaleX(-1)}.wp .wc.bl{bottom:.3in;left:.3in;transform:scaleY(-1)}.wp .wc.br{bottom:.3in;right:.3in;transform:scale(-1,-1)}
+.wp .rays{position:absolute;inset:.3in;overflow:hidden;color:var(--g);pointer-events:none}
+.wp .rays svg{position:absolute;left:50%;top:-1.3in;width:11in;height:4.1in;transform:translateX(-50%);display:block}
+.wp>*:not(.fr):not(.fr2):not(.wc):not(.rays){position:relative}
+.wp .lg{width:.62in;height:.62in;margin:0 0 5pt}
+.wp .k{font:700 10pt 'Segoe UI',Arial,sans-serif;letter-spacing:.42em;color:var(--g);text-transform:uppercase;padding-left:.42em}
+.wp .wel{font:italic 500 30pt/1 'Cormorant Garamond',Georgia,serif;color:var(--g2);margin:.16in 0 0}
+.wp h1{font:700 98pt/.95 'Cormorant Garamond',Georgia,serif;margin:2pt 0 0;color:var(--tx);letter-spacing:-.01em;white-space:nowrap}
+.wp.dark h1{color:#fff;text-shadow:0 0 18pt rgba(243,217,144,.25)}
+.wp .dv{width:5.2in;height:.72in;color:var(--g);margin:4pt 0 2pt}
+.wp .dv svg{width:100%;height:100%;display:block}
+.wp .sub{font:700 12.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.4em;text-transform:uppercase;color:var(--g2);padding-left:.4em}
+.wp .tg{font:italic 500 17pt/1.3 'Cormorant Garamond',Georgia,serif;color:var(--mut);margin:5pt 0 0}
+.wp .tease{font:500 20pt/1.3 'Cormorant Garamond',Georgia,serif;color:var(--tx);margin:.14in 0 .16in}
+.wp .tease em{color:var(--g2)}
+.wp .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:.3in;width:7.9in;margin:auto 0 0}
+.wp .steps div{border-top:2pt solid var(--g);padding:8pt 4pt 0}
+.wp .steps i{display:block;font:700 20pt/1 'Cormorant Garamond',Georgia,serif;font-style:normal;color:var(--g)}
+.wp .steps b{display:block;font:700 11pt 'Segoe UI',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;margin:4pt 0 3pt;color:var(--tx)}
+.wp .steps span{display:block;font:10pt/1.4 'Segoe UI',Arial,sans-serif;color:var(--mut)}
+.wp .wf{margin:.16in 0 0;font:600 9.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--g)}
+.wp .wf small{display:block;font:8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.16em;color:var(--mut);margin-top:3pt}
+/* PNG export: one poster filling the whole window, no margins */
+body.png{background:transparent}body.png .sheet{margin:0;padding:0;max-width:none;box-shadow:none;background:transparent}body.png .toolbar{display:none}
+body.png .wp{width:100vw;height:100vh;border-radius:0;break-after:auto}
 .poster .ft{position:absolute;left:0;right:0;bottom:.3in;text-align:center;font:8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
 .sign .arrow{font:700 120pt/1 'Segoe UI',Arial,sans-serif;color:var(--gold);margin:-10pt 0 0}
 .sign .qr img{width:1.6in;height:1.6in;image-rendering:pixelated}
@@ -477,6 +511,36 @@ tr{break-inside:avoid}
       return out.join('');
     };
 
+    /* ---------------- WELCOME POSTER ---------------- */
+    const welcome = () => {
+      const st = 'stroke="currentColor" fill="none" stroke-linecap="round"';
+      // a quarter sunburst for each corner of the frame
+      const fan = [15, 30, 45, 60, 75].map(a => { const r = a * Math.PI / 180; return `<path d="M8 8 L${(8 + 62 * Math.cos(r)).toFixed(1)} ${(8 + 62 * Math.sin(r)).toFixed(1)}" stroke-width="1"/>`; }).join('');
+      const CORNER = `<svg viewBox="0 0 100 100" ${st}><path d="M8 40 A32 32 0 0 1 40 8" stroke-width="1.6"/><path d="M8 56 A48 48 0 0 1 56 8" stroke-width="1"/><path d="M8 72 A64 64 0 0 1 72 8" stroke-width=".7" opacity=".7"/>${fan}<path d="M8 88 V8 H88" stroke-width="2"/><path d="M14 94 V14 H94" stroke-width=".8"/><path d="M8 8 l5 5" stroke-width="2.4"/><circle cx="8" cy="8" r="3" fill="currentColor" stroke="none"/></svg>`;
+      // a faint sunrise of rays behind the title
+      const rays = Array.from({ length: 23 }, (_, i) => { const a = (186 + i * 7.6) * Math.PI / 180; return `<path d="M${(100 + 22 * Math.cos(a)).toFixed(1)} ${(100 + 22 * Math.sin(a)).toFixed(1)} L${(100 + 120 * Math.cos(a)).toFixed(1)} ${(100 + 120 * Math.sin(a)).toFixed(1)}" stroke-width="${i % 2 ? .35 : .7}"/>`; }).join('');
+      const RAYS = `<svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMax slice" ${st} opacity=".22">${rays}</svg>`;
+      // two champagne coupes clinking, between deco rules
+      const coupe = `<path d="M-21 0 H21 C19 13 9 17 0 17 C-9 17 -19 13 -21 0 Z" stroke-width="1.8"/><path d="M-16 4.5 H16" stroke-width="1" opacity=".8"/><path d="M0 17 V41" stroke-width="1.8"/><path d="M-12 44 Q0 39 12 44" stroke-width="1.8"/><circle cx="-6" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="11" r=".9" fill="currentColor" stroke="none"/><circle cx="-1" cy="7" r=".8" fill="currentColor" stroke="none"/>`;
+      const star = (x, y, s) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -5 L1.2 -1.2 5 0 1.2 1.2 0 5 -1.2 1.2 -5 0 -1.2 -1.2Z" fill="currentColor" stroke="none"/>`;
+      const DIV = `<svg viewBox="0 0 300 80" ${st}><path d="M6 46 H96" stroke-width="1.2"/><path d="M14 52 H90" stroke-width=".6"/><path d="M204 46 H294" stroke-width="1.2"/><path d="M210 52 H286" stroke-width=".6"/>
+        <path d="M104 46 l6 -6 6 6 -6 6z" fill="currentColor" stroke="none"/><path d="M184 46 l6 -6 6 6 -6 6z" fill="currentColor" stroke="none"/>
+        <g transform="translate(133 22) rotate(-17) scale(1.2)">${coupe}</g><g transform="translate(167 22) rotate(17) scale(1.2)">${coupe}</g>${star(150, 6, 1.4)}${star(136, 2, .75)}${star(164, 2, .85)}</svg>`;
+      const when = [P.date, P.venue].filter(Boolean).map(esc).join(' · ');
+      const page = cls => `<section class="wp ${cls}"><div class="fr"></div><div class="fr2"></div>${['tl', 'tr', 'bl', 'br'].map(p => `<div class="wc ${p}">${CORNER}</div>`).join('')}<div class="rays">${RAYS}</div>
+        <div class="lg">${LOGOSM(cls === 'dark' ? '#f3d990' : '#94701f')}</div>
+        <div class="k">Kane Oil &amp; Energy · Annual Gala</div>
+        <div class="wel">Welcome to</div>
+        <h1>${esc(P.title || 'The Last Toast')}</h1>
+        <div class="dv">${DIV}</div>
+        <div class="sub">${esc(P.subtitle || 'A Murder Mystery Evening')}</div>
+        ${P.tagline ? `<div class="tg">${esc(P.tagline)}</div>` : ''}
+        <p class="tease">Tonight, Kane Oil &amp; Energy raises a glass.<br><em>Not everyone will finish theirs.</em></p>
+        <div class="steps"><div><i>I</i><b>Check in</b><span>Give your name at the table and collect your badge</span></div><div><i>II</i><b>Log in</b><span>Scan the code, enter your code word, tap I've Arrived</span></div><div><i>III</i><b>Trust no one</b><span>Stay in character, guard your secrets, and watch your glass</span></div></div>
+        <div class="wf">${when}${hosted ? `<small>${esc(hosted)}</small>` : ''}</div></section>`;
+      return page('dark') + page('light');
+    };
+
     /* ---------------- INSPECTOR'S LINES ---------------- */
     const inspectorDoc = () => cover("Inspector's Lines", inspector ? 'For ' + inspector.name : 'For the Inspector', 'FOR THE INSPECTOR ONLY') +
       `<h2 style="margin-top:0">How your night works</h2>
@@ -603,15 +667,15 @@ tr{break-inside:avoid}
         <div class="dt">${esc(P.date || '')}</div><div class="seal">${seal}</div></section>`).join('');
     };
 
-    return { host, tags, props, badges, signs, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
+    return { host, tags, props, badges, signs, welcome, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
   }
 
-  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
+  const LABELS = { host: 'HOST BOOK · CONFIDENTIAL', tags: 'EVIDENCE QR TAGS · CONFIDENTIAL', props: 'EVIDENCE PROPS · CONFIDENTIAL', badges: 'NAME BADGES', signs: 'SIGNS', welcome: 'WELCOME POSTER', inspector: "INSPECTOR'S LINES", toast: "ALEX'S TOAST CARD", notebook: "DETECTIVE'S NOTEBOOK", awards: 'AWARD CERTIFICATES', dossiers: 'CHARACTER DOSSIERS · CONFIDENTIAL', invite: 'INVITATION & RULES', sheets: 'PLAYER BACKUP SHEET · PRIVATE', all: 'PRINT PACKET · CONFIDENTIAL' };
   /** Returns { html, label, pageCSS } for any key in LABELS.
       opts.qr(text) → <img> tag for a QR code; opts.base = site address; opts.players = {charId: guest name}. */
   function render(S, P, which, opts) {
     const d = build(S, P, opts);
-    const order = ['host', 'tags', 'props', 'badges', 'signs', 'inspector', 'toast', 'notebook', 'awards', 'dossiers', 'invite'];
+    const order = ['host', 'tags', 'props', 'badges', 'signs', 'welcome', 'inspector', 'toast', 'notebook', 'awards', 'dossiers', 'invite'];
     const html = which === 'all' ? order.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + d[k]()).join('') : (d[which] || d.host)();
     const label = LABELS[which] || LABELS.host;
     const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST · ${label}";font:7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;
