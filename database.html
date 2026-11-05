@@ -55,6 +55,8 @@
 .alrt-show{border:0;background:transparent;color:var(--muted);font:600 11px var(--mono);letter-spacing:.12em;cursor:pointer;padding:6px 2px;text-align:left}
 .ca-more{display:inline-block;vertical-align:middle}.ca-more summary{list-style:none;cursor:pointer;font:600 11px var(--mono);letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px}.ca-more summary::-webkit-details-marker{display:none}
 .ca-more[open] summary{color:var(--gold2);border-color:rgba(212,162,76,.5)}.ca-more-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ra-guide{display:grid;gap:8px}.ra-sec{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}.ra-sec summary{cursor:pointer;list-style:none;padding:12px 14px;font:600 13px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}.ra-sec summary::-webkit-details-marker{display:none}
+.ra-body{padding:0 16px 14px;font-size:15.5px;line-height:1.65;color:#ece6da}.ra-body ul{padding-left:20px;margin:6px 0}.ra-body li{margin:0 0 6px}.ra-body table{width:100%;border-collapse:collapse}.ra-body td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}.ra-body td:first-child{white-space:nowrap;color:var(--gold2)}.ra-body .terms{border-left:2px solid var(--gold);padding-left:12px;color:var(--muted)}
 .desk-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.desk-kpis div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.desk-kpis b{display:block;font-size:17px;color:var(--gold2)}.desk-kpis span{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .desk-list{display:grid;gap:6px}.desk-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);color:inherit;padding:9px 10px;cursor:pointer;font:inherit}
 .desk-row .nn{flex:1;min-width:0}.desk-row .nn b{display:block;font-size:14.5px}.desk-row .nn small{display:block;font-size:11.5px;color:var(--muted)}.desk-row.in{opacity:.65}
@@ -646,7 +648,7 @@ body.crashed #alertbar,body.crashed #lockdown,body.crashed #fullmsg,body.crashed
 <div id="nextbarRoot"></div>
 
 <script>/* always load the newest copy of these files (GitHub Pages lets browsers cache them for 10 minutes) */
-['config.js', 'party.js', 'story.locked.js', 'core.js', 'printkit.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
+['config.js', 'party.js', 'story.locked.js', 'core.js', 'printkit.js', 'ra-kit.js'].forEach(f => document.write('<script src="' + f + '?v=' + Date.now() + '"><\/script>'));</script>
 <script>
 /* =========================================================================
    KANE OIL DATABASE — player dossiers, evidence scanning, Who's Who, hints,
@@ -908,6 +910,13 @@ function signOut(silent) {
 /* ---------------- render root ---------------- */
 function render() {
   const app = $('#app');
+  // the RA Kit (opened with the RA passcode) works before and after the company "crashes"
+  if (ui.ra) {
+    document.body.classList.remove('crashed'); $('#corrupt').classList.add('hidden');
+    const k = 'ra' + (ui.ra.name ? ':in' : '');
+    if (ui.built !== k) { ui.built = k; app.innerHTML = raHTML(); bindRa(); }
+    return;
+  }
   const crashed = companyClosed(S) && !(ME && ME.type === 'host') && !(session && session.role === 'admin') && !(ui.hostDoor && !session);
   document.body.classList.toggle('crashed', crashed);
   $('#corrupt').classList.toggle('hidden', !crashed);
@@ -969,6 +978,81 @@ function bindCorrupt() {
     if (pct >= 37) { clearInterval(climb); setTimeout(() => { if (!p.isConnected) return; p.textContent = 'RECOVERY FAILED · 37%'; p.classList.add('fail'); bar.style.background = '#ff4d6d'; }, 700); }
   }, 260);
 }
+/* ---------------- the RA Kit (for other RAs: unlocked with the RA passcode, then their name) ----------------
+   ra-kit.js holds the guide and the file list, locked with the passcode. Each file in ra/ is locked with its own key
+   (inside the kit). Every visit and download is logged for the host, sealed so only the host can read the names. */
+async function openRaKit(code) {
+  if (!window.RA_KIT) return null;
+  try { const { key } = await deriveFromCode(code, RA_KIT.salt, RA_KIT.iter); return await decryptJSON(key, RA_KIT); } catch (e) { return null; }
+}
+async function raLog(what) {
+  await backend.set('raLog/' + uid('l'), { sec: await sealForHost({ name: ui.ra.name, what, ua: navigator.userAgent.slice(0, 140) }), ts: backend.TS() });
+}
+function raHTML() {
+  const K = ui.ra.kit;
+  if (!ui.ra.name) return `<div class="login-wrap"><div class="login">
+    <div class="lbrand">${LOGO(26)}<span class="gold-text">THE LAST TOAST · RA KIT</span></div>
+    <h1 style="margin-top:18px">Welcome, RA.</h1>
+    <div class="term"><div>Passcode accepted. Tell us who you are to open the kit.</div></div>
+    <form id="raForm" class="lcard" autocomplete="on">
+      <label class="lbl" for="raName">Your full name</label>
+      <input class="input" id="raName" maxlength="60" autocomplete="name" placeholder="First and last name" style="text-align:left;letter-spacing:0">
+      <button class="btn gold block" id="raGo" type="submit">OPEN THE RA KIT</button>
+      <div class="login-err" id="raErr"></div>
+    </form>
+    <div class="foot">Your name is shared with the author so he knows who's using the kit,<br>and every file you download is stamped with it.</div></div></div>`;
+  const groups = [...new Set(K.files.map(f => f.group))];
+  const kb = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB';
+  return `<header class="topbar"><div class="brand">${LOGO(34)}<div><b>THE LAST TOAST</b><small>RA KIT · LICENSED TO ${esc(ui.ra.name.toUpperCase())}</small></div></div><button class="iconbtn" id="raOut">CLOSE KIT</button></header>
+    <section class="panel gold"><div class="ph"><h2>The RA Kit</h2><span class="sub">FOR ONE NON-COMMERCIAL EVENT</span></div>
+      <div class="ra-guide">${K.guide.map((g, i) => `<details class="ra-sec" ${i === 0 ? 'open' : ''}><summary>${esc(g.h)}</summary><div class="ra-body">${g.t}</div></details>`).join('')}</div></section>
+    ${groups.map(gr => `<section class="panel"><div class="ph"><h2>${esc(gr)}</h2></div><div class="relist">${K.files.filter(f => f.group === gr).map(f => `<div class="reitem"><div class="t">${esc(f.name)}<small>${esc(f.desc)} · ${kb(f.size)}</small></div><button class="btn sm gold" data-radl="${esc(f.id)}">DOWNLOAD</button></div>`).join('')}</div></section>`).join('')}
+    <p class="note" style="text-align:center;margin:8px 0 40px">The Last Toast © 2026 Jacob Frederick. Licensed to ${esc(ui.ra.name)} for one non-commercial event. Please don't copy, share or post it.</p>`;
+}
+const raSafe = s => String(s || '').replace(/[^\x20-\x7E]/g, '').trim();   // the PDF stamp font only takes plain characters
+async function raStamp(bytes) {
+  const load = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  if (!window.PDFLib) await load('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js').catch(() => load('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'));
+  const { PDFDocument, StandardFonts, rgb } = PDFLib, doc = await PDFDocument.load(bytes), font = await doc.embedFont(StandardFonts.Helvetica);
+  const line = `Licensed to ${raSafe(ui.ra.name) || 'an approved RA'} on ${new Date().toLocaleDateString('en-US')}  |  The Last Toast (c) 2026 Jacob Frederick  |  One non-commercial event. Do not copy or share.`;
+  for (const p of doc.getPages()) { const { width } = p.getSize(), size = 6.5, w = font.widthOfTextAtSize(line, size); p.drawText(line, { x: Math.max(10, (width - w) / 2), y: 7, size, font, color: rgb(0.45, 0.45, 0.45) }); }
+  return await doc.save();
+}
+function bindRa() {
+  const f = $('#raForm');
+  if (f) {
+    $('#raName').focus();
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = $('#raName').value.trim().replace(/\s+/g, ' '), err = $('#raErr'), btn = $('#raGo');
+      if (name.length < 3 || !/\s/.test(name)) { err.textContent = 'PLEASE ENTER YOUR FIRST AND LAST NAME'; return; }
+      btn.disabled = true; btn.textContent = 'OPENING…';
+      try { ui.ra.name = name; await raLog('opened the RA Kit'); ui.built = null; render(); }
+      catch (x) { ui.ra.name = ''; btn.disabled = false; btn.textContent = 'OPEN THE RA KIT'; err.textContent = "COULDN'T CONNECT · CHECK YOUR INTERNET AND TRY AGAIN"; }
+    });
+    return;
+  }
+  $('#raOut').onclick = () => { ui.ra = null; ui.built = null; render(); };
+  if (ui.raBound) return; ui.raBound = true;
+  $('#app').addEventListener('click', async e => {
+    const b = e.target.closest('[data-radl]'); if (!b || !ui.ra) return;
+    const file = ui.ra.kit.files.find(x => x.id === b.dataset.radl); if (!file) return;
+    const label = b.textContent; b.disabled = true; b.textContent = 'PREPARING…';
+    try {
+      const ct = await (await fetch('ra/' + file.bin + '.bin?v=' + (ui.ra.kit.built || ''))).arrayBuffer();
+      const key = await crypto.subtle.importKey('raw', unb64(file.k), 'AES-GCM', false, ['decrypt']);
+      let bytes = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(file.iv) }, key, ct));
+      if (file.type === 'application/pdf') { b.textContent = 'STAMPING…'; try { bytes = await raStamp(bytes); } catch (x) { console.warn('stamp', x); } }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([bytes], { type: file.type }));
+      a.download = `The Last Toast - ${file.name.replace(/[\\/:*?"<>|]/g, '')} (${raSafe(ui.ra.name) || 'RA'}).${file.ext}`;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      raLog('downloaded ' + file.name).catch(() => { });
+      b.textContent = '✓ DOWNLOADED';
+    } catch (x) { console.warn('ra download', x); b.textContent = 'TRY AGAIN'; toast("COULDN'T DOWNLOAD", 'Check your connection and try again.', 'err'); }
+    b.disabled = false; setTimeout(() => { if (b.isConnected && b.textContent !== label) b.textContent = label; }, 4000);
+  });
+}
+
 /* ---------------- login (reveals nothing about roles or files) ---------------- */
 function loginHTML() {
   let pending = false; try { pending = !!sessionStorage.getItem(PEND); } catch (e) { }
@@ -1010,7 +1094,12 @@ async function doLogin(raw, quiet) {
   btn.disabled = true; btn.textContent = 'VERIFYING…'; err.textContent = ''; ringState('busy');
   term.insertAdjacentHTML('beforeend', `<div>Verifying credentials…</div>`);
   const [b] = await Promise.all([unlockStory(code).catch(() => null), sleep(quiet ? 300 : 700)]);
-  if (!b) return deny('ACCESS DENIED', true);
+  if (!b) {
+    // not a character or host code: is it the RA Kit passcode?
+    const kit = await openRaKit(code);
+    if (kit) { store.set('fails', '0'); term.insertAdjacentHTML('beforeend', `<div class="ok">RA Kit unlocked</div>`); ringState('good'); await sleep(350); ui.ra = { kit, name: '' }; ui.built = null; render(); window.scrollTo(0, 0); return; }
+    return deny('ACCESS DENIED', true);
+  }
   if (b.type === 'evidence') return deny('THAT IS AN EVIDENCE TAG · SCAN IT WITH YOUR CAMERA', false);
   store.set('fails', '0');
   for (let n = 0; n < 50 && !ready; n++) await sleep(200);
@@ -1656,6 +1745,7 @@ const PLACES = [
   ["Alex's co-host desk (check-in & inbox on her phone)", 'game', 'cohostPanel', 'alex cohost co-host helper desk check in inbox'],
   ['Manual switches (killer knows, voting, seal dossiers)', 'tools', 'switchPanel', 'switch flag override killer voting seal'],
   ['Website mode (RSVPs closed / company crash)', 'tools', 'modePanel', 'crash shutdown website mode rsvp closed'],
+  ['RA Kit access log (who opened the kit for other RAs)', 'tools', 'raPanel', 'ra kit resident assistant share passcode log downloads'],
   ['Emergency tools (force refresh, unfreeze, clear votes)', 'game', 'emergPanel', 'emergency refresh reload stuck unfreeze'],
   ['Case files & awards', 'tools', 'recapPanel', 'recap awards album best dressed detective liar publish'],
   ['Backups, restore, hard reset, delete RSVPs', 'tools', 'backupPanel', 'export import save restore reset wipe delete'],
@@ -1894,6 +1984,9 @@ function adminShellHTML() {
         <div class="reitem" style="margin-top:14px"><div class="t">Exit interview<small id="svSub">Guests' survey answers from the case files page</small></div><button class="btn sm" id="svOpen">SEE ANSWERS</button></div>
       </section>
       <section class="panel" id="logPanel" data-fold="log" data-fold-default="1"><div class="ph"><h2>Activity Log</h2><span class="sub" id="logSub"></span></div><div class="log" id="logList"></div></section>
+      <section class="panel" id="raPanel" data-fold="ra"><div class="ph"><h2>RA Kit Access Log</h2><span class="sub" id="raSub">WHO OPENED THE KIT</span></div>
+        <p class="note" style="margin:0 0 10px">Other RAs open the RA Kit at the database login with the RA passcode (it's in <b>Website\private\ra-passcode.txt</b>), then give their name. Every visit and download shows up here. Only you can read the names.</p>
+        <div class="log" id="raList"></div></section>
     </div></div>
   </div>
   <div class="stamp">STORY BUILD · ${esc(HOST.built || '—')}</div>`;
@@ -3199,7 +3292,18 @@ function renderGuests(who) {
   patch($('#rsvpList'), JSON.stringify([rs.map(([id, r]) => [id, r.ts, r.name, r.attending, r.plusOne, r.plusOneName, r.pref, r.note, r.sec && r.sec.iv]), Object.entries(HOST.rsvpSec).map(([k, v]) => k + v.iv + !!v.d), Object.entries(S.photos).map(([k, v]) => k + (v && v.src)), Object.entries(HOST.hostPhotoCache || {}).map(([k, v]) => k + v.iv), HOST.assign, K, f, q, Object.keys(S.succession), Object.keys(dead()), [...ui.openCards], !!ui.expandAll, checkinOpen(), S.site.spares || '']),
     shown.length ? shown.map(card).join('') : rs.length ? `<div class="empty">NOBODY MATCHES THIS FILTER.</div>` : `<div class="empty">NO RSVPS YET. SEND THE INVITATION LINK ABOVE.</div>`);
 }
+/* the RA Kit access log (names sealed for the host) */
+async function renderRaLog() {
+  const box = $('#raList'); if (!box || !HOST || !HOST.rsvpKey) return;
+  const L = RAW.raLog || {}; HOST.raCache = HOST.raCache || {};
+  for (const [id, e] of Object.entries(L)) { if (!e || !e.sec || HOST.raCache[id] !== undefined) continue; try { HOST.raCache[id] = Object.assign({ ts: +e.ts || 0 }, await openSealed(HOST.rsvpKey, e.sec)); } catch (x) { HOST.raCache[id] = null; } }
+  const rows = Object.entries(HOST.raCache).filter(([id, r]) => r && L[id]).map(([, r]) => r).sort((a, b) => b.ts - a.ts);
+  const people = new Set(rows.map(r => (r.name || '').toLowerCase()));
+  $('#raSub').textContent = rows.length ? `${people.size} RA${people.size > 1 ? 'S' : ''} · ${rows.length} EVENTS` : 'NOBODY YET';
+  patch(box, rows.map(r => r.ts).join(), rows.length ? rows.slice(0, 120).map(r => `<div><span class="t">${esc(new Date(r.ts).toDateString() === new Date().toDateString() ? fmtTime(r.ts) : whenStr(r.ts) + ' ' + fmtTime(r.ts))}</span><span><b>${esc(r.name || '?')}</b> ${esc(r.what || '')}</span></div>`).join('') : '<div class="empty" style="display:block">NO RA HAS OPENED THE KIT YET</div>');
+}
 function renderTools() {
+  renderRaLog();
   const chOn = S.site.cohost === true, chb = $('#cohostBtn');
   if (chb) { chb.textContent = chOn ? "TURN OFF ALEX'S DESK" : "TURN ON ALEX'S DESK"; chb.className = 'btn ' + (chOn ? 'ghost' : 'gold'); $('#cohostSub').textContent = chOn ? 'ON · SHOWING ON HER PHONE' : 'OFF'; }
   const ps = projectorState(S);
