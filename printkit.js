@@ -156,6 +156,9 @@ tr{break-inside:avoid}
 .tshot.wide{width:5.4in}.tshot.wide img{border-radius:6pt}
 .tshot figcaption{font:10pt/1.45 'Segoe UI',Arial,sans-serif;color:#3a3f4b;margin-top:7pt}.tshot figcaption b{display:block;font-size:11.5pt;color:#0c1220;margin-bottom:2pt}
 /* paper edition */
+.castws{width:100%;font-size:9.5pt}.castws td,.castws th{padding:3pt 5pt;border-bottom:1pt solid #e2ddd0;text-align:left;vertical-align:top}.castws td:first-child{color:var(--gold);font-weight:700;width:12pt}.castws small{display:block;color:var(--muted);font-size:8pt}.castws td:nth-child(4){width:1.9in}
+.whos h4{margin:8pt 0 3pt;color:var(--gold);font:700 8.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.whogrid{display:grid;grid-template-columns:1fr 1fr;gap:3pt 14pt}.whogrid div{break-inside:avoid;font-size:8.6pt;line-height:1.3;padding:2pt 0}.whogrid b{display:block;font-size:9.4pt}.whogrid i{display:block;color:#5b4a1e}.whogrid span{display:block;color:var(--muted)}
 .run .runrow{display:grid;grid-template-columns:.75in 1fr;gap:10pt;border-top:1pt solid #e2ddd0;padding:8pt 0;break-inside:avoid}
 .run .rt b{display:block;font:700 18pt 'Cormorant Garamond',Georgia,serif;color:var(--gold)}.run .rt span{font:8.5pt 'Segoe UI',Arial,sans-serif;color:var(--muted)}
 .run h3{margin:0 0 3pt}.run .say{border-left:2pt solid var(--gold);padding:2pt 0 2pt 9pt;margin:6pt 0;font-style:italic}.run .say b{display:block;font:700 7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.2em;color:var(--gold);font-style:normal}
@@ -555,6 +558,53 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
     };
     const paperWhen = w => { w = w || {}; if (w.phase) { const s = show.find(x => x.id === w.phase); return s ? `when the host announces "${s.title}"` : 'when the host says'; } if (w.evidence) return `as soon as you see or hear about the "${(EV[w.evidence] || {}).title || w.evidence}"`; if (w.death) return `when ${nm(w.death)} dies`; if (w.killer) return 'at 8:00 (Doors open)'; return 'when the host says'; };
     const env = (forWho, when, kind, body) => `<div class="envcard"><div class="envlab"><span>✂ Cut off this label and tape it to a small envelope</span><b>FOR: ${esc(forWho)}</b><i>${esc(kind)} · OPEN ${esc(when)}</i></div><div class="envbody">${paras(generic(body))}</div></div>`;
+    // casting on paper: every role, its size, and a blank for the player
+    const castSheet = () => {
+      const size = c => c.tier === 'ext' ? 'Supporting' : c.mustCast ? 'Leading' : 'Featured';
+      const order = c => (c.mustCast ? 0 : c.tier !== 'ext' ? 1 : 2);
+      const list = chars.filter(c => !c.spare).slice().sort((a, b) => order(a) - order(b));
+      return `<p class="small">Fill every <b>★ must-cast</b> role first: those characters carry the solution. Then the Inspector, then featured roles, then supporting roles for everyone else. Leading roles take about 20 minutes of reading, featured 10 to 15, supporting about 5.</p>
+        <table class="castws"><tr><th></th><th>Character</th><th>Role size</th><th>Player</th><th>Sheet given</th></tr>${list.map(c => { const d = DIR[c.id] || {}; return `<tr><td>${c.mustCast ? '★' : ''}</td><td><b>${esc(d.name || c.name)}</b><small>${esc(generic(d.title || c.occ || ''))}${c.inspector ? ' · THE INSPECTOR' : ''}${c.scriptedDeath ? ' · dies during the game' : ''}</small></td><td>${size(c)}</td><td></td><td>☐</td></tr>`; }).join('')}</table>
+        <p class="small muted">Who plays the killer stays between you and that player; they find out at 8:00 with everyone else.</p>`;
+    };
+    // the paper Who's Who: what guests would see in the phone directory (public, no secrets)
+    const whosWho = () => {
+      const list = chars.filter(c => !c.spare).map(c => Object.assign({ id: c.id, name: c.name, title: c.occ, group: 'Guests' }, DIR[c.id] || {}));
+      const groups = [...new Set(list.map(d => d.group))];
+      return `<section class="whos"><div class="part-kicker">Kane Oil &amp; Energy · Annual Gala</div><h2 style="margin:2pt 0 8pt">Who's Who at the Gala</h2>
+        ${groups.map(g => `<h4>${esc(g)}</h4><div class="whogrid">${list.filter(d => d.group === g).map(d => `<div><b>${esc(d.name)}</b><i>${esc(generic(d.title || ''))}</i>${d.blurb ? `<span>${esc(generic(d.blurb))}</span>` : ''}</div>`).join('')}</div>`).join('')}
+        <p class="small muted" style="margin-top:8pt">The Last Toast © 2026 Jacob Frederick</p></section>`;
+    };
+    // paper signs and rules posters: the same look as the website set, with no phones, code words or QR codes
+    const paperSigns = () => {
+      const sign = (cls, k, big, mid, sm) => `<section class="sign ${cls}"><div class="lg">${LOGOSM(cls === 'dark' ? '#f3d990' : '#94701f')}</div><div class="k">${k}</div><div class="big">${big}</div>${mid ? `<div class="mid">${mid}</div>` : ''}${sm ? `<div class="sm">${sm}</div>` : ''}</section>`;
+      const out = [];
+      out.push(sign('dark', 'Kane Oil &amp; Energy · Annual Gala', esc(P.title || 'The Last Toast'), esc(P.subtitle || 'A Murder Mystery Evening'), 'Tonight, Kane Oil &amp; Energy raises a glass.'));
+      out.push(sign('', 'Kane Oil &amp; Energy · Annual Gala', 'Check-In', '', '<span style="font-size:18pt;line-height:1.7">1 · Give your name to a host<br>2 · Collect your name badge and your sealed role packet<br>3 · Read your character sheet in private<br>4 · Open your envelopes only when they say so</span>'));
+      rooms.forEach(r => out.push(sign(r.alwaysOpen ? 'dark' : '', esc(r.sign || 'Kane Oil & Energy'), esc(r.name), '', esc(r.alwaysOpen ? 'Welcome. Find the Investigation Board and the coat check inside.' : generic(r.desc || 'Private.')))));
+      rooms.filter(r => !r.alwaysOpen).forEach(r => out.push(sign('sealed', 'Kane Oil Security', 'SEALED', esc(r.sealedName || r.name), 'Do not enter until the host announces that this room is <b>OPEN</b>.')));
+      out.push(sign('', 'Kane Oil &amp; Energy', 'Evidence', 'Found something?', 'Read it where you found it. Then it\'s your choice: share it with the room now, or keep it to yourself for a while. Shared evidence goes on the Investigation Board. <b>Please leave props where you found them.</b>'));
+      out.push(sign('', 'Kane Oil &amp; Energy', 'The Investigation Board', 'Pin shared evidence here', 'Once a clue is shared, put it on the board so everyone can connect the dots.'));
+      const rules = [
+        ['Stay in character', 'From the moment you arrive until the final reveal, you are your character. Accents, grudges and dramatic exits are encouraged.'],
+        ['Guard your secrets', 'Never show anyone your character sheet. What\'s on it is yours to reveal, trade or hide.'],
+        ['Only the killer may lie about the murder', 'Everyone else can dodge, deflect and keep their personal secrets, but can\'t tell an outright lie about the crime itself.'],
+        ['Open envelopes only when told', 'Every envelope in your packet says when to open it. Open it then, and not before. Some open when a piece of evidence turns up.'],
+        ['Sealed means sealed', 'Don\'t go into a closed room until the host announces it\'s open.'],
+        ['Locked means puzzle, not crowbar', 'Some evidence is locked away. The code is always hidden in the clues. Never force anything open or move furniture.'],
+        ['Hunt for evidence', 'Clues are hidden in the open rooms. Read what you find, decide whether to share it, and leave it where it was.'],
+        ['Know who\'s who', 'Use your Who\'s Who sheet, and wear your name badge all night so people can find you.'],
+        ['The bell means eyes up', 'When you hear the bell, stop and look to the host. Something has happened.'],
+        ['If you die', 'The host will hand you a card. Play it out dramatically, then stay in character as the body. The dead can listen, but can\'t share clues.'],
+        ['Cooperate with the Inspector', 'Once there\'s a crime, an Inspector takes charge. You don\'t have to tell them everything, but you\'d better have a good reason not to.'],
+        ['The accusation', 'Near the end, you\'ll get a ballot. Name one suspect and say why. Then, before the truth, the main suspects confess what they\'ve been hiding.'],
+        ['No peeking', 'Reading someone else\'s character sheet or envelopes is a firing offense.']
+      ];
+      rules.forEach(([h, t], i) => out.push(`<section class="poster one"><div class="lg">${LOGOSM('#94701f')}</div><div class="k">Rules of the Night · ${i + 1} of ${rules.length}</div>
+        <div class="num">${i + 1}</div><h2>${esc(h)}</h2><div class="orn">✦</div><p>${esc(t)}</p>
+        <div class="ft">Kane Oil &amp; Energy · ${esc(P.title || 'The Last Toast')} · © 2026 Jacob Frederick</div></section>`));
+      return out.join('');
+    };
     const paper = () => {
       const notKiller = `You are not the killer.\n\nYou don't have to do anything with this card. Keep playing your character. Everyone in the room opened one of these at the same time, so nobody can tell who got the important one.`;
       const confessOrder = (S.confessOrder || []).filter(id => CH[id]);
@@ -589,7 +639,7 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
         <li>Any invitation, poster or post about your event must credit <b>"The Last Toast, a murder mystery by Jacob Frederick."</b></li>
         <li>Every page is stamped with your name. To run it again, share it, or change it, ask Jacob for written permission first.</li></ol></div>
         <h3>Why this is protected</h3><p>The Last Toast took more than 150 hours to make, starting in late September 2026: the story, 39 characters, 15 pieces of evidence, two puzzles, 40 timed memories, a 21-part run of show, and every printable here. It was built for the residents of Conway Hall at Dickinson College, and it's shared with other RAs in good faith. Please honor that.</p>
-        <h3>Credits</h3><ul class="tight"><li><b>Created, written and produced by Jacob Frederick</b>, Resident Assistant, Conway Hall, Dickinson College.</li><li><b>Co-hosted with Alex Proedrou</b>, who also played Alexandra "Alex" Kane.</li><li><b>Sponsored by Residence Life</b>, Dickinson College.</li><li>The original website and digital tools were <b>built with Claude, an AI model by Anthropic</b>, under Jacob's direction. The website is not part of this edition.</li></ul>` +
+        <h3>Credits</h3><ul class="tight"><li><b>Created, written and produced by Jacob Frederick</b>, Resident Assistant, Conway Hall, Dickinson College.</li><li><b>Co-hosted with Alex Proedrou</b>, who also played Alexandra "Alex" Kane.</li><li><b>Sponsored by Residence Life</b>, Dickinson College.</li><li>The original website: its <b>design and code were built by Claude, an AI model by Anthropic</b>, under Jacob's direction. <b>For that reason, the website is not included in this edition.</b></li></ul><p class="small muted">What this edition contains: RA Jacob Frederick's original game: his story, characters, ideas and design.</p>` +
         part('Part 1', 'How it works on paper') +
         `<p>This edition runs the whole murder mystery with paper and envelopes. Nothing needs a phone.</p>
         <ul class="tight"><li><b>Role packets.</b> Each player gets a sealed packet at the door: their <b>Character Sheet</b> (Part 6) and a stack of small envelopes (Part 3). Each envelope is labeled with <i>when</i> to open it. The players handle their own envelopes; you just announce each phase.</li>
@@ -604,7 +654,10 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
         part('Part 3', 'The Envelope Kit · sorted by character') + `<p class="small muted">Print, cut each card out, cut off its label, fold the card, put it in a small envelope and tape the label on the outside. Bundle each character's envelopes into their role packet.</p>${envelopes}` +
         part('Part 4', 'For the host: official reports & death cards') + `<div class="envgrid">${reports}</div><div class="envgrid" style="margin-top:12pt">${deaths}</div>` +
         part('Part 5', 'Ballots & hints') + `<div class="ballots">${ballots}</div>${(hints || []).length ? `<h3>Hint cards (read one aloud when the room is stuck)</h3><ol>${hints.map(h => `<li>${esc(generic(h.text || h))}</li>`).join('')}</ol>` : ''}` +
-        part('Part 6', 'Character Sheets') + `<p class="small muted">One per player, in their role packet. Spoiler-free.</p><div style="break-before:page"></div>` + sheets(true);
+        part('Part 6', 'Casting worksheet') + castSheet() +
+        part('Part 7', "Who's Who (one per guest)") + whosWho() +
+        part('Part 8', 'Paper signs & rules posters') + `<p class="small muted">Paper versions of the door signs, SEALED signs, check-in sign and rules posters: no phones, code words or QR codes. (Direction arrows, restrooms and coat check are in the Signs printout.)</p>` + paperSigns() +
+        part('Part 9', 'Character Sheets') + `<p class="small muted">One per player, in their role packet. Spoiler-free.</p><div style="break-before:page"></div>` + sheets(true);
     };
 
     /* ---------------- NAME BADGES ---------------- */
