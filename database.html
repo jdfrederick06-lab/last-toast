@@ -55,6 +55,11 @@
 .alrt-show{border:0;background:transparent;color:var(--muted);font:600 11px var(--mono);letter-spacing:.12em;cursor:pointer;padding:6px 2px;text-align:left}
 .ca-more{display:inline-block;vertical-align:middle}.ca-more summary{list-style:none;cursor:pointer;font:600 11px var(--mono);letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px}.ca-more summary::-webkit-details-marker{display:none}
 .ca-more[open] summary{color:var(--gold2);border-color:rgba(212,162,76,.5)}.ca-more-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.lic-box{max-height:240px;overflow:auto;text-align:left;margin:12px 0 8px;padding:10px 12px;border:1px solid rgba(212,162,76,.45);border-radius:12px;background:rgba(0,0,0,.25);font-size:13px;line-height:1.5;color:#e9e2d2}
+.lic-box ol{padding-left:18px;margin:6px 0}.lic-box ul{padding-left:16px;margin:4px 0}.lic-box li{margin:0 0 5px}.lic-h{font:700 11px var(--mono);letter-spacing:.12em;color:var(--gold2);margin:0 0 6px}.lic-h span{color:var(--muted);font-weight:400}.lic-f{margin:6px 0 0;color:var(--muted)}
+.lic-ok{display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:14px;margin:4px 0 12px}
+.lic-strip{border:1px solid rgba(255,77,94,.45);background:rgba(255,77,94,.08);border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:13.5px;line-height:1.5;color:#f1e6e8;text-align:center}
+.ra-body .lic{font-size:15px}
 .ra-guide{display:grid;gap:8px}.ra-sec{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}.ra-sec summary{cursor:pointer;list-style:none;padding:12px 14px;font:600 13px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}.ra-sec summary::-webkit-details-marker{display:none}
 .ra-body{padding:0 16px 14px;font-size:15.5px;line-height:1.65;color:#ece6da}.ra-body ul{padding-left:20px;margin:6px 0}.ra-body li{margin:0 0 6px}.ra-body table{width:100%;border-collapse:collapse}.ra-body td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}.ra-body td:first-child{white-space:nowrap;color:var(--gold2)}.ra-body .terms{border-left:2px solid var(--gold);padding-left:12px;color:var(--muted)}
 .desk-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.desk-kpis div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.desk-kpis b{display:block;font-size:17px;color:var(--gold2)}.desk-kpis span{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -993,28 +998,30 @@ function raHTML() {
   if (!ui.ra.name) return `<div class="login-wrap"><div class="login">
     <div class="lbrand">${LOGO(26)}<span class="gold-text">THE LAST TOAST · RA KIT</span></div>
     <h1 style="margin-top:18px">Welcome, RA.</h1>
-    <div class="term"><div>Passcode accepted. Tell us who you are to open the kit.</div></div>
+    <div class="term"><div>Passcode accepted. Enter your name and read the terms to open the kit.</div></div>
     <form id="raForm" class="lcard" autocomplete="on">
       <label class="lbl" for="raName">Your full name</label>
       <input class="input" id="raName" maxlength="60" autocomplete="name" placeholder="First and last name" style="text-align:left;letter-spacing:0">
+      ${K.terms ? `<div class="lic-box">${K.terms}</div><label class="check lic-ok"><input type="checkbox" id="raAgree"> I have read and agree to the RA Kit License &amp; Terms</label>` : ''}
       <button class="btn gold block" id="raGo" type="submit">OPEN THE RA KIT</button>
       <div class="login-err" id="raErr"></div>
     </form>
-    <div class="foot">Your name is shared with the author so he knows who's using the kit,<br>and every file you download is stamped with it.</div></div></div>`;
+    <div class="foot">Your name and your acceptance are recorded for the creator,<br>and every file you download is stamped with your name.</div></div></div>`;
   const groups = [...new Set(K.files.map(f => f.group))];
   const kb = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB';
   return `<header class="topbar"><div class="brand">${LOGO(34)}<div><b>THE LAST TOAST</b><small>RA KIT · LICENSED TO ${esc(ui.ra.name.toUpperCase())}</small></div></div><button class="iconbtn" id="raOut">CLOSE KIT</button></header>
-    <section class="panel gold"><div class="ph"><h2>The RA Kit</h2><span class="sub">FOR ONE NON-COMMERCIAL EVENT</span></div>
+    <div class="lic-strip">The Last Toast © 2026 Jacob Frederick. All rights reserved. Licensed to <b>${esc(ui.ra.name)}</b> for <b>one free event</b>. Copying, sharing, selling or adapting any part is not permitted.</div>
+    <section class="panel gold"><div class="ph"><h2>The RA Kit</h2><span class="sub">FOR ONE FREE EVENT</span></div>
       <div class="ra-guide">${K.guide.map((g, i) => `<details class="ra-sec" ${i === 0 ? 'open' : ''}><summary>${esc(g.h)}</summary><div class="ra-body">${g.t}</div></details>`).join('')}</div></section>
     ${groups.map(gr => `<section class="panel"><div class="ph"><h2>${esc(gr)}</h2></div><div class="relist">${K.files.filter(f => f.group === gr).map(f => `<div class="reitem"><div class="t">${esc(f.name)}<small>${esc(f.desc)} · ${kb(f.size)}</small></div><button class="btn sm gold" data-radl="${esc(f.id)}">DOWNLOAD</button></div>`).join('')}</div></section>`).join('')}
-    <p class="note" style="text-align:center;margin:8px 0 40px">The Last Toast © 2026 Jacob Frederick. Licensed to ${esc(ui.ra.name)} for one non-commercial event. Please don't copy, share or post it.</p>`;
+    <div class="lic-strip">The Last Toast © 2026 Jacob Frederick. All rights reserved. Licensed to <b>${esc(ui.ra.name)}</b> for <b>one free event</b> under the RA Kit License &amp; Terms (${esc(ui.ra.kit.termsV || 'v1')}). Do not copy, share, sell, post or adapt any part of it.</div>`;
 }
 const raSafe = s => String(s || '').replace(/[^\x20-\x7E]/g, '').trim();   // the PDF stamp font only takes plain characters
 async function raStamp(bytes) {
   const load = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   if (!window.PDFLib) await load('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js').catch(() => load('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'));
   const { PDFDocument, StandardFonts, rgb } = PDFLib, doc = await PDFDocument.load(bytes), font = await doc.embedFont(StandardFonts.Helvetica);
-  const line = `Licensed to ${raSafe(ui.ra.name) || 'an approved RA'} on ${new Date().toLocaleDateString('en-US')}  |  The Last Toast (c) 2026 Jacob Frederick  |  One non-commercial event. Do not copy or share.`;
+  const line = `The Last Toast (c) 2026 Jacob Frederick. All rights reserved.  |  Licensed to ${raSafe(ui.ra.name) || 'an approved RA'} on ${new Date().toLocaleDateString('en-US')} for one free event under the RA Kit License.  |  Do not copy, share, sell or adapt.`;
   for (const p of doc.getPages()) { const { width } = p.getSize(), size = 6.5, w = font.widthOfTextAtSize(line, size); p.drawText(line, { x: Math.max(10, (width - w) / 2), y: 7, size, font, color: rgb(0.45, 0.45, 0.45) }); }
   return await doc.save();
 }
@@ -1026,8 +1033,9 @@ function bindRa() {
       e.preventDefault();
       const name = $('#raName').value.trim().replace(/\s+/g, ' '), err = $('#raErr'), btn = $('#raGo');
       if (name.length < 3 || !/\s/.test(name)) { err.textContent = 'PLEASE ENTER YOUR FIRST AND LAST NAME'; return; }
+      if (ui.ra.kit.terms && !($('#raAgree') || {}).checked) { err.textContent = 'PLEASE READ AND AGREE TO THE TERMS'; return; }
       btn.disabled = true; btn.textContent = 'OPENING…';
-      try { ui.ra.name = name; await raLog('opened the RA Kit'); ui.built = null; render(); }
+      try { ui.ra.name = name; await raLog('opened the RA Kit and accepted the terms (' + (ui.ra.kit.termsV || 'v1') + ')'); ui.built = null; render(); }
       catch (x) { ui.ra.name = ''; btn.disabled = false; btn.textContent = 'OPEN THE RA KIT'; err.textContent = "COULDN'T CONNECT · CHECK YOUR INTERNET AND TRY AGAIN"; }
     });
     return;
@@ -1070,7 +1078,7 @@ function loginHTML() {
       <button class="btn gold block" id="authBtn" type="submit">UNLOCK</button>
       <div class="login-err" id="loginErr"></div>
     </form>
-    <div class="foot">END-TO-END ENCRYPTED · KANE SECURE${P.sponsor ? '<br>' + esc((P.host ? 'HOSTED BY ' + P.host + ' · ' : '') + 'SPONSORED BY ' + P.sponsor).toUpperCase() : ''}</div>
+    <div class="foot">END-TO-END ENCRYPTED · KANE SECURE<br>THE LAST TOAST © 2026 JACOB FREDERICK · ALL RIGHTS RESERVED · SITE BUILT WITH CLAUDE (ANTHROPIC)${P.sponsor ? '<br>' + esc((P.host ? 'HOSTED BY ' + P.host + ' · ' : '') + 'SPONSORED BY ' + P.sponsor).toUpperCase() : ''}</div>
   </div></div>`;
 }
 const FACE_SVG = `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#f7dc9a" stroke-width="1.3" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="10" r="3"/><path d="M7 17c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg>`;

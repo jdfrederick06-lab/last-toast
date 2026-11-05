@@ -345,7 +345,7 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
     const whenText = w => { w = w || {}; if (w.phase) return 'phase ' + phaseT(w.phase); if (w.evidence) return 'when “' + ((EV[w.evidence] || {}).title || w.evidence) + '” is revealed'; if (w.death) return 'when ' + nm(w.death) + ' dies'; if (w.killer) return 'when the killer learns the truth'; return ''; };
     const roomOpens = r => { if (r.alwaysOpen) return 'Always open'; const i = show.findIndex(st => (st.actions || []).some(a => a.do === 'room' && a.id === r.id)); return i < 0 ? 'Opened by the host' : `${show[i].time} · ${show[i].title}`; };
     const deliverAt = e => { const i = show.findIndex(st => (st.actions || []).some(a => a.do === 'deliver' && a.id === e.id)); return i < 0 ? 'Sent by the host' : `${show[i].time} · ${show[i].title}`; };
-    const cover = (title, sub, conf, extra = '') => `<section class="cover">${HEX}<div class="k">Kane Oil &amp; Energy · ${esc(P.title || 'The Last Toast')}</div><h1>${esc(title)}</h1><div class="sub">${esc(sub)}</div>${conf ? `<div class="conf">${esc(conf)}</div>` : ''}<div class="meta">${hosted ? esc(hosted) + '<br>' : ''}Printed ${esc(today)}${extra}</div></section>`;
+    const cover = (title, sub, conf, extra = '') => `<section class="cover">${HEX}<div class="k">Kane Oil &amp; Energy · ${esc(P.title || 'The Last Toast')}</div><h1>${esc(title)}</h1><div class="sub">${esc(sub)}</div>${conf ? `<div class="conf">${esc(conf)}</div>` : ''}<div class="meta">${hosted ? esc(hosted) + '<br>' : ''}Printed ${esc(today)}${extra}<br><b>The Last Toast © 2026 Jacob Frederick. All rights reserved.</b> Created, written and produced by Jacob Frederick. Not to be copied, shared, sold or adapted without his written permission.</div></section>`;
     const part = (kicker, title) => `<h1 class="part">${esc(title)}</h1><div class="part-kicker">${esc(kicker)}</div><div class="rule"></div>`;
     const blank = t => String(t || '').replace(/\{victim3\}/g, '[the third victim]').replace(/\{accused\}/g, '[the accused]');
     const list = arr => `<ul class="tight">${(arr || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
@@ -580,6 +580,16 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
           ${s.id === 'confess' ? `<p><b>Confession order:</b> ${confessOrder.map((id, n) => (n + 1) + '. ' + esc(nm(id))).join(' · ')} (skip anyone not there; the killer goes last, and lies).</p>` : ''}</div></div>`;
       }).join('');
       return cover('Paper Edition', 'The whole game, no website needed', 'CONFIDENTIAL · FOR THE HOST', ' · © 2026 Jacob Frederick · Licensed for one non-commercial event. Do not copy or redistribute.').replace(esc(hosted) + '<br>', '') +
+        part('Before you begin', 'License, ownership & credits') +
+        `<div class="box red"><div class="lbl">Read this first</div>
+        <p><b>The Last Toast</b>, including its story, plot, the world of Kane Oil &amp; Energy, every character and name, the dossiers, secrets, briefs, evidence, puzzles, scripts, run of show and every printable in this edition, was <b>created by Jacob Frederick</b>. <b>All rights reserved.</b></p>
+        <p>This copy is shared under the <b>RA Kit License &amp; Terms</b>, which you agreed to when you opened the kit:</p>
+        <ol class="tight"><li>You may run The Last Toast <b>once, free of charge</b>, for the residents of your own hall or community, and print what you need for that event.</li>
+        <li>You may <b>not</b> sell it or charge for it; copy, share, forward, post, upload or publish it (including to shared drives, social media or AI tools); give the passcode or files to anyone; rewrite, rename or repackage the story or characters as your own; or remove the creator's name, these notices, or your name stamped on each page.</li>
+        <li>Any invitation, poster or post about your event must credit <b>"The Last Toast, a murder mystery by Jacob Frederick."</b></li>
+        <li>Every page is stamped with your name. To run it again, share it, or change it, ask Jacob for written permission first.</li></ol></div>
+        <h3>Why this is protected</h3><p>The Last Toast took more than 150 hours to make, starting in late September 2026: the story, 39 characters, 15 pieces of evidence, two puzzles, 40 timed memories, a 21-part run of show, and every printable here. It was built for the residents of Conway Hall at Dickinson College, and it's shared with other RAs in good faith. Please honor that.</p>
+        <h3>Credits</h3><ul class="tight"><li><b>Created, written and produced by Jacob Frederick</b>, Resident Assistant, Conway Hall, Dickinson College.</li><li><b>Co-hosted with Alex Proedrou</b>, who also played Alexandra "Alex" Kane.</li><li><b>Sponsored by Residence Life</b>, Dickinson College.</li><li>The original website and digital tools were <b>built with Claude, an AI model by Anthropic</b>, under Jacob's direction. The website is not part of this edition.</li></ul>` +
         part('Part 1', 'How it works on paper') +
         `<p>This edition runs the whole murder mystery with paper and envelopes. Nothing needs a phone.</p>
         <ul class="tight"><li><b>Role packets.</b> Each player gets a sealed packet at the door: their <b>Character Sheet</b> (Part 6) and a stack of small envelopes (Part 3). Each envelope is labeled with <i>when</i> to open it. The players handle their own envelopes; you just announce each phase.</li>
@@ -815,7 +825,7 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
         ${title ? `<div class="award">${esc(title)}</div>` : '<div class="award blank"></div>'}
         <div class="orn">${ORN}</div>
         <div class="to">is hereby presented to</div><div class="nm">${esc(aw[k] || '')}</div><div class="why">${why}</div>
-        <div class="foot"><div class="sig">${esc(signers[0])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div><div class="seal">${SEAL(i)}</div><div class="sig">${esc(signers[1])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div>${when ? `<div class="dt">${when}</div>` : ''}</div></section>`).join('');
+        <div class="foot"><div class="sig">${esc(signers[0])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div><div class="seal">${SEAL(i)}</div><div class="sig">${esc(signers[1])}<small>Host · ${esc(P.title || 'The Last Toast')}</small></div><div class="dt">${when ? when + ' · ' : ''}The Last Toast © 2026 Jacob Frederick</div></div></section>`).join('');
     };
     return { paper, tour, kit, rooms: () => rooms.map(r => ({ id: r.id, name: r.name })), host, tags, props, badges, signs, welcome, inspector: inspectorDoc, dossiers, invite, toast, notebook, awards: awardsDoc, sheets };
   }
@@ -833,7 +843,7 @@ body.png #doc>section{width:100vw;height:100vh;margin:0;border-radius:0;break-af
     const html = keys.map((k, i) => (i ? '<div style="break-before:page"></div>' : '') + one(k)).join('');
     const roomName = k => ((d.rooms().find(r => 'kit-' + r.id === k) || {}).name || '').toUpperCase();
     const label = which === 'all' ? LABELS.all : keys.length > 1 && new Set(keys).size > 1 ? 'PRINT PACKET' : keys[0].startsWith('kit-') ? 'ROOM KIT · ' + roomName(keys[0]) : (LABELS[keys[0]] || LABELS.host);
-    const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST · ${label}";font:7.5pt 'Segoe UI',Arial,sans-serif;letter-spacing:.14em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;
+    const pageCSS = `@page{size:Letter;margin:.7in .75in .75in;@bottom-left{content:"THE LAST TOAST © 2026 JACOB FREDERICK · ALL RIGHTS RESERVED · ${label}";font:6.8pt 'Segoe UI',Arial,sans-serif;letter-spacing:.1em;color:#8a8f99}@bottom-right{content:counter(page);font:9pt Georgia,serif;color:#8a8f99}}@page:first{@bottom-left{content:none}@bottom-right{content:none}}`;
     return { html, label, pageCSS };
   }
   /* what to print each document on */
